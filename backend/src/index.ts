@@ -14,7 +14,19 @@ import adminRoutes from './routes/admin';
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: config.frontendUrl, credentials: true }));
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      const allowed = config.frontendUrls;
+      if (allowed.includes(origin) || origin.endsWith('.vercel.app')) {
+        return cb(null, true);
+      }
+      return cb(null, allowed[0] || true);
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // API routes
