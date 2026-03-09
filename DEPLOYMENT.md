@@ -67,7 +67,7 @@ Replace `YOUR_USERNAME/busy-beds` with your actual GitHub username and repo name
 **Step A: Settings**
 1. Click your **backend service** (the one created from GitHub, e.g. "busy-beds")
 2. Go to **Settings**
-3. Set **Root Directory** to `backend`
+3. **Root Directory:** Set to `backend` (required)
 
 **Step B: Connect database (critical)**
 1. Go to **Variables** tab
@@ -219,8 +219,13 @@ After deploy, copy the URL (e.g. `https://busy-beds.vercel.app`).
 ### Migration fails
 
 - Ensure the backend service Root Directory is `backend`
-- Check that `database/schema.init.sql` exists in the repo
+- Schema is in `backend/scripts/schema.init.sql`
 - Inspect Railway build logs for the migration step
+
+### Railpack "could not determine how to build"
+
+- Set Root Directory to `backend` in Railway Settings
+- Backend has `nixpacks.toml` and `railway.toml` for explicit build config
 
 ---
 

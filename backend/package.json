@@ -1,6 +1,9 @@
 {
   "name": "busy-beds-backend",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=18"
+  },
   "description": "Hotel Coupon Membership System API",
   "main": "dist/index.js",
   "scripts": {
