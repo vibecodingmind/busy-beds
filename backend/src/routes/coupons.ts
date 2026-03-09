@@ -44,7 +44,7 @@ router.get('/', authMiddleware, async (req, res) => {
 // Validate coupon (public - for redemption page)
 router.get('/:code/validate', async (req, res) => {
   try {
-    const coupon = await couponService.validateCoupon(req.params.code);
+    const coupon = await couponService.validateCoupon(req.params?.code ?? '');
     if (!coupon) {
       return res.status(404).json({ error: 'Coupon not found or invalid' });
     }
@@ -72,7 +72,7 @@ router.post(
       if (!req.hotel) return res.status(401).json({ error: 'Hotel authentication required' });
 
       await couponService.redeemCoupon(
-        req.params.code,
+        req.params?.code ?? '',
         req.hotel.hotelAccountId,
         req.hotel.hotelId
       );

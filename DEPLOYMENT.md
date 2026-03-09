@@ -62,20 +62,30 @@ Replace `YOUR_USERNAME/busy-beds` with your actual GitHub username and repo name
 4. Click the PostgreSQL service → **Variables** tab
 5. Copy the `DATABASE_URL` value (you’ll use it for the backend)
 
-### 2.3 Configure the backend service
+### 2.3 Configure the backend service and connect the database
 
-1. Click your **backend service** (the one created from GitHub)
+**Step A: Settings**
+1. Click your **backend service** (the one created from GitHub, e.g. "busy-beds")
 2. Go to **Settings**
 3. Set **Root Directory** to `backend`
-4. Go to **Variables** and add:
 
-| Variable       | Value                                                                 |
-|----------------|-----------------------------------------------------------------------|
-| `DATABASE_URL` | Paste from PostgreSQL service (or use **Add Reference** → Postgres)  |
-| `JWT_SECRET`   | Generate one: `openssl rand -base64 32` in Terminal                  |
-| `FRONTEND_URL` | Leave empty for now; add your Vercel URL after Part 3                |
+**Step B: Connect database (critical)**
+1. Go to **Variables** tab
+2. Click **+ New Variable** → **Add Reference**
+3. Select your **PostgreSQL** service
+4. Choose **DATABASE_URL** from the dropdown
+5. Click **Add** – this links the database to your backend
 
-5. Click **Deploy** (or it will deploy automatically)
+**Step C: Add other variables**
+6. Click **+ New Variable** → **Add Variable** (plain, not reference)
+7. Add:
+   - `JWT_SECRET` = output of `openssl rand -base64 32`
+   - `FRONTEND_URL` = your Vercel URL (e.g. `https://busy-beds.vercel.app`) – add after Part 3
+
+**Step D: Deploy**
+8. Railway deploys automatically when you save. Or click **Deploy** in the top right.
+
+**Verify connection:** Backend service → **Variables** → you should see `DATABASE_URL` with a value like `postgresql://...@postgres.railway.internal:5432/railway`. If it's there, the database is connected.
 
 ### 2.4 Get your backend URL
 
@@ -86,7 +96,11 @@ Replace `YOUR_USERNAME/busy-beds` with your actual GitHub username and repo name
 
 ### 2.5 Run seed and create admin (one-time)
 
-Install Railway CLI (optional but useful):
+**Note:** The Railway CLI does NOT connect the database. The connection is done in Step 2.3 (Add Reference → DATABASE_URL). The CLI is only for running one-off commands from your Mac.
+
+Use your **backend service name** (from `railway link`). Run `railway status` to see it. If you only have one service, omit `-s busy-beds`.
+
+Install Railway CLI (optional – only for running seed/admin from your computer):
 
 ```bash
 npm install -g @railway/cli
@@ -100,11 +114,17 @@ cd "/Users/guteng/Documents/Busy Beds"
 # Link to your Railway project (follow prompts)
 railway link
 
-# Run seed (subscription plans + sample hotels)
-railway run -s busy-beds-backend psql $DATABASE_URL -f database/seed.sql
+# Run seed (use YOUR service name from railway status - e.g. busy-beds)
+railway run -s busy-beds node backend/scripts/seed.js
 
 # Create admin user (password: admin123)
-cd backend && railway run -s busy-beds-backend npx tsx scripts/seed-admin.ts
+railway run -s busy-beds npx tsx backend/scripts/seed-admin.ts
+```
+
+If `-s busy-beds` gives "Service not found", run without `-s` (uses your linked service):
+```bash
+railway run node backend/scripts/seed.js
+railway run npx tsx backend/scripts/seed-admin.ts
 ```
 
 If you don’t use the CLI, run the SQL and script from the Railway dashboard:

@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const hotel = await hotelModel.findHotelById(parseInt(req.params.id));
+    const hotel = await hotelModel.findHotelById(parseInt(req.params?.id ?? '0'));
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
     res.json(hotel);
   } catch (err) {

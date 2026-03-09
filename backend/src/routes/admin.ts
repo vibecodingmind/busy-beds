@@ -54,7 +54,7 @@ router.post(
 
 router.get('/hotels/:id', async (req, res) => {
   try {
-    const hotel = await hotelModel.findHotelById(parseInt(req.params.id));
+    const hotel = await hotelModel.findHotelById(parseInt(req.params?.id ?? '0'));
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
     res.json(hotel);
   } catch (err) {
@@ -65,7 +65,7 @@ router.get('/hotels/:id', async (req, res) => {
 
 router.put('/hotels/:id', async (req, res) => {
   try {
-    const hotel = await hotelModel.updateHotel(parseInt(req.params.id), req.body);
+    const hotel = await hotelModel.updateHotel(parseInt(req.params?.id ?? '0'), req.body);
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
     res.json(hotel);
   } catch (err) {
@@ -77,7 +77,7 @@ router.put('/hotels/:id', async (req, res) => {
 router.delete('/hotels/:id', async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM hotels WHERE id = $1 RETURNING id', [
-      req.params.id,
+      req.params?.id ?? '0',
     ]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Hotel not found' });
     res.json({ success: true });
@@ -99,7 +99,7 @@ router.post(
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      const hotelId = parseInt(req.params.id);
+      const hotelId = parseInt(req.params?.id ?? '0');
       const hotel = await hotelModel.findHotelById(hotelId);
       if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
 

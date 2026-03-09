@@ -47,7 +47,7 @@ router.post(
         email: account.email,
         type: 'hotel',
       };
-      const token = jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
+      const token = jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as jwt.SignOptions);
 
       res.status(201).json({
         hotelAccount: { id: account.id, hotelId: account.hotel_id, email: account.email, name: account.name },
@@ -91,7 +91,7 @@ router.post(
         email: account.email,
         type: 'hotel',
       };
-      const token = jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
+      const token = jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as jwt.SignOptions);
 
       res.json({
         hotelAccount: { id: account.id, hotelId: account.hotel_id, email: account.email, name: account.name },

@@ -20,7 +20,7 @@ export async function findAllHotels(limit = 50, offset = 0): Promise<Hotel[]> {
     `SELECT * FROM hotels ORDER BY name LIMIT $1 OFFSET $2`,
     [limit, offset]
   );
-  return result.rows.map((r) => ({ ...r, images: r.images || [] }));
+  return result.rows.map((r: Record<string, unknown>) => ({ ...r, images: (r.images as string[]) || [] })) as Hotel[];
 }
 
 export async function findHotelById(id: number): Promise<Hotel | null> {
