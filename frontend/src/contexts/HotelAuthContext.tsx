@@ -39,9 +39,10 @@ export function HotelAuthProvider({ children }: { children: React.ReactNode }) {
     }
     hotelAuth
       .me()
-      .then((res: { hotel: Hotel; hotelAccount: { id: number; hotel_id: number; email: string; name: string } }) => {
-        setHotel(res.hotel);
-        setHotelAccount(res.hotelAccount ? { ...res.hotelAccount, hotelId: res.hotelAccount.hotel_id } : null);
+      .then((res) => {
+        const data = res as { hotel: Hotel; hotelAccount: { id: number; hotel_id: number; email: string; name: string } };
+        setHotel(data.hotel);
+        setHotelAccount(data.hotelAccount ? { ...data.hotelAccount, hotelId: data.hotelAccount.hotel_id } : null);
       })
       .catch(() => {
         localStorage.removeItem('hotelToken');
