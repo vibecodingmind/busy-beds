@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { hotels } from '@/lib/api';
 import GetCouponButton from './GetCouponButton';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HotelDetailPage({
   params,
 }: {

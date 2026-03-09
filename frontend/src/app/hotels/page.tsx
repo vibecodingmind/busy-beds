@@ -1,6 +1,8 @@
 import { hotels } from '@/lib/api';
 import HotelCard from '@/components/hotel/HotelCard';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HotelsPage() {
   let hotelList: { id: number; name: string; description: string | null; location: string | null; contact_phone: string | null; contact_email: string | null; images: string[]; coupon_discount_value: string; coupon_limit: number; limit_period: string }[] = [];
   try {
