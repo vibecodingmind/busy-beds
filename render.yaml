@@ -1,0 +1,11 @@
+# Render Blueprint - Alternative when Railway is stuck
+# Deploy: render.com → New → Blueprint → Connect busy-beds repo
+# Then add DATABASE_URL, JWT_SECRET, FRONTEND_URL in the dashboard
+
+services:
+  - type: web
+    name: busy-beds-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run migrate && npm start
