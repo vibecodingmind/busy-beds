@@ -1,0 +1,11 @@
+{
+  "name": "busy-beds",
+  "private": true,
+  "scripts": {
+    "build": "cd backend && npm install && npm run build",
+    "start": "cd backend && npm run migrate && npm start"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

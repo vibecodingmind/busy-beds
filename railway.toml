@@ -1,0 +1,9 @@
+# Railway config - ensures backend is built when deploying from repo root
+# If Root Directory is set to "backend" in Railway Dashboard, that takes precedence
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "cd backend && npm run migrate && npm start"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
