@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useHotelAuth } from '@/contexts/HotelAuthContext';
 
-export default function HotelLoginPage() {
+function HotelLoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -80,5 +80,13 @@ export default function HotelLoginPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function HotelLoginPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-md py-8">Loading...</div>}>
+      <HotelLoginForm />
+    </Suspense>
   );
 }
