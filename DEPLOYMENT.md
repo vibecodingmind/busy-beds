@@ -1,10 +1,47 @@
 # Busy Beds – Deployment Guide
 
-Step-by-step guide to deploy Busy Beds to GitHub, Railway (backend + database), and Vercel (frontend).
+Step-by-step guide to deploy Busy Beds. Choose one:
+
+- **Option A:** Vercel (frontend + backend) + Railway Postgres
+- **Option B:** Railway (backend + Postgres) + Vercel (frontend)
 
 ---
 
-## Part 1: Push to GitHub
+## Option A: All on Vercel (frontend + backend)
+
+Use this when Railway is down or you prefer a single platform. Database stays on Railway Postgres (or any Postgres provider).
+
+### A1. Deploy backend on Vercel
+
+1. Go to [vercel.com](https://vercel.com) → **Add New** → **Project**
+2. Import your `busy-beds` repo
+3. Configure:
+   - **Root Directory:** `backend`
+   - **Framework Preset:** Other (or leave auto)
+   - **Build Command:** (uses `backend/vercel.json` – runs `npm run build && npm run migrate`)
+4. **Environment Variables:**
+   - `DATABASE_URL` – your Postgres URL (Railway Postgres or other)
+   - `JWT_SECRET` – `openssl rand -base64 32`
+   - `FRONTEND_URL` – your frontend URL (e.g. `https://busy-beds.vercel.app`)
+5. Deploy. Copy the backend URL (e.g. `https://busy-beds-backend-xxx.vercel.app`)
+
+### A2. Deploy frontend on Vercel
+
+1. **Add New** → **Project** → import same `busy-beds` repo again (second project)
+2. Configure:
+   - **Root Directory:** `frontend`
+   - **Framework Preset:** Next.js
+3. **Environment Variable:**
+   - `NEXT_PUBLIC_API_URL` = `https://YOUR-BACKEND-URL.vercel.app/api/v1`
+4. Deploy
+
+### A3. Database
+
+Use Railway Postgres (Part 2.2) or any Postgres provider. Put the connection string in `DATABASE_URL` on the backend project.
+
+---
+
+## Part 1: Push to GitHub (both options)
 
 ### 1.1 Create a GitHub repository
 
@@ -43,7 +80,9 @@ Replace `YOUR_USERNAME/busy-beds` with your actual GitHub username and repo name
 
 ---
 
-## Part 2: Deploy Backend + Database on Railway
+## Option B: Railway backend + Vercel frontend
+
+### Part 2: Deploy Backend + Database on Railway
 
 ### 2.1 Create Railway account and project
 
@@ -134,7 +173,7 @@ If you don’t use the CLI, run the SQL and script from the Railway dashboard:
 
 ---
 
-## Part 3: Deploy Frontend on Vercel
+### Part 3: Deploy Frontend on Vercel
 
 ### 3.1 Create Vercel project
 
@@ -166,7 +205,7 @@ After deploy, copy the URL (e.g. `https://busy-beds.vercel.app`).
 
 ---
 
-## Part 4: Connect frontend and backend
+### Part 4: Connect frontend and backend
 
 ### 4.1 Set FRONTEND_URL on Railway
 
@@ -185,7 +224,7 @@ After deploy, copy the URL (e.g. `https://busy-beds.vercel.app`).
 
 ---
 
-## Part 5: Create hotel account (for redemption)
+### Part 5: Create hotel account (for redemption)
 
 1. Log in as admin
 2. Go to **Admin** → **Hotels**
@@ -231,10 +270,9 @@ After deploy, copy the URL (e.g. `https://busy-beds.vercel.app`).
 
 ## Summary
 
-| Platform   | Purpose                    | URL / config                          |
-|-----------|----------------------------|---------------------------------------|
-| GitHub    | Source code                | Your repo URL                         |
-| Railway   | Backend + PostgreSQL       | Backend URL + `DATABASE_URL`         |
-| Vercel    | Frontend                   | Frontend URL                          |
+| Option | Frontend | Backend | Database |
+|--------|----------|---------|----------|
+| A      | Vercel   | Vercel  | Railway Postgres (or any) |
+| B      | Vercel   | Railway | Railway Postgres |
 
-After setup, pushing to `main` will trigger automatic deploys on both Railway and Vercel.
+After setup, pushing to `main` triggers automatic deploys.
