@@ -35,38 +35,40 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
             sizes="(max-width: 640px) 50vw, 300px"
             unoptimized={!imageUrl.includes('images.unsplash.com')}
           />
+          {/* Dark gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
           {/* Discount tag - top left */}
           {discountLabel && (
-            <div className="absolute left-2 top-2 z-10 rounded-lg bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+            <div className="absolute left-2 top-2 z-10 rounded-lg bg-black/80 px-2 py-1 text-xs font-medium text-white">
               {discountLabel} off
             </div>
           )}
-          <div className="absolute right-2 top-2 z-10">
-            <FavoriteButton hotelId={hotel.id} size="sm" onRemove={onRemoveFavorite} />
+          <div className="absolute right-2 top-2 z-10 rounded-full bg-black/50 p-1">
+            <FavoriteButton hotelId={hotel.id} size="sm" onRemove={onRemoveFavorite} onImage />
           </div>
-          {/* View Details - bottom right overlay */}
-          <div className="absolute bottom-2 right-2 z-10 flex items-center gap-1 rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-zinc-800 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-zinc-800/90 dark:text-zinc-200">
+          {/* View Details - bottom right, white text on dark */}
+          <div className="absolute bottom-2 right-2 z-10 flex items-center gap-1 rounded-lg bg-black/80 px-3 py-1.5 text-sm font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
             View Details
-            <ChevronRightIcon />
+            <ChevronRightIcon className="text-white" />
           </div>
         </div>
         <div className="p-4">
           <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{hotel.name}</h3>
           {hotel.location && (
-            <p className="mt-2 flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400">
-              <MapPinIcon className="h-4 w-4 flex-shrink-0 text-zinc-400" />
+            <p className="mt-2 flex items-center gap-1.5 text-sm text-zinc-700 dark:text-zinc-400">
+              <MapPinIcon className="h-4 w-4 flex-shrink-0 text-zinc-600 dark:text-zinc-400" />
               <span className="line-clamp-1">{hotel.location}</span>
             </p>
           )}
           {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
             <p className="mt-2 flex items-center gap-1.5 text-sm">
               <StarRating rating={Number(hotel.avg_rating)} size="sm" />
-              <span className="text-zinc-600 dark:text-zinc-400">
+              <span className="text-zinc-700 dark:text-zinc-400">
                 {Number(hotel.avg_rating).toFixed(1)} ({hotel.review_count})
               </span>
             </p>
           ) : (
-            <p className="mt-2 text-sm text-zinc-400 dark:text-zinc-500">No reviews yet</p>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-500">No reviews yet</p>
           )}
           <p className="mt-3 font-medium text-[#FF385C] dark:text-[#ff6b81]">
             {hotel.coupon_discount_value}

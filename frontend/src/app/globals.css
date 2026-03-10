@@ -1,14 +1,14 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* Light mode - bright and airy */
+/* Light mode - bright and airy, strong text contrast */
 :root {
   --background: #f8fafc;
-  --foreground: #1e293b;
+  --foreground: #0f172a;
   --card-bg: rgba(255, 255, 255, 0.8);
   --card-border: rgba(226, 232, 240, 0.8);
   --border: #e2e8f0;
-  --muted: #64748b;
+  --muted: #475569;
   --primary: #FF385C;
   --primary-hover: #e31c5f;
   --primary-light: #fff1f2;

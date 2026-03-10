@@ -23,80 +23,75 @@ export default function AuthLayout({
   hideTopButton = false,
 }: AuthLayoutProps) {
   return (
-    <div className="flex min-h-screen">
-      {/* Left panel - branding */}
-      <div className="relative hidden w-1/2 lg:block">
-        <Image
-          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80"
-          alt="Hotel"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-black/40" />
-        <Link href="/" className="absolute left-8 top-8 flex items-center gap-2 hover:opacity-90">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
-            <svg
-              className="h-6 w-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+    <div className="min-h-screen bg-zinc-900 flex items-center justify-center p-4">
+      {/* Glassy dark container */}
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border border-zinc-700/50 bg-zinc-900/95 shadow-2xl backdrop-blur-xl">
+        <div className="flex min-h-[600px] flex-col lg:flex-row">
+          {/* Left panel - image */}
+          <div className="relative hidden w-full lg:block lg:w-1/2">
+            <Image
+              src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200&q=80"
+              alt="Travel"
+              fill
+              className="object-cover"
+              priority
+              sizes="50vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            <Link
+              href="/"
+              className="absolute right-6 top-6 rounded-lg border border-white/20 bg-black/30 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/10"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-          </div>
-          <span className="text-xl font-bold text-white">Busy Beds</span>
-        </Link>
-        <div className="absolute bottom-12 left-8 right-8">
-          <h2 className="text-3xl font-bold text-white">Find your sweet stay</h2>
-          <p className="mt-2 text-white/90">
-            Subscribe to access property discount coupons. Generate unique coupons and save on your
-            stay.
-          </p>
-          <div className="mt-6 flex gap-2">
-            <div className="h-2 w-2 rounded-full bg-white" />
-            <div className="h-2 w-2 rounded-full bg-white/40" />
-            <div className="h-2 w-2 rounded-full bg-white/40" />
-          </div>
-        </div>
-      </div>
-
-      {/* Right panel - form */}
-      <div className="flex w-full flex-col justify-center bg-[var(--background)] px-8 py-12 lg:w-1/2 lg:px-16">
-        <div className="mx-auto w-full max-w-md">
-          <Link
-            href="/"
-            className="mb-6 flex items-center gap-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 lg:mb-8"
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span className="font-semibold">Busy Beds</span>
-          </Link>
-          {!hideTopButton && (
-            <div className="mb-8 flex justify-end">
-              <Link
-                href={switchLink}
-                className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-zinc-800"
-              >
-                {switchLabel}
-              </Link>
-            </div>
-          )}
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{title}</h1>
-          <p className="mt-1 text-zinc-600 dark:text-zinc-400">{subtitle}</p>
-          <div className="mt-8">{children}</div>
-          <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400">
-            {switchText}{' '}
-            <Link href={switchLink} className="font-medium text-zinc-900 dark:text-zinc-100 underline hover:no-underline">
-              {switchLabel}
+              Back to website →
             </Link>
-          </p>
+            <div className="absolute left-8 bottom-12 right-8">
+              <h2 className="text-2xl font-bold text-white md:text-3xl">
+                Find your sweet stay
+              </h2>
+              <p className="mt-2 text-white/90">
+                Subscribe to access property discount coupons. Generate unique coupons and save on your stay.
+              </p>
+              <div className="mt-6 flex gap-2">
+                <div className="h-1.5 w-8 rounded-full bg-white" />
+                <div className="h-1.5 w-6 rounded-full bg-white/40" />
+                <div className="h-1.5 w-6 rounded-full bg-white/40" />
+              </div>
+            </div>
+          </div>
+
+          {/* Right panel - form */}
+          <div className="flex flex-1 flex-col justify-center bg-zinc-900/98 px-8 py-12 lg:px-12 lg:py-16">
+            <div className="mx-auto w-full max-w-sm">
+              <Link
+                href="/"
+                className="mb-6 inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors lg:mb-8"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="font-semibold">Busy Beds</span>
+              </Link>
+              {!hideTopButton && (
+                <div className="mb-6 flex justify-end lg:mb-8">
+                  <Link
+                    href={switchLink}
+                    className="rounded-lg border border-zinc-600 bg-zinc-800/80 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-zinc-700"
+                  >
+                    {switchLabel}
+                  </Link>
+                </div>
+              )}
+              <h1 className="text-2xl font-bold text-white">{title}</h1>
+              <p className="mt-1 text-zinc-400">{subtitle}</p>
+              <div className="mt-8">{children}</div>
+              <p className="mt-8 text-center text-sm text-zinc-400">
+                {switchText}{' '}
+                <Link href={switchLink} className="font-medium text-[#FF385C] hover:text-[#ff6b81] transition-colors">
+                  {switchLabel}
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

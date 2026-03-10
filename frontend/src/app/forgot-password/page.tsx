@@ -51,18 +51,18 @@ export default function ForgotPasswordPage() {
         switchLabel="Login"
       >
         <div className="space-y-4">
-          <p className="text-zinc-600">
+          <p className="text-zinc-400">
             Check your inbox for a link to reset your password. The link expires in 1 hour.
           </p>
           {resetUrl && (
-            <div className="rounded-lg bg-amber-50 p-4 text-sm">
-              <p className="font-medium text-amber-800">Dev mode: Reset link</p>
-              <a href={resetUrl} className="mt-2 block break-all text-amber-700 underline">
+            <div className="rounded-xl border border-amber-800/50 bg-amber-900/30 p-4 text-sm">
+              <p className="font-medium text-amber-300">Dev mode: Reset link</p>
+              <a href={resetUrl} className="mt-2 block break-all text-amber-400 underline hover:text-amber-300">
                 {resetUrl}
               </a>
             </div>
           )}
-          <Link href="/login" className="block text-center text-zinc-600 hover:text-zinc-900">
+          <Link href="/login" className="block text-center text-zinc-400 hover:text-[#FF385C] transition-colors">
             Back to Login
           </Link>
         </div>
@@ -80,10 +80,10 @@ export default function ForgotPasswordPage() {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+          <div className="rounded-lg bg-red-900/30 border border-red-800/50 p-3 text-sm text-red-300">{error}</div>
         )}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="email" className="block text-sm font-medium text-zinc-300">
             Your Email
           </label>
           <input
@@ -92,31 +92,32 @@ export default function ForgotPasswordPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+            placeholder="you@example.com"
+            className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-zinc-900 py-2.5 font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+          className="w-full rounded-xl bg-[#FF385C] py-3 font-medium text-white hover:bg-[#e31c5f] disabled:opacity-50 transition-colors"
         >
           {loading ? 'Sending...' : 'Send Reset Link'}
         </button>
-        <p className="mt-2 text-center text-sm text-zinc-600">
+        <p className="mt-2 text-center text-sm text-zinc-400">
           Didn&apos;t receive a verification email?{' '}
           <button
             type="button"
             onClick={handleResendVerification}
             disabled={!email || resendSent}
-            className="text-zinc-900 underline hover:no-underline disabled:opacity-50"
+            className="text-[#FF385C] hover:text-[#ff6b81] underline hover:no-underline disabled:opacity-50 disabled:no-underline"
           >
             {resendSent ? 'Sent' : 'Resend link'}
           </button>
         </p>
         {verifyUrl && (
-          <div className="rounded-lg bg-amber-50 p-4 text-sm">
-            <p className="font-medium text-amber-800">Dev mode: Verification link</p>
-            <a href={verifyUrl} className="mt-2 block break-all text-amber-700 underline">
+          <div className="rounded-xl border border-amber-800/50 bg-amber-900/30 p-4 text-sm">
+            <p className="font-medium text-amber-300">Dev mode: Verification link</p>
+            <a href={verifyUrl} className="mt-2 block break-all text-amber-400 underline hover:text-amber-300">
               {verifyUrl}
             </a>
           </div>

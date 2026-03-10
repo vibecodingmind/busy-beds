@@ -43,8 +43,8 @@ function ResetPasswordForm() {
   if (success) {
     return (
       <div className="space-y-4">
-        <p className="text-zinc-600">Password reset successfully. Redirecting to login...</p>
-        <Link href="/login" className="block text-zinc-900 underline">
+        <p className="text-zinc-400">Password reset successfully. Redirecting to login...</p>
+        <Link href="/login" className="block text-[#FF385C] hover:text-[#ff6b81] transition-colors">
           Go to Login
         </Link>
       </div>
@@ -54,8 +54,8 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="space-y-4">
-        <p className="text-red-600">Invalid or missing reset token. Please request a new reset link.</p>
-        <Link href="/forgot-password" className="block text-zinc-900 underline">
+        <p className="text-red-300">Invalid or missing reset token. Please request a new reset link.</p>
+        <Link href="/forgot-password" className="block text-[#FF385C] hover:text-[#ff6b81] transition-colors">
           Request new link
         </Link>
       </div>
@@ -65,10 +65,10 @@ function ResetPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+        <div className="rounded-lg bg-red-900/30 border border-red-800/50 p-3 text-sm text-red-300">{error}</div>
       )}
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-zinc-700">
+        <label htmlFor="password" className="block text-sm font-medium text-zinc-300">
           New Password
         </label>
         <div className="relative mt-1">
@@ -79,12 +79,13 @@ function ResetPasswordForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 pr-10 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+            placeholder="Enter your password"
+            className="w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 pr-10 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-700"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
           >
             {showPassword ? (
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +101,7 @@ function ResetPasswordForm() {
         </div>
       </div>
       <div>
-        <label htmlFor="confirm" className="block text-sm font-medium text-zinc-700">
+        <label htmlFor="confirm" className="block text-sm font-medium text-zinc-300">
           Confirm Password
         </label>
         <input
@@ -110,13 +111,14 @@ function ResetPasswordForm() {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
           minLength={6}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+          placeholder="Confirm your password"
+          className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-lg bg-zinc-900 py-2.5 font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+        className="w-full rounded-xl bg-[#FF385C] py-3 font-medium text-white hover:bg-[#e31c5f] disabled:opacity-50 transition-colors"
       >
         {loading ? 'Resetting...' : 'Reset Password'}
       </button>

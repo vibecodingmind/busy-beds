@@ -63,7 +63,7 @@ export default function HotelsClient() {
           <HouseIcon className="h-7 w-7 text-[#FF385C]" />
           Properties
         </h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">Browse properties and generate discount coupons.</p>
+        <p className="mt-2 text-zinc-700 dark:text-zinc-400">Browse properties and generate discount coupons.</p>
 
         <div className="mt-6 flex flex-col gap-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">

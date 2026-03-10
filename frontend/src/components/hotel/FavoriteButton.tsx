@@ -9,9 +9,10 @@ interface Props {
   className?: string;
   size?: 'sm' | 'md';
   onRemove?: () => void; // Called when removed from favorites (e.g. to update parent list)
+  onImage?: boolean; // Use white/red for visibility on image overlays
 }
 
-export default function FavoriteButton({ hotelId, className = '', size = 'md', onRemove }: Props) {
+export default function FavoriteButton({ hotelId, className = '', size = 'md', onRemove, onImage }: Props) {
   const { user } = useAuth();
   const [favorited, setFavorited] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,7 +51,15 @@ export default function FavoriteButton({ hotelId, className = '', size = 'md', o
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className={`rounded-full p-2 transition ${favorited ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30' : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300'} ${sz} ${className}`}
+      className={`rounded-full p-2 transition ${
+        onImage
+          ? favorited
+            ? 'text-red-400 hover:text-red-300 hover:bg-white/20'
+            : 'text-white hover:bg-white/20 hover:text-white'
+          : favorited
+            ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30'
+            : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300'
+      } ${sz} ${className}`}
       aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
     >
       <svg className="h-full w-full" fill={favorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">

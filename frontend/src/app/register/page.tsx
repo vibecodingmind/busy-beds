@@ -93,7 +93,7 @@ function RegisterContent() {
         <div className="space-y-4">
           <Link
             href="/"
-            className="mb-4 inline-flex items-center gap-2 text-sm text-zinc-600 hover:text-zinc-900"
+            className="mb-4 inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -103,31 +103,31 @@ function RegisterContent() {
           <button
             type="button"
             onClick={() => setRegisterType('guest')}
-            className="flex w-full items-center gap-4 rounded-lg border-2 border-zinc-200 p-4 text-left transition hover:border-zinc-900 hover:bg-zinc-50"
+            className="flex w-full items-center gap-4 rounded-xl border border-zinc-600 bg-zinc-800/50 p-4 text-left transition hover:border-zinc-500 hover:bg-zinc-700/50"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
-              <svg className="h-6 w-6 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-700">
+              <svg className="h-6 w-6 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-zinc-900">Guest / Traveler</p>
-              <p className="text-sm text-zinc-600">Subscribe to get hotel discount coupons</p>
+              <p className="font-semibold text-white">Guest / Traveler</p>
+              <p className="text-sm text-zinc-400">Subscribe to get hotel discount coupons</p>
             </div>
           </button>
           <button
             type="button"
             onClick={() => setRegisterType('hotel')}
-            className="flex w-full items-center gap-4 rounded-lg border-2 border-zinc-200 p-4 text-left transition hover:border-zinc-900 hover:bg-zinc-50"
+            className="flex w-full items-center gap-4 rounded-xl border border-zinc-600 bg-zinc-800/50 p-4 text-left transition hover:border-zinc-500 hover:bg-zinc-700/50"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
-              <svg className="h-6 w-6 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-700">
+              <svg className="h-6 w-6 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
             <div>
-              <p className="font-semibold text-zinc-900">Hotel Owner</p>
-              <p className="text-sm text-zinc-600">Register your hotel to redeem coupons</p>
+              <p className="font-semibold text-white">Hotel Owner</p>
+              <p className="text-sm text-zinc-400">Register your hotel to redeem coupons</p>
             </div>
           </button>
         </div>
@@ -147,13 +147,13 @@ function RegisterContent() {
           hideTopButton
         >
           <div className="space-y-4">
-            <div className="rounded-lg bg-emerald-50 p-4 text-emerald-800">
+            <div className="rounded-xl border border-emerald-800/50 bg-emerald-900/30 p-4 text-emerald-300">
               <p className="font-medium">Thank you for registering!</p>
               <p className="mt-2 text-sm">
                 Your registration has been submitted. An admin will review and approve your account. You will be able to log in once approved.
               </p>
             </div>
-            <Link href="/login?type=hotel" className="block text-center text-zinc-600 hover:text-zinc-900">
+            <Link href="/login?type=hotel" className="block text-center text-zinc-400 hover:text-[#FF385C] transition-colors">
               Back to Login
             </Link>
           </div>
@@ -171,20 +171,20 @@ function RegisterContent() {
       >
         <form onSubmit={handleHotelSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+            <div className="rounded-lg bg-red-900/30 border border-red-800/50 p-3 text-sm text-red-300">{error}</div>
           )}
           <div>
-            <label htmlFor="hotel" className="block text-sm font-medium text-zinc-700">
-              Hotel
+            <label htmlFor="hotel" className="block text-sm font-medium text-zinc-300">
+              Property
             </label>
             <select
               id="hotel"
               value={hotelId}
               onChange={(e) => setHotelId(e.target.value)}
               required
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
             >
-              <option value="">Select hotel</option>
+              <option value="">Select property</option>
               {hotels.map((h) => (
                 <option key={h.id} value={h.id}>
                   {h.name}
@@ -193,12 +193,12 @@ function RegisterContent() {
             </select>
             {hotels.length === 0 && (
               <p className="mt-1 text-sm text-zinc-500">
-                No hotels available. Contact admin to add your hotel.
+                No properties available. Contact admin to add your property.
               </p>
             )}
           </div>
           <div>
-            <label htmlFor="hotel-name" className="block text-sm font-medium text-zinc-700">
+            <label htmlFor="hotel-name" className="block text-sm font-medium text-zinc-300">
               Your Name
             </label>
             <input
@@ -207,11 +207,11 @@ function RegisterContent() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
             />
           </div>
           <div>
-            <label htmlFor="hotel-email" className="block text-sm font-medium text-zinc-700">
+            <label htmlFor="hotel-email" className="block text-sm font-medium text-zinc-300">
               Your Email
             </label>
             <input
@@ -220,11 +220,11 @@ function RegisterContent() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
             />
           </div>
           <div>
-            <label htmlFor="hotel-password" className="block text-sm font-medium text-zinc-700">
+            <label htmlFor="hotel-password" className="block text-sm font-medium text-zinc-300">
               Password
             </label>
             <input
@@ -234,21 +234,22 @@ function RegisterContent() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              placeholder="Enter your password"
+              className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
             />
           </div>
           <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={goBack}
-              className="rounded-lg border border-zinc-300 px-6 py-2.5 font-medium text-zinc-700 hover:bg-zinc-50"
+              className="rounded-xl border border-zinc-600 px-6 py-2.5 font-medium text-zinc-300 hover:bg-zinc-700/50 transition-colors"
             >
               Back
             </button>
             <button
               type="submit"
               disabled={loading || hotels.length === 0 || !hotelId}
-              className="flex-1 rounded-lg bg-zinc-900 py-2.5 font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+              className="flex-1 rounded-xl bg-[#FF385C] py-3 font-medium text-white hover:bg-[#e31c5f] disabled:opacity-50 transition-colors"
             >
               {loading ? 'Creating account...' : 'Register'}
             </button>
@@ -269,10 +270,10 @@ function RegisterContent() {
     >
       <form onSubmit={handleGuestSubmit} className="space-y-4">
         {error && (
-          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+          <div className="rounded-lg bg-red-900/30 border border-red-800/50 p-3 text-sm text-red-300">{error}</div>
         )}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="name" className="block text-sm font-medium text-zinc-300">
             Name
           </label>
           <input
@@ -281,11 +282,12 @@ function RegisterContent() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+            placeholder="First name"
+            className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
           />
         </div>
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="email" className="block text-sm font-medium text-zinc-300">
             Your Email
           </label>
           <input
@@ -294,11 +296,12 @@ function RegisterContent() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+            placeholder="you@example.com"
+            className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
           />
         </div>
         <div>
-          <label htmlFor="promo" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="promo" className="block text-sm font-medium text-zinc-300">
             Promo code (optional)
           </label>
           <input
@@ -329,17 +332,17 @@ function RegisterContent() {
               }
             }}
             placeholder="e.g. WELCOME10"
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+            className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
           />
           {promoValid?.valid && promoValid.message && (
-            <p className="mt-1 text-sm text-emerald-600">✓ {promoValid.message}</p>
+            <p className="mt-1 text-sm text-emerald-400">✓ {promoValid.message}</p>
           )}
           {promoValid && !promoValid.valid && promoCode.trim() && (
-            <p className="mt-1 text-sm text-amber-600">Invalid or expired code</p>
+            <p className="mt-1 text-sm text-amber-400">Invalid or expired code</p>
           )}
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="password" className="block text-sm font-medium text-zinc-300">
             Password
           </label>
           <div className="relative mt-1">
@@ -350,12 +353,13 @@ function RegisterContent() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 pr-10 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+              placeholder="Enter your password"
+              className="w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 pr-10 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-700"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
             >
               {showPassword ? (
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -373,23 +377,23 @@ function RegisterContent() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-zinc-900 py-2.5 font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+          className="w-full rounded-xl bg-[#FF385C] py-3 font-medium text-white hover:bg-[#e31c5f] disabled:opacity-50 transition-colors"
         >
-          {loading ? 'Creating account...' : 'Sign Up'}
+          {loading ? 'Creating account...' : 'Create account'}
         </button>
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-zinc-200" />
+            <div className="w-full border-t border-zinc-700" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-2 text-zinc-500">Or sign up with</span>
+            <span className="bg-zinc-900 px-3 text-zinc-500">Or register with</span>
           </div>
         </div>
         <div className="space-y-3">
           <button
             type="button"
             onClick={() => handleSocialLogin('google')}
-            className="flex w-full items-center justify-center gap-3 rounded-lg border border-zinc-300 bg-white py-2.5 font-medium text-zinc-700 hover:bg-zinc-50"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-600 bg-zinc-800/50 py-2.5 font-medium text-zinc-300 hover:bg-zinc-700/50 transition-colors"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -402,7 +406,7 @@ function RegisterContent() {
           <button
             type="button"
             onClick={() => handleSocialLogin('facebook')}
-            className="flex w-full items-center justify-center gap-3 rounded-lg border border-zinc-300 bg-white py-2.5 font-medium text-zinc-700 hover:bg-zinc-50"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-600 bg-zinc-800/50 py-2.5 font-medium text-zinc-300 hover:bg-zinc-700/50 transition-colors"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#1877F2">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -414,7 +418,7 @@ function RegisterContent() {
           <button
             type="button"
             onClick={goBack}
-            className="rounded-lg border border-zinc-300 px-6 py-2.5 font-medium text-zinc-700 hover:bg-zinc-50"
+            className="rounded-xl border border-zinc-600 px-6 py-2.5 font-medium text-zinc-300 hover:bg-zinc-700/50 transition-colors"
           >
             Back
           </button>
