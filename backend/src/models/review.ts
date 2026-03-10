@@ -53,3 +53,21 @@ export async function findUserReview(hotelId: number, userId: number): Promise<H
   );
   return result.rows[0] || null;
 }
+
+export async function findRecentReviews(limit = 5): Promise<{ id: number; rating: number; comment: string | null; user_name: string; hotel_name: string; created_at: Date }[]> {
+  const result = await pool.query(
+    `SELECT r.id, r.rating, r.comment, r.created_at, u.name as user_name, h.name as hotel_name
+     FROM hotel_reviews r
+     JOIN users u ON r.user_id = u.id
+     JOIN hotels h ON r.hotel_id = h.id
+     ORDER BY r.created_at DESC
+     LIMIT $1`,
+    [limit]
+  );
+  return result.rows;
+}
+
+export async function getTotalReviewCount(): Promise<number> {
+  const result = await pool.query('SELECT COUNT(*)::int as count FROM hotel_reviews');
+  return result.rows[0]?.count || 0;
+}

@@ -162,6 +162,11 @@ export const stripe = {
 
 // Reviews
 export const reviews = {
+  recent: (limit?: number) =>
+    api<{ reviews: { id: number; rating: number; comment: string | null; user_name: string; hotel_name: string; created_at: string }[] }>(
+      `/reviews/recent${limit != null ? `?limit=${limit}` : ''}`
+    ),
+  stats: () => api<{ totalReviews: number }>('/reviews/stats'),
   list: (hotelId: number) =>
     api<{ reviews: { id: number; rating: number; comment: string | null; user_name: string; created_at: string }[]; averageRating: number | null; totalCount: number }>(
       `/reviews/hotels/${hotelId}`
@@ -253,10 +258,14 @@ export interface Hotel {
   location: string | null;
   contact_phone: string | null;
   contact_email: string | null;
+  contact_whatsapp?: string | null;
   images: string[];
   latitude?: number | null;
   longitude?: number | null;
   booking_url?: string | null;
+  featured?: boolean;
+  avg_rating?: number | null;
+  review_count?: number;
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;

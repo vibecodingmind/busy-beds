@@ -7,7 +7,9 @@ export interface Hotel {
   location: string | null;
   contact_phone: string | null;
   contact_email: string | null;
+  contact_whatsapp: string | null;
   images: string[];
+  featured: boolean;
   latitude: number | null;
   longitude: number | null;
   booking_url: string | null;
@@ -27,22 +29,30 @@ export async function findAllHotels(
   const params: unknown[] = [];
   let i = 1;
   if (opts?.search?.trim()) {
-    where = `WHERE name ILIKE $${i} OR location ILIKE $${i} OR description ILIKE $${i}`;
+    where = `WHERE h.name ILIKE $${i} OR h.location ILIKE $${i} OR h.description ILIKE $${i}`;
     params.push(`%${opts.search.trim()}%`);
     i++;
   }
-  const sortCol = opts?.sort === 'location' ? 'location' : 'name';
+  const sortCol = opts?.sort === 'location' ? 'h.location' : 'h.name';
   params.push(limit, offset);
   const result = await pool.query(
-    `SELECT * FROM hotels ${where} ORDER BY ${sortCol} NULLS LAST, name LIMIT $${i} OFFSET $${i + 1}`,
+    `SELECT h.*,
+      (SELECT ROUND(AVG(r.rating)::numeric, 1) FROM hotel_reviews r WHERE r.hotel_id = h.id) as avg_rating,
+      (SELECT COUNT(*)::int FROM hotel_reviews r WHERE r.hotel_id = h.id) as review_count
+     FROM hotels h ${where}
+     ORDER BY COALESCE(h.featured, false) DESC, ${sortCol} NULLS LAST, h.name
+     LIMIT $${i} OFFSET $${i + 1}`,
     params
   );
   return result.rows.map((r: Record<string, unknown>) => ({
     ...r,
+    avg_rating: r.avg_rating != null ? Number(r.avg_rating) : null,
+    review_count: r.review_count != null ? Number(r.review_count) : 0,
     images: (r.images as string[]) || [],
     latitude: r.latitude != null ? Number(r.latitude) : null,
     longitude: r.longitude != null ? Number(r.longitude) : null,
-  })) as Hotel[];
+    featured: Boolean(r.featured),
+  })) as (Hotel & { avg_rating?: number | null; review_count?: number })[];
 }
 
 export async function findHotelById(id: number): Promise<Hotel | null> {
@@ -58,17 +68,19 @@ export async function createHotel(data: {
   location?: string;
   contact_phone?: string;
   contact_email?: string;
+  contact_whatsapp?: string | null;
   images?: string[];
   latitude?: number | null;
   longitude?: number | null;
   booking_url?: string | null;
+  featured?: boolean;
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;
 }): Promise<Hotel> {
   const result = await pool.query(
-    `INSERT INTO hotels (name, description, location, contact_phone, contact_email, images, latitude, longitude, booking_url, coupon_discount_value, coupon_limit, limit_period)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    `INSERT INTO hotels (name, description, location, contact_phone, contact_email, contact_whatsapp, images, latitude, longitude, booking_url, featured, coupon_discount_value, coupon_limit, limit_period)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
      RETURNING *`,
     [
       data.name,
@@ -76,10 +88,12 @@ export async function createHotel(data: {
       data.location || null,
       data.contact_phone || null,
       data.contact_email || null,
+      data.contact_whatsapp || null,
       JSON.stringify(data.images || []),
       data.latitude ?? null,
       data.longitude ?? null,
       data.booking_url || null,
+      data.featured ?? false,
       data.coupon_discount_value,
       data.coupon_limit,
       data.limit_period,
@@ -97,10 +111,12 @@ export async function updateHotel(
     location: string;
     contact_phone: string;
     contact_email: string;
+    contact_whatsapp: string | null;
     images: string[];
     latitude: number | null;
     longitude: number | null;
     booking_url: string | null;
+    featured: boolean;
     coupon_discount_value: string;
     coupon_limit: number;
     limit_period: string;

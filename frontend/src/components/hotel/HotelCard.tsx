@@ -36,6 +36,13 @@ export default function HotelCard({ hotel }: HotelCardProps) {
           {hotel.location && (
             <p className="mt-2 text-sm text-zinc-500">{hotel.location}</p>
           )}
+          {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
+            <p className="mt-2 text-sm text-amber-600">
+              {Number(hotel.avg_rating).toFixed(1)} ★ ({hotel.review_count} reviews)
+            </p>
+          ) : (
+            <p className="mt-2 text-sm text-zinc-400">No reviews yet</p>
+          )}
           <p className="mt-3 font-medium text-emerald-600">{hotel.coupon_discount_value}</p>
         </div>
       </div>

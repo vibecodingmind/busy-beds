@@ -18,10 +18,12 @@ export default function EditHotelPage() {
     location: '',
     contact_phone: '',
     contact_email: '',
+    contact_whatsapp: '',
     booking_url: '',
     images: [] as string[],
     latitude: '' as string | number,
     longitude: '' as string | number,
+    featured: false,
     coupon_discount_value: '',
     coupon_limit: 10,
     limit_period: 'daily',
@@ -40,10 +42,12 @@ export default function EditHotelPage() {
         location: h.location || '',
         contact_phone: h.contact_phone || '',
         contact_email: h.contact_email || '',
+        contact_whatsapp: h.contact_whatsapp || '',
         images: h.images || [],
         booking_url: h.booking_url || '',
         latitude: h.latitude ?? '',
         longitude: h.longitude ?? '',
+        featured: h.featured ?? false,
         coupon_discount_value: h.coupon_discount_value,
         coupon_limit: h.coupon_limit,
         limit_period: h.limit_period,
@@ -60,6 +64,8 @@ export default function EditHotelPage() {
       await admin.hotels.update(id, {
         ...form,
         images: form.images,
+        contact_whatsapp: form.contact_whatsapp || null,
+        featured: form.featured,
         booking_url: form.booking_url || null,
         latitude: form.latitude === '' ? null : Number(form.latitude),
         longitude: form.longitude === '' ? null : Number(form.longitude),
@@ -151,6 +157,25 @@ export default function EditHotelPage() {
             onChange={(e) => setForm((f) => ({ ...f, contact_email: e.target.value }))}
             className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">WhatsApp (optional)</label>
+          <input
+            value={form.contact_whatsapp}
+            onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))}
+            placeholder="e.g. +1234567890"
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="featured"
+            checked={form.featured}
+            onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+            className="h-4 w-4 rounded border-zinc-300"
+          />
+          <label htmlFor="featured" className="text-sm font-medium text-zinc-700">Featured hotel</label>
         </div>
         <PhotosInput
           value={form.images}

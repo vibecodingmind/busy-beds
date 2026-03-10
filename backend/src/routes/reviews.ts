@@ -44,6 +44,27 @@ router.post(
   }
 );
 
+router.get('/recent', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit as string) || 5, 20);
+    const reviews = await reviewModel.findRecentReviews(limit);
+    res.json({ reviews });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch reviews' });
+  }
+});
+
+router.get('/stats', async (req, res) => {
+  try {
+    const totalReviews = await reviewModel.getTotalReviewCount();
+    res.json({ totalReviews });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
 router.get('/hotels/:hotelId/me', authMiddleware, async (req, res) => {
   try {
     const hotelId = parseInt(req.params.hotelId || '0');

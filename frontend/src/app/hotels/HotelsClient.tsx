@@ -53,11 +53,28 @@ export default function HotelsClient() {
           ))}
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {hotelList.map((hotel) => (
-            <HotelCard key={hotel.id} hotel={hotel} />
-          ))}
-        </div>
+        <>
+          {hotelList.some((h) => h.featured) && (
+            <div className="mt-8">
+              <h2 className="mb-4 text-lg font-semibold text-zinc-800">Featured Hotels</h2>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {hotelList.filter((h) => h.featured).map((hotel) => (
+                  <HotelCard key={hotel.id} hotel={hotel} />
+                ))}
+              </div>
+            </div>
+          )}
+          <div className={hotelList.some((h) => h.featured) ? 'mt-10' : 'mt-8'}>
+            <h2 className="mb-4 text-lg font-semibold text-zinc-800">
+              {hotelList.some((h) => h.featured) ? 'All Hotels' : 'Hotels'}
+            </h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {hotelList.map((hotel) => (
+                <HotelCard key={hotel.id} hotel={hotel} />
+              ))}
+            </div>
+          </div>
+        </>
       )}
       {!loading && hotelList.length === 0 && (
         <p className="mt-8 text-center text-zinc-500">No hotels found.</p>

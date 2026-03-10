@@ -16,10 +16,12 @@ export default function NewHotelPage() {
     location: '',
     contact_phone: '',
     contact_email: '',
+    contact_whatsapp: '',
     booking_url: '',
     images: [] as string[],
     latitude: '' as string | number,
     longitude: '' as string | number,
+    featured: false,
     coupon_discount_value: '',
     coupon_limit: 10,
     limit_period: 'daily',
@@ -35,6 +37,8 @@ export default function NewHotelPage() {
       await admin.hotels.create({
         ...form,
         images: form.images,
+        contact_whatsapp: form.contact_whatsapp || null,
+        featured: form.featured,
         latitude: form.latitude === '' ? undefined : Number(form.latitude),
         longitude: form.longitude === '' ? undefined : Number(form.longitude),
       });
@@ -110,6 +114,25 @@ export default function NewHotelPage() {
             onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))}
             className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">WhatsApp (optional)</label>
+          <input
+            value={form.contact_whatsapp}
+            onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))}
+            placeholder="e.g. +1234567890"
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="featured"
+            checked={form.featured}
+            onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+            className="h-4 w-4 rounded border-zinc-300"
+          />
+          <label htmlFor="featured" className="text-sm font-medium text-zinc-700">Featured hotel</label>
         </div>
         <PhotosInput
           value={form.images}

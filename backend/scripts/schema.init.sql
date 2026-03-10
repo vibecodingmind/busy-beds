@@ -134,6 +134,12 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='booking_url') THEN
     ALTER TABLE hotels ADD COLUMN booking_url VARCHAR(500);
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='contact_whatsapp') THEN
+    ALTER TABLE hotels ADD COLUMN contact_whatsapp VARCHAR(50);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='featured') THEN
+    ALTER TABLE hotels ADD COLUMN featured BOOLEAN DEFAULT false;
+  END IF;
 END $$;
 
 -- Allow 'cancelled' status on coupons
