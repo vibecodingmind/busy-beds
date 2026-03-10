@@ -8,6 +8,19 @@ import { QRCodeSVG } from 'qrcode.react';
 
 type Coupon = { id: number; code: string; hotel_name: string; discount_value: string; status: string; expires_at: string };
 
+function getExpiryCountdown(expiresAt: string): string {
+  const now = new Date();
+  const exp = new Date(expiresAt);
+  if (exp <= now) return 'Expired';
+  const ms = exp.getTime() - now.getTime();
+  const days = Math.floor(ms / (24 * 60 * 60 * 1000));
+  const hours = Math.floor((ms % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  if (days > 7) return `Expires in ${days} days`;
+  if (days > 0) return `Expires in ${days}d ${hours}h`;
+  if (hours > 0) return `Expires in ${hours} hours`;
+  return 'Expires soon';
+}
+
 const DEFAULT_TERMS = [
   'Redeemable at the hotel at check-in',
   'Can be used for eligible room rates only',
@@ -20,6 +33,14 @@ export default function MyCouponsPage() {
   const router = useRouter();
   const [couponList, setCouponList] = useState<Coupon[]>([]);
   const [selected, setSelected] = useState<Coupon | null>(null);
+  const [tab, setTab] = useState<'active' | 'used' | 'expired'>('active');
+
+  const filteredCoupons = couponList.filter((c) => {
+    if (tab === 'active') return c.status === 'active';
+    if (tab === 'used') return c.status === 'redeemed';
+    if (tab === 'expired') return c.status === 'expired' || c.status === 'cancelled';
+    return true;
+  });
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
@@ -48,10 +69,29 @@ export default function MyCouponsPage() {
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">My Coupons</h1>
       <p className="mt-2 text-zinc-600 dark:text-zinc-400">Select a coupon to view details and QR code.</p>
 
+      <div className="mt-6 flex gap-2 border-b border-zinc-200 dark:border-zinc-700">
+        {(['active', 'used', 'expired'] as const).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setTab(t)}
+            className={`border-b-2 px-4 py-2 text-sm font-medium ${
+              tab === t
+                ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400'
+                : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300'
+            }`}
+          >
+            {t === 'active' && 'Active'}
+            {t === 'used' && 'Used'}
+            {t === 'expired' && 'Expired'}
+          </button>
+        ))}
+      </div>
+
       <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-stretch">
         {/* Left: Coupon list */}
         <div className="flex flex-1 flex-col gap-4 lg:max-w-md">
-          {couponList.map((c) => (
+          {filteredCoupons.map((c) => (
             <div
               key={c.id}
               className={`flex cursor-pointer items-center gap-4 rounded-xl border-2 bg-white p-4 transition dark:bg-zinc-900 ${
@@ -67,8 +107,8 @@ export default function MyCouponsPage() {
               <div className="min-w-0 flex-1 border-l-2 border-dashed border-zinc-200 pl-4 dark:border-zinc-600">
                 <p className="font-semibold text-zinc-900 dark:text-zinc-100">{c.hotel_name}</p>
                 <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{c.discount_value}</p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                  Expires {new Date(c.expires_at).toLocaleDateString()}
+                <p className={`text-xs ${c.status === 'active' ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                  {c.status === 'active' ? getExpiryCountdown(c.expires_at) : `Expired ${new Date(c.expires_at).toLocaleDateString()}`}
                 </p>
               </div>
               <button
@@ -80,9 +120,11 @@ export default function MyCouponsPage() {
               </button>
             </div>
           ))}
-          {couponList.length === 0 && (
+          {filteredCoupons.length === 0 && (
             <p className="rounded-xl border-2 border-dashed border-zinc-200 bg-white p-8 text-center text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
-              No coupons yet. Get one from a hotel!
+              {tab === 'active' && 'No active coupons. Get one from a hotel!'}
+              {tab === 'used' && 'No used coupons yet.'}
+              {tab === 'expired' && 'No expired coupons.'}
             </p>
           )}
         </div>
@@ -99,8 +141,10 @@ export default function MyCouponsPage() {
                 <div>
                   <p className="font-semibold text-zinc-900 dark:text-zinc-100">{selected.hotel_name}</p>
                   <p className="font-medium text-emerald-600 dark:text-emerald-400">{selected.discount_value} Coupon</p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    Expires on {new Date(selected.expires_at).toLocaleDateString()}
+                  <p className={`text-sm ${selected.status === 'active' ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                    {selected.status === 'active'
+                      ? `${getExpiryCountdown(selected.expires_at)} · ${new Date(selected.expires_at).toLocaleDateString()}`
+                      : `Expired ${new Date(selected.expires_at).toLocaleDateString()}`}
                   </p>
                 </div>
               </div>
@@ -132,6 +176,9 @@ export default function MyCouponsPage() {
                 </div>
                 <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
                   Show at hotel check-in
+                </p>
+                <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+                  Can&apos;t scan? Give the code <strong>{selected.code}</strong> to the front desk
                 </p>
               </div>
 

@@ -17,6 +17,9 @@ import seedRoutes from './routes/seed';
 import reviewsRoutes from './routes/reviews';
 import referralsRoutes from './routes/referrals';
 import cronRoutes from './routes/cron';
+import favoritesRoutes from './routes/favorites';
+import promoRoutes from './routes/promo';
+import waitlistRoutes from './routes/waitlist';
 
 const app = express();
 
@@ -52,6 +55,9 @@ app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/seed', seedRoutes);
 app.use('/api/v1/reviews', reviewsRoutes);
 app.use('/api/v1/referrals', referralsRoutes);
+app.use('/api/v1/favorites', favoritesRoutes);
+app.use('/api/v1/promo', promoRoutes);
+app.use('/api/v1/waitlist', waitlistRoutes);
 app.use('/api/v1/stripe', stripeRoutes);
 app.use('/api/v1/cron', cronRoutes);
 

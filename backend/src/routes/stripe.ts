@@ -4,6 +4,7 @@ import express from 'express';
 import { authMiddleware } from '../middleware/auth';
 import type { JwtPayload } from '../middleware/auth';
 import * as subscriptionModel from '../models/subscription';
+import { processReferralReward } from '../services/referralReward';
 import { pool } from '../config/db';
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
@@ -30,7 +31,12 @@ export function webhookHandler(req: Request, res: Response) {
     const planId = parseInt(session.metadata?.plan_id || '0');
     const subId = session.subscription as string;
     if (userId && planId) {
-      subscriptionModel.createStripeSubscription(userId, planId, subId).catch((e) => console.error('Webhook create sub:', e));
+      subscriptionModel.createStripeSubscription(userId, planId, subId).then(async () => {
+        const plan = await subscriptionModel.findPlanById(planId);
+        if (plan && plan.price > 0) {
+          processReferralReward(userId, planId, Number(plan.price)).catch((e) => console.error('Referral reward:', e));
+        }
+      }).catch((e) => console.error('Webhook create sub:', e));
     }
   } else if (event.type === 'customer.subscription.deleted' || event.type === 'customer.subscription.updated') {
     const sub = event.data.object as Stripe.Subscription;
@@ -40,6 +46,68 @@ export function webhookHandler(req: Request, res: Response) {
   }
   res.json({ received: true });
 }
+
+router.post('/connect/onboard', authMiddleware, async (req, res) => {
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+  try {
+    const userId = (req.user as JwtPayload).userId;
+    const existing = await pool.query(
+      'SELECT stripe_connect_account_id FROM users WHERE id = $1',
+      [userId]
+    );
+    if (existing.rows[0]?.stripe_connect_account_id) {
+      return res.json({ url: null, message: 'Already connected' });
+    }
+    const account = await stripe.accounts.create({
+      type: 'express',
+      metadata: { user_id: String(userId) },
+    });
+    await pool.query(
+      'INSERT INTO stripe_connect_pending (account_id, user_id) VALUES ($1, $2) ON CONFLICT (account_id) DO UPDATE SET user_id = $2',
+      [account.id, userId]
+    );
+    const returnUrl = `${frontendUrl}/referral?connected=1`;
+    const refreshUrl = `${frontendUrl}/referral?refresh=1`;
+    const accountLink = await stripe.accountLinks.create({
+      account: account.id,
+      refresh_url: refreshUrl,
+      return_url: returnUrl,
+      type: 'account_onboarding',
+    });
+    res.json({ url: accountLink.url });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create Connect link' });
+  }
+});
+
+router.post('/connect/complete', authMiddleware, async (req, res) => {
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+  try {
+    const userId = (req.user as JwtPayload).userId;
+    const pending = await pool.query(
+      'SELECT account_id FROM stripe_connect_pending WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1',
+      [userId]
+    );
+    if (!pending.rows[0]) {
+      return res.json({ success: false, message: 'No pending connection' });
+    }
+    const accountId = pending.rows[0].account_id;
+    const account = await stripe.accounts.retrieve(accountId);
+    if (!account.details_submitted) {
+      return res.status(400).json({ error: 'Onboarding not complete' });
+    }
+    await pool.query(
+      'UPDATE users SET stripe_connect_account_id = $1 WHERE id = $2',
+      [accountId, userId]
+    );
+    await pool.query('DELETE FROM stripe_connect_pending WHERE user_id = $1', [userId]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to complete Connect' });
+  }
+});
 
 router.post('/create-checkout-session', authMiddleware, async (req, res) => {
   if (!stripe) {

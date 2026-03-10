@@ -8,8 +8,20 @@ router.get('/', async (req, res) => {
     const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
     const offset = parseInt(req.query.offset as string) || 0;
     const search = req.query.search as string | undefined;
-    const sort = (req.query.sort as string) === 'location' ? 'location' as const : undefined;
-    const hotels = await hotelModel.findAllHotels(limit, offset, { search, sort });
+    const sortVal = req.query.sort as string;
+    const sort = ['name', 'location', 'rating', 'distance'].includes(sortVal) ? sortVal as 'name' | 'location' | 'rating' | 'distance' : undefined;
+    const featured = req.query.featured === 'true' ? true : undefined;
+    const minRating = req.query.min_rating != null ? parseFloat(req.query.min_rating as string) : undefined;
+    const lat = req.query.lat != null ? parseFloat(req.query.lat as string) : undefined;
+    const lng = req.query.lng != null ? parseFloat(req.query.lng as string) : undefined;
+    const hotels = await hotelModel.findAllHotels(limit, offset, {
+      search,
+      sort,
+      featured,
+      min_rating: minRating,
+      lat,
+      lng,
+    });
     res.json({ hotels });
   } catch (err) {
     console.error(err);

@@ -95,15 +95,39 @@ export const hotelAuth = {
 
 // Hotels
 export const hotels = {
-  list: (opts?: { limit?: number; offset?: number; search?: string; sort?: string }) => {
+  list: (opts?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    sort?: string;
+    featured?: boolean;
+    min_rating?: number;
+    lat?: number;
+    lng?: number;
+  }) => {
     const params = new URLSearchParams();
     params.set('limit', String(opts?.limit || 50));
     params.set('offset', String(opts?.offset || 0));
     if (opts?.search) params.set('search', opts.search);
-    if (opts?.sort) params.set('sort', opts.sort);
+    if (opts?.sort) params.set('sort', opts.sort || 'name');
+    if (opts?.featured !== undefined) params.set('featured', String(opts.featured));
+    if (opts?.min_rating != null) params.set('min_rating', String(opts.min_rating));
+    if (opts?.lat != null) params.set('lat', String(opts.lat));
+    if (opts?.lng != null) params.set('lng', String(opts.lng));
     return api<{ hotels: Hotel[] }>(`/hotels?${params}`);
   },
   get: (id: number) => api<Hotel>(`/hotels/${id}`),
+};
+
+// Favorites
+export const favorites = {
+  add: (hotelId: number) =>
+    api<{ favorited: boolean }>(`/favorites/${hotelId}`, { method: 'POST' }),
+  remove: (hotelId: number) =>
+    api<{ favorited: boolean }>(`/favorites/${hotelId}`, { method: 'DELETE' }),
+  ids: () => api<{ hotelIds: number[] }>('/favorites/ids'),
+  hotels: () => api<{ hotels: Hotel[] }>('/favorites/hotels'),
+  check: (hotelId: number) => api<{ favorited: boolean }>(`/favorites/check/${hotelId}`),
 };
 
 // Coupons
@@ -158,6 +182,14 @@ export const stripe = {
       method: 'POST',
       body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
     }),
+  connectOnboard: () =>
+    api<{ url: string }>('/stripe/connect/onboard', {
+      method: 'POST',
+    }),
+  connectComplete: () =>
+    api<{ success: boolean }>('/stripe/connect/complete', {
+      method: 'POST',
+    }),
 };
 
 // Reviews
@@ -167,10 +199,34 @@ export const reviews = {
       `/reviews/recent${limit != null ? `?limit=${limit}` : ''}`
     ),
   stats: () => api<{ totalReviews: number }>('/reviews/stats'),
-  list: (hotelId: number) =>
-    api<{ reviews: { id: number; rating: number; comment: string | null; user_name: string; created_at: string }[]; averageRating: number | null; totalCount: number }>(
-      `/reviews/hotels/${hotelId}`
-    ),
+  list: (hotelId: number, sort?: 'recent' | 'rating_high' | 'rating_low' | 'verified_first') =>
+    api<{
+      reviews: {
+        id: number;
+        rating: number;
+        comment: string | null;
+        user_name: string;
+        created_at: string;
+        verified_guest?: boolean;
+        hotel_response?: { response_text: string; created_at: string };
+        helpful_count?: number;
+        not_helpful_count?: number;
+        user_vote?: boolean | null;
+      }[];
+      averageRating: number | null;
+      totalCount: number;
+    }>(`/reviews/hotels/${hotelId}${sort ? `?sort=${sort}` : ''}`),
+  voteHelpful: (reviewId: number, helpful: boolean) =>
+    api<{ success: boolean }>(`/reviews/${reviewId}/helpful`, {
+      method: 'POST',
+      body: JSON.stringify({ helpful }),
+    }),
+  addResponse: (reviewId: number, responseText: string) =>
+    api<{ success: boolean }>(`/reviews/${reviewId}/response`, {
+      method: 'POST',
+      body: JSON.stringify({ response_text: responseText }),
+      tokenType: 'hotel',
+    }),
   myReview: (hotelId: number) =>
     api<{ review: { id: number; rating: number; comment: string | null } | null }>(`/reviews/hotels/${hotelId}/me`),
   create: (hotelId: number, rating: number, comment?: string) =>
@@ -180,12 +236,35 @@ export const reviews = {
     }),
 };
 
-// Referrals
-export const referrals = {
-  me: () =>
-    api<{ code: string; referred: { id: number; name: string; email: string; created_at: string }[] }>(
-      '/referrals/me'
+// Waitlist
+export const waitlist = {
+  join: (email: string) =>
+    api<{ success: boolean; message: string }>('/waitlist', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+};
+
+// Promo codes
+export const promo = {
+  validate: (code: string) =>
+    api<{ valid: boolean; discount_type?: string; discount_value?: number; message?: string }>(
+      `/promo/validate?code=${encodeURIComponent(code)}`
     ),
+};
+
+// Referrals
+export type ReferralReward = { referred_id: number; referred_name: string; amount: number; status: string; created_at: string };
+export type ReferralMeResponse = {
+  code: string;
+  referred: { id: number; name: string; email: string; created_at: string }[];
+  stripe_connected: boolean;
+  rewards: ReferralReward[];
+  total_earned: number;
+  total_pending: number;
+};
+export const referrals = {
+  me: () => api<ReferralMeResponse>('/referrals/me'),
 };
 
 // Hotel dashboard

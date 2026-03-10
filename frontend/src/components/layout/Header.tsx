@@ -43,6 +43,7 @@ export default function Header() {
           {user ? (
             <>
               <Link href="/dashboard" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">{t('dashboard')}</Link>
+              <Link href="/favorites" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">Favorites</Link>
               <Link href="/my-coupons" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">{t('myCoupons')}</Link>
               <Link href="/subscription" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">{t('subscription')}</Link>
               <Link href="/referral" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">{t('referral')}</Link>

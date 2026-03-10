@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { body, validationResult } from 'express-validator';
 import { authMiddleware, type JwtPayload } from '../middleware/auth';
 import * as subscriptionModel from '../models/subscription';
+import { processReferralReward } from '../services/referralReward';
 
 const router = Router();
 
@@ -55,7 +56,11 @@ router.post(
         return res.status(400).json({ error: 'Invalid plan' });
       }
 
-      const sub = await subscriptionModel.createSubscription((req.user as JwtPayload).userId, plan_id);
+      const userId = (req.user as JwtPayload).userId;
+      const sub = await subscriptionModel.createSubscription(userId, plan_id);
+      if (plan.price > 0) {
+        processReferralReward(userId, plan_id, Number(plan.price)).catch((e) => console.error('Referral reward:', e));
+      }
       res.json({ subscription: sub });
     } catch (err) {
       console.error(err);

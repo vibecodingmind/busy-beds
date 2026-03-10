@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { hotels, reviews } from '@/lib/api';
 import type { Hotel } from '@/lib/api';
 import HotelCard from '@/components/hotel/HotelCard';
+import WaitlistForm from '@/components/WaitlistForm';
 
 // Avoid fetching API at build time (backend may be unreachable during Vercel build)
 export const dynamic = 'force-dynamic';
@@ -62,7 +63,7 @@ export default async function HomePage() {
       </section>
 
       <section className="mt-12">
-        <h2 className="text-2xl font-semibold text-zinc-900">Get Started in 3 Steps</h2>
+        <h2 className="text-center text-2xl font-semibold text-zinc-900">Get Started in 3 Steps</h2>
         <div className="mt-6 grid gap-8 sm:grid-cols-3">
           <div className="flex flex-col items-center text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
@@ -117,6 +118,8 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      <WaitlistForm />
 
       {featuredHotels.length > 0 && (
         <section className="mt-12">

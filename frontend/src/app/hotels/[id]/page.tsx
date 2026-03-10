@@ -3,7 +3,9 @@ import { hotels } from '@/lib/api';
 import type { Hotel } from '@/lib/api';
 import GetCouponButton from './GetCouponButton';
 import HotelPhotoGallery from '@/components/hotel/HotelPhotoGallery';
+import FavoriteButton from '@/components/hotel/FavoriteButton';
 import HotelMap from '@/components/hotel/HotelMap';
+import RecentlyViewedTracker from '@/components/hotel/RecentlyViewedTracker';
 import HotelDistance from '@/components/hotel/HotelDistance';
 import HotelReviews from '@/components/hotel/HotelReviews';
 
@@ -37,11 +39,15 @@ export default async function HotelDetailPage({
 
   return (
     <div>
+      <RecentlyViewedTracker hotelId={hotel.id} />
       <Link href="/hotels" className="text-sm text-emerald-600 hover:underline">
         ← Back to hotels
       </Link>
-      <div className="mt-6 rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-bold text-zinc-900">{hotel.name}</h1>
+      <div className="mt-6 rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{hotel.name}</h1>
+          <FavoriteButton hotelId={hotel.id} />
+        </div>
 
         <div className="mt-6">
           <HotelPhotoGallery images={hotel.images || []} hotelName={hotel.name} />
@@ -137,7 +143,7 @@ export default async function HotelDetailPage({
           <GetCouponButton hotelId={hotel.id} hotelName={hotel.name} />
         </div>
 
-        <HotelReviews hotelId={hotel.id} />
+        <HotelReviews hotelId={hotel.id} hotelName={hotel.name} />
       </div>
     </div>
   );

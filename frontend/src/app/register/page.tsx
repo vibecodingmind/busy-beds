@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHotelAuth } from '@/contexts/HotelAuthContext';
-import { hotelAuth } from '@/lib/api';
+import { hotelAuth, promo } from '@/lib/api';
 import AuthLayout from '@/components/auth/AuthLayout';
 
 type RegisterType = 'guest' | 'hotel' | null;
@@ -18,6 +18,8 @@ function RegisterContent() {
   const [hotelId, setHotelId] = useState('');
   const [hotels, setHotels] = useState<{ id: number; name: string }[]>([]);
   const [showPassword, setShowPassword] = useState(false);
+  const [promoCode, setPromoCode] = useState('');
+  const [promoValid, setPromoValid] = useState<{ valid: boolean; message?: string } | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
@@ -294,6 +296,47 @@ function RegisterContent() {
             required
             className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
           />
+        </div>
+        <div>
+          <label htmlFor="promo" className="block text-sm font-medium text-zinc-700">
+            Promo code (optional)
+          </label>
+          <input
+            id="promo"
+            type="text"
+            value={promoCode}
+            onChange={async (e) => {
+              const v = e.target.value;
+              setPromoCode(v);
+              if (!v.trim()) {
+                setPromoValid(null);
+                return;
+              }
+              try {
+                const res = await promo.validate(v);
+                setPromoValid({ valid: res.valid, message: res.message });
+              } catch {
+                setPromoValid({ valid: false });
+              }
+            }}
+            onBlur={async () => {
+              if (!promoCode.trim()) return;
+              try {
+                const res = await promo.validate(promoCode);
+                setPromoValid({ valid: res.valid, message: res.message });
+              } catch {
+                setPromoValid({ valid: false });
+              }
+            }}
+            placeholder="e.g. WELCOME10"
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2.5 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+          />
+          {promoValid?.valid && promoValid.message && (
+            <p className="mt-1 text-sm text-emerald-600">✓ {promoValid.message}</p>
+          )}
+          {promoValid && !promoValid.valid && promoCode.trim() && (
+            <p className="mt-1 text-sm text-amber-600">Invalid or expired code</p>
+          )}
         </div>
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-zinc-700">

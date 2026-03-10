@@ -185,3 +185,87 @@ CREATE INDEX IF NOT EXISTS idx_referrals_referrer_id ON referrals(referrer_id);
 CREATE TABLE IF NOT EXISTS coupon_reminder_sent (
     coupon_id INTEGER PRIMARY KEY REFERENCES coupons(id) ON DELETE CASCADE
 );
+
+-- User favorites (wishlist)
+CREATE TABLE IF NOT EXISTS user_favorites (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    hotel_id INTEGER NOT NULL REFERENCES hotels(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, hotel_id)
+);
+CREATE INDEX IF NOT EXISTS idx_user_favorites_user_id ON user_favorites(user_id);
+
+-- Hotel response to reviews
+CREATE TABLE IF NOT EXISTS hotel_review_responses (
+    id SERIAL PRIMARY KEY,
+    review_id INTEGER NOT NULL REFERENCES hotel_reviews(id) ON DELETE CASCADE,
+    hotel_account_id INTEGER NOT NULL REFERENCES hotel_accounts(id) ON DELETE CASCADE,
+    response_text TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(review_id)
+);
+
+-- Promo codes for signup/subscription
+CREATE TABLE IF NOT EXISTS promo_codes (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    discount_type VARCHAR(20) NOT NULL CHECK (discount_type IN ('percent', 'fixed', 'free_month')),
+    discount_value DECIMAL(10, 2) NOT NULL,
+    valid_from TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    valid_until TIMESTAMP WITH TIME ZONE,
+    max_uses INTEGER DEFAULT NULL,
+    uses_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Waitlist: notify when new hotels join
+CREATE TABLE IF NOT EXISTS hotel_waitlist (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(email)
+);
+
+-- Review helpfulness votes
+CREATE TABLE IF NOT EXISTS review_helpful_votes (
+    id SERIAL PRIMARY KEY,
+    review_id INTEGER NOT NULL REFERENCES hotel_reviews(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    helpful BOOLEAN NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(review_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_review_helpful_review_id ON review_helpful_votes(review_id);
+
+-- Referral payouts: 25% of referred user's first subscription
+CREATE TABLE IF NOT EXISTS referral_rewards (
+    id SERIAL PRIMARY KEY,
+    referrer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    referred_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    amount DECIMAL(10, 2) NOT NULL,
+    plan_id INTEGER NOT NULL REFERENCES subscription_plans(id),
+    plan_price DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'failed')),
+    stripe_transfer_id VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    paid_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE(referrer_id, referred_id)
+);
+CREATE INDEX IF NOT EXISTS idx_referral_rewards_referrer_id ON referral_rewards(referrer_id);
+CREATE INDEX IF NOT EXISTS idx_referral_rewards_referred_id ON referral_rewards(referred_id);
+
+-- Stripe Connect account for referrer payouts
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='stripe_connect_account_id') THEN
+    ALTER TABLE users ADD COLUMN stripe_connect_account_id VARCHAR(255);
+  END IF;
+END $$;
+
+-- Temp mapping for Connect onboarding (account_id -> user_id)
+CREATE TABLE IF NOT EXISTS stripe_connect_pending (
+    account_id VARCHAR(255) PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

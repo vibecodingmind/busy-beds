@@ -23,24 +23,53 @@ export interface Hotel {
 export async function findAllHotels(
   limit = 50,
   offset = 0,
-  opts?: { search?: string; sort?: 'name' | 'location' }
-): Promise<Hotel[]> {
-  let where = '';
+  opts?: {
+    search?: string;
+    sort?: 'name' | 'location' | 'rating' | 'distance';
+    featured?: boolean;
+    min_rating?: number;
+    lat?: number;
+    lng?: number;
+  }
+): Promise<(Hotel & { avg_rating?: number | null; review_count?: number })[]> {
+  const conditions: string[] = [];
   const params: unknown[] = [];
   let i = 1;
   if (opts?.search?.trim()) {
-    where = `WHERE h.name ILIKE $${i} OR h.location ILIKE $${i} OR h.description ILIKE $${i}`;
+    conditions.push(`(h.name ILIKE $${i} OR h.location ILIKE $${i} OR h.description ILIKE $${i})`);
     params.push(`%${opts.search.trim()}%`);
     i++;
   }
-  const sortCol = opts?.sort === 'location' ? 'h.location' : 'h.name';
+  if (opts?.featured === true) {
+    conditions.push('COALESCE(h.featured, false) = true');
+  }
+  if (opts?.min_rating != null && opts.min_rating > 0) {
+    conditions.push(`(SELECT AVG(r.rating) FROM hotel_reviews r WHERE r.hotel_id = h.id) >= $${i}`);
+    params.push(opts.min_rating);
+    i++;
+  }
+  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  let orderBy = 'COALESCE(h.featured, false) DESC, ';
+  if (opts?.sort === 'location') {
+    orderBy += 'h.location NULLS LAST, h.name';
+  } else if (opts?.sort === 'rating') {
+    orderBy = '(SELECT AVG(r.rating) FROM hotel_reviews r WHERE r.hotel_id = h.id) DESC NULLS LAST, ' + orderBy + 'h.name';
+  } else if (opts?.sort === 'distance' && opts?.lat != null && opts?.lng != null) {
+    params.push(opts.lat, opts.lng);
+    orderBy = `(CASE WHEN h.latitude IS NOT NULL AND h.longitude IS NOT NULL
+      THEN 6371 * acos(least(1, cos(radians($${i})) * cos(radians(h.latitude)) * cos(radians(h.longitude) - radians($${i + 1})) + sin(radians($${i})) * sin(radians(h.latitude))))
+      ELSE 999999 END) NULLS LAST, ` + orderBy + 'h.name';
+    i += 2;
+  } else {
+    orderBy += 'h.name';
+  }
   params.push(limit, offset);
   const result = await pool.query(
     `SELECT h.*,
       (SELECT ROUND(AVG(r.rating)::numeric, 1) FROM hotel_reviews r WHERE r.hotel_id = h.id) as avg_rating,
       (SELECT COUNT(*)::int FROM hotel_reviews r WHERE r.hotel_id = h.id) as review_count
      FROM hotels h ${where}
-     ORDER BY COALESCE(h.featured, false) DESC, ${sortCol} NULLS LAST, h.name
+     ORDER BY ${orderBy}
      LIMIT $${i} OFFSET $${i + 1}`,
     params
   );
@@ -60,6 +89,27 @@ export async function findHotelById(id: number): Promise<Hotel | null> {
   const row = result.rows[0];
   if (!row) return null;
   return { ...row, images: row.images || [], latitude: row.latitude ? Number(row.latitude) : null, longitude: row.longitude ? Number(row.longitude) : null };
+}
+
+export async function findHotelsByIds(ids: number[]): Promise<(Hotel & { avg_rating?: number | null; review_count?: number })[]> {
+  if (ids.length === 0) return [];
+  const result = await pool.query(
+    `SELECT h.*,
+      (SELECT ROUND(AVG(r.rating)::numeric, 1) FROM hotel_reviews r WHERE r.hotel_id = h.id) as avg_rating,
+      (SELECT COUNT(*)::int FROM hotel_reviews r WHERE r.hotel_id = h.id) as review_count
+     FROM hotels h WHERE h.id = ANY($1::int[])
+     ORDER BY array_position($1::int[], h.id)`,
+    [ids]
+  );
+  return result.rows.map((r: Record<string, unknown>) => ({
+    ...r,
+    avg_rating: r.avg_rating != null ? Number(r.avg_rating) : null,
+    review_count: r.review_count != null ? Number(r.review_count) : 0,
+    images: (r.images as string[]) || [],
+    latitude: r.latitude != null ? Number(r.latitude) : null,
+    longitude: r.longitude != null ? Number(r.longitude) : null,
+    featured: Boolean(r.featured),
+  })) as (Hotel & { avg_rating?: number | null; review_count?: number })[];
 }
 
 export async function createHotel(data: {

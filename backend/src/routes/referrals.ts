@@ -10,7 +10,28 @@ router.get('/me', authMiddleware, async (req, res) => {
     const userId = (req.user as JwtPayload).userId;
     const code = await referralModel.ensureReferralCode(userId);
     const referred = await referralModel.findReferredUsers(userId);
-    res.json({ code, referred });
+    const stripe_connected = await referralModel.getStripeConnected(userId);
+    const rewards = await referralModel.findRewardsForReferrer(userId);
+    const total_earned = rewards
+      .filter((r) => r.status === 'paid')
+      .reduce((sum, r) => sum + parseFloat(r.amount), 0);
+    const total_pending = rewards
+      .filter((r) => r.status === 'pending')
+      .reduce((sum, r) => sum + parseFloat(r.amount), 0);
+    res.json({
+      code,
+      referred,
+      stripe_connected,
+      rewards: rewards.map((r) => ({
+        referred_id: r.referred_id,
+        referred_name: r.referred_name,
+        amount: parseFloat(r.amount),
+        status: r.status,
+        created_at: r.created_at,
+      })),
+      total_earned,
+      total_pending,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch referral info' });

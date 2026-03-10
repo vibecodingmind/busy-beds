@@ -51,3 +51,33 @@ export async function findReferrerByCode(code: string): Promise<number | null> {
   const r = await pool.query('SELECT id FROM users WHERE referral_code = $1', [code.toUpperCase()]);
   return r.rows[0]?.id ?? null;
 }
+
+export interface ReferralRewardRow {
+  id: number;
+  referrer_id: number;
+  referred_id: number;
+  referred_name: string;
+  amount: string;
+  status: string;
+  created_at: Date;
+}
+
+export async function findRewardsForReferrer(referrerId: number): Promise<ReferralRewardRow[]> {
+  const r = await pool.query(
+    `SELECT rr.id, rr.referrer_id, rr.referred_id, u.name AS referred_name, rr.amount::text, rr.status, rr.created_at
+     FROM referral_rewards rr
+     JOIN users u ON rr.referred_id = u.id
+     WHERE rr.referrer_id = $1
+     ORDER BY rr.created_at DESC`,
+    [referrerId]
+  );
+  return r.rows;
+}
+
+export async function getStripeConnected(userId: number): Promise<boolean> {
+  const r = await pool.query(
+    'SELECT stripe_connect_account_id FROM users WHERE id = $1',
+    [userId]
+  );
+  return !!r.rows[0]?.stripe_connect_account_id;
+}

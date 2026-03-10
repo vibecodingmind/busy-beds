@@ -1,50 +1,144 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { hotels } from '@/lib/api';
 import type { Hotel } from '@/lib/api';
 import HotelCard from '@/components/hotel/HotelCard';
 import { CardSkeleton } from '@/components/LoadingSkeleton';
+import HotelsMapView from '@/components/hotel/HotelsMapView';
+import { useRecentlyViewedHotels } from '@/hooks/useRecentlyViewedHotels';
 
 export default function HotelsClient() {
+  const recentlyViewed = useRecentlyViewedHotels();
   const [hotelList, setHotelList] = useState<Hotel[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<string>('name');
+  const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [minRating, setMinRating] = useState<number | undefined>(undefined);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchHotels = () => {
     setLoading(true);
     hotels
-      .list({ search: search || undefined, sort: sort || undefined })
-      .then((r) => {
-        setHotelList(r.hotels);
+      .list({
+        search: search || undefined,
+        sort: sort || 'name',
+        featured: featuredOnly ? true : undefined,
+        min_rating: minRating,
+        lat: coords?.lat,
+        lng: coords?.lng,
       })
+      .then((r) => setHotelList(r.hotels))
       .catch(() => setHotelList([]))
       .finally(() => setLoading(false));
-  }, [search, sort]);
+  };
+
+  useEffect(() => {
+    fetchHotels();
+  }, [search, sort, featuredOnly, minRating, coords?.lat, coords?.lng]);
+
+  const handleNearby = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setSort('distance');
+      },
+      () => alert('Could not get your location. Check permissions.'),
+      { enableHighAccuracy: true }
+    );
+  };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-zinc-900">Hotels</h1>
-      <p className="mt-2 text-zinc-600">Browse hotels and generate discount coupons.</p>
+      <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Hotels</h1>
+      <p className="mt-2 text-zinc-600 dark:text-zinc-400">Browse hotels and generate discount coupons.</p>
 
-      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center">
-        <input
-          type="search"
-          placeholder="Search by name, location..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 rounded-lg border border-zinc-300 px-4 py-2"
-        />
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-          className="rounded-lg border border-zinc-300 px-4 py-2"
-        >
-          <option value="name">Sort by Name</option>
-          <option value="location">Sort by Location</option>
-        </select>
+      <div className="mt-6 flex flex-col gap-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+          <input
+            type="search"
+            placeholder="Search by name, location..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
+          />
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
+          >
+            <option value="name">Sort by Name</option>
+            <option value="location">Sort by Location</option>
+            <option value="rating">Sort by Rating</option>
+            <option value="distance">Sort by Distance</option>
+          </select>
+          <button
+            type="button"
+            onClick={handleNearby}
+            className="rounded-lg border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800"
+          >
+            📍 Nearby
+          </button>
+          <div className="flex rounded-lg border border-zinc-300 dark:border-zinc-600">
+            <button
+              type="button"
+              onClick={() => setViewMode('grid')}
+              className={`px-4 py-2 text-sm ${viewMode === 'grid' ? 'bg-zinc-200 dark:bg-zinc-700' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
+            >
+              Grid
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('map')}
+              className={`px-4 py-2 text-sm ${viewMode === 'map' ? 'bg-zinc-200 dark:bg-zinc-700' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
+            >
+              Map
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={featuredOnly}
+              onChange={(e) => setFeaturedOnly(e.target.checked)}
+              className="h-4 w-4 rounded border-zinc-300"
+            />
+            <span className="text-sm text-zinc-700 dark:text-zinc-300">Featured only</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <span className="text-sm text-zinc-700 dark:text-zinc-300">Min rating:</span>
+            <select
+              value={minRating ?? ''}
+              onChange={(e) => setMinRating(e.target.value ? parseFloat(e.target.value) : undefined)}
+              className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
+            >
+              <option value="">Any</option>
+              <option value="4">4+ ★</option>
+              <option value="3.5">3.5+ ★</option>
+              <option value="3">3+ ★</option>
+            </select>
+          </label>
+        </div>
       </div>
+
+      {recentlyViewed.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-4 text-lg font-semibold text-zinc-800 dark:text-zinc-200">Recently Viewed</h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {recentlyViewed.map((hotel) => (
+              <HotelCard key={hotel.id} hotel={hotel} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -52,11 +146,15 @@ export default function HotelsClient() {
             <CardSkeleton key={i} />
           ))}
         </div>
+      ) : viewMode === 'map' ? (
+        <div className="mt-8">
+          <HotelsMapView hotels={hotelList} />
+        </div>
       ) : (
         <>
-          {hotelList.some((h) => h.featured) && (
+          {hotelList.some((h) => h.featured) && !featuredOnly && (
             <div className="mt-8">
-              <h2 className="mb-4 text-lg font-semibold text-zinc-800">Featured Hotels</h2>
+              <h2 className="mb-4 text-lg font-semibold text-zinc-800 dark:text-zinc-200">Featured Hotels</h2>
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {hotelList.filter((h) => h.featured).map((hotel) => (
                   <HotelCard key={hotel.id} hotel={hotel} />
@@ -64,9 +162,9 @@ export default function HotelsClient() {
               </div>
             </div>
           )}
-          <div className={hotelList.some((h) => h.featured) ? 'mt-10' : 'mt-8'}>
-            <h2 className="mb-4 text-lg font-semibold text-zinc-800">
-              {hotelList.some((h) => h.featured) ? 'All Hotels' : 'Hotels'}
+          <div className={hotelList.some((h) => h.featured) && !featuredOnly ? 'mt-10' : recentlyViewed.length > 0 ? 'mt-10' : 'mt-8'}>
+            <h2 className="mb-4 text-lg font-semibold text-zinc-800 dark:text-zinc-200">
+              {featuredOnly ? 'Featured Hotels' : hotelList.some((h) => h.featured) ? 'All Hotels' : 'Hotels'}
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {hotelList.map((hotel) => (
