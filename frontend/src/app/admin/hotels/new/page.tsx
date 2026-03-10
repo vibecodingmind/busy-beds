@@ -15,6 +15,9 @@ export default function NewHotelPage() {
     location: '',
     contact_phone: '',
     contact_email: '',
+    images: [] as string[],
+    latitude: '' as string | number,
+    longitude: '' as string | number,
     coupon_discount_value: '',
     coupon_limit: 10,
     limit_period: 'daily',
@@ -27,7 +30,12 @@ export default function NewHotelPage() {
     setError('');
     setLoading(true);
     try {
-      await admin.hotels.create(form);
+      await admin.hotels.create({
+        ...form,
+        images: form.images,
+        latitude: form.latitude === '' ? undefined : Number(form.latitude),
+        longitude: form.longitude === '' ? undefined : Number(form.longitude),
+      });
       router.push('/admin/hotels');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create hotel');
@@ -90,6 +98,40 @@ export default function NewHotelPage() {
             onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))}
             className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">Image URLs</label>
+          <textarea
+            value={form.images.join('\n')}
+            onChange={(e) => setForm((f) => ({ ...f, images: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) }))}
+            placeholder="One URL per line (e.g. Unsplash)"
+            rows={3}
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-zinc-700">Latitude</label>
+            <input
+              type="number"
+              step="any"
+              value={form.latitude}
+              onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))}
+              placeholder="e.g. 37.7749"
+              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-zinc-700">Longitude</label>
+            <input
+              type="number"
+              step="any"
+              value={form.longitude}
+              onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))}
+              placeholder="e.g. -122.4194"
+              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            />
+          </div>
         </div>
         <div>
           <label className="block text-sm font-medium text-zinc-700">Coupon Discount</label>

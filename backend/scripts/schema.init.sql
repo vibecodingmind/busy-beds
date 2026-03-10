@@ -121,3 +121,14 @@ BEGIN
     ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT false;
   END IF;
 END $$;
+
+-- Add latitude/longitude to hotels for map and distance
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='latitude') THEN
+    ALTER TABLE hotels ADD COLUMN latitude DECIMAL(10, 8);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='longitude') THEN
+    ALTER TABLE hotels ADD COLUMN longitude DECIMAL(11, 8);
+  END IF;
+END $$;

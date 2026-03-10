@@ -17,6 +17,9 @@ export default function EditHotelPage() {
     location: '',
     contact_phone: '',
     contact_email: '',
+    images: [] as string[],
+    latitude: '' as string | number,
+    longitude: '' as string | number,
     coupon_discount_value: '',
     coupon_limit: 10,
     limit_period: 'daily',
@@ -35,6 +38,9 @@ export default function EditHotelPage() {
         location: h.location || '',
         contact_phone: h.contact_phone || '',
         contact_email: h.contact_email || '',
+        images: h.images || [],
+        latitude: h.latitude ?? '',
+        longitude: h.longitude ?? '',
         coupon_discount_value: h.coupon_discount_value,
         coupon_limit: h.coupon_limit,
         limit_period: h.limit_period,
@@ -48,7 +54,12 @@ export default function EditHotelPage() {
     setError('');
     setLoading(true);
     try {
-      await admin.hotels.update(id, form);
+      await admin.hotels.update(id, {
+        ...form,
+        images: form.images,
+        latitude: form.latitude === '' ? null : Number(form.latitude),
+        longitude: form.longitude === '' ? null : Number(form.longitude),
+      });
       router.push('/admin/hotels');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update');
@@ -101,6 +112,65 @@ export default function EditHotelPage() {
             rows={3}
             className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">Location</label>
+          <input
+            value={form.location}
+            onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">Contact Phone</label>
+          <input
+            value={form.contact_phone}
+            onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))}
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">Contact Email</label>
+          <input
+            type="email"
+            value={form.contact_email}
+            onChange={(e) => setForm((f) => ({ ...f, contact_email: e.target.value }))}
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">Image URLs</label>
+          <textarea
+            value={form.images.join('\n')}
+            onChange={(e) => setForm((f) => ({ ...f, images: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) }))}
+            placeholder="One URL per line (e.g. Unsplash)"
+            rows={3}
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-zinc-700">Latitude</label>
+            <input
+              type="number"
+              step="any"
+              value={form.latitude}
+              onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))}
+              placeholder="e.g. 37.7749"
+              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-zinc-700">Longitude</label>
+            <input
+              type="number"
+              step="any"
+              value={form.longitude}
+              onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))}
+              placeholder="e.g. -122.4194"
+              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            />
+          </div>
         </div>
         <div>
           <label className="block text-sm font-medium text-zinc-700">Coupon Discount</label>

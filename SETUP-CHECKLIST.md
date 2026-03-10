@@ -50,13 +50,17 @@ Use this checklist to ensure GitHub, Railway, and Vercel work together.
 
 ## 5. One-time: Seed database
 
+See **SEED-GUIDE.md** for full step-by-step instructions.
+
+**Quick start:**
 ```bash
-cd "/Users/guteng/Documents/Busy Beds"
-export DATABASE_URL="postgresql://...YOUR_RAILWAY_PUBLIC_POSTGRES_URL..."
-node backend/scripts/migrate.js
-node backend/scripts/seed.js
-cd backend && npx tsx scripts/seed-admin.ts
+cd backend
+DATABASE_URL="postgresql://..." npm run seed:all
 ```
+
+Or with Railway: `railway run npm run seed:all`
+
+**Test accounts:** [TEST-USERS.md](TEST-USERS.md)
 
 ---
 

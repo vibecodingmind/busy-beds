@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { hotels } from '@/lib/api';
+import type { Hotel } from '@/lib/api';
 import HotelCard from '@/components/hotel/HotelCard';
 
 // Avoid fetching API at build time (backend may be unreachable during Vercel build)
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  let featuredHotels: { id: number; name: string; description: string | null; location: string | null; contact_phone: string | null; contact_email: string | null; images: string[]; coupon_discount_value: string; coupon_limit: number; limit_period: string }[] = [];
+  let featuredHotels: Hotel[] = [];
   try {
     const res = await hotels.list(6);
     featuredHotels = res.hotels;

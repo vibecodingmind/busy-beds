@@ -12,6 +12,8 @@
     "start": "node dist/index.js",
     "migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.js",
+    "seed:test-users": "npx tsx scripts/seed-test-users.ts",
+    "seed:all": "node scripts/migrate.js && node scripts/seed.js && npx tsx scripts/seed-test-users.ts",
     "db:schema": "psql $DATABASE_URL -f ../database/schema.sql",
     "db:seed": "psql $DATABASE_URL -f ../database/seed.sql"
   },

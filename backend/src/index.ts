@@ -12,6 +12,7 @@ import couponsRoutes from './routes/coupons';
 import subscriptionsRoutes from './routes/subscriptions';
 import hotelDashboardRoutes from './routes/hotelDashboard';
 import adminRoutes from './routes/admin';
+import seedRoutes from './routes/seed';
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use('/api/v1/coupons', couponsRoutes);
 app.use('/api/v1/subscriptions', subscriptionsRoutes);
 app.use('/api/v1/hotel', hotelDashboardRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/seed', seedRoutes);
 
 // Health check
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));

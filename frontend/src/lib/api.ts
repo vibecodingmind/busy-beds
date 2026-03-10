@@ -179,6 +179,8 @@ export interface Hotel {
   contact_phone: string | null;
   contact_email: string | null;
   images: string[];
+  latitude?: number | null;
+  longitude?: number | null;
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;

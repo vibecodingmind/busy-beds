@@ -7,6 +7,21 @@ Step-by-step guide to deploy Busy Beds. Choose one:
 
 ---
 
+## Auto Deploy
+
+When Railway and Vercel are connected to your GitHub repo, **every push to `main` triggers automatic deployment**:
+
+1. **Railway** – Deploys backend when you push to `main`
+2. **Vercel** – Deploys frontend when you push to `main`
+
+**To enable auto deploy:**
+- **Railway:** New Project → Deploy from GitHub repo → select `busy-beds` → connect
+- **Vercel:** Add New → Project → Import `busy-beds` from GitHub
+
+No GitHub Actions needed; both platforms watch the repo and deploy on push.
+
+---
+
 ## Option A: All on Vercel (frontend + backend)
 
 Use this when Railway is down or you prefer a single platform. Database stays on Railway Postgres (or any Postgres provider).
@@ -120,6 +135,7 @@ Replace `YOUR_USERNAME/busy-beds` with your actual GitHub username and repo name
 7. Add:
    - `JWT_SECRET` = output of `openssl rand -base64 32`
    - `FRONTEND_URL` = your Vercel URL (e.g. `https://busy-beds.vercel.app`) – add after Part 3
+   - `SEED_SECRET` = output of `openssl rand -hex 16` (for one-time seed via API when local DB connection fails)
 
 **Step D: Deploy**
 8. Railway deploys automatically when you save. Or click **Deploy** in the top right.
@@ -153,17 +169,18 @@ cd "/Users/guteng/Documents/Busy Beds"
 # Link to your Railway project (follow prompts)
 railway link
 
-# Run seed (use YOUR service name from railway status - e.g. busy-beds)
-railway run -s busy-beds node backend/scripts/seed.js
-
-# Create admin user (password: admin123)
-railway run -s busy-beds npx tsx backend/scripts/seed-admin.ts
+# Migrate + seed + test users (see TEST-USERS.md for credentials)
+railway run -s busy-beds npm run seed:all
 ```
 
-If `-s busy-beds` gives "Service not found", run without `-s` (uses your linked service):
+If `-s busy-beds` gives "Service not found", run without `-s`:
 ```bash
-railway run node backend/scripts/seed.js
-railway run npx tsx backend/scripts/seed-admin.ts
+railway run npm run seed:all
+```
+
+**If Railway CLI times out (ETIMEDOUT):** Use the seed API instead. Add `SEED_SECRET` to Railway variables, deploy, then call:
+```
+https://YOUR-BACKEND-URL/api/v1/seed?secret=YOUR_SEED_SECRET
 ```
 
 If you don’t use the CLI, run the SQL and script from the Railway dashboard:

@@ -34,7 +34,7 @@ export default function AuthLayout({
           priority
         />
         <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute left-8 top-8 flex items-center gap-2">
+        <Link href="/" className="absolute left-8 top-8 flex items-center gap-2 hover:opacity-90">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
             <svg
               className="h-6 w-6 text-white"
@@ -51,7 +51,7 @@ export default function AuthLayout({
             </svg>
           </div>
           <span className="text-xl font-bold text-white">Busy Beds</span>
-        </div>
+        </Link>
         <div className="absolute bottom-12 left-8 right-8">
           <h2 className="text-3xl font-bold text-white">Find your sweet stay</h2>
           <p className="mt-2 text-white/90">
@@ -69,6 +69,15 @@ export default function AuthLayout({
       {/* Right panel - form */}
       <div className="flex w-full flex-col justify-center bg-white px-8 py-12 lg:w-1/2 lg:px-16">
         <div className="mx-auto w-full max-w-md">
+          <Link
+            href="/"
+            className="mb-6 flex items-center gap-2 text-zinc-600 hover:text-zinc-900 lg:mb-8"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="font-semibold">Busy Beds</span>
+          </Link>
           {!hideTopButton && (
             <div className="mb-8 flex justify-end">
               <Link

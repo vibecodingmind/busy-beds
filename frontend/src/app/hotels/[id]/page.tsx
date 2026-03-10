@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { hotels } from '@/lib/api';
+import type { Hotel } from '@/lib/api';
 import GetCouponButton from './GetCouponButton';
+import HotelPhotoGallery from '@/components/hotel/HotelPhotoGallery';
+import HotelMap from '@/components/hotel/HotelMap';
+import HotelDistance from '@/components/hotel/HotelDistance';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +14,7 @@ export default async function HotelDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  let hotel: { id: number; name: string; description: string | null; location: string | null; contact_phone: string | null; contact_email: string | null; images: string[]; coupon_discount_value: string; coupon_limit: number; limit_period: string } | null = null;
+  let hotel: Hotel | null = null;
   try {
     hotel = await hotels.get(parseInt(id));
   } catch {
@@ -28,6 +32,8 @@ export default async function HotelDetailPage({
     );
   }
 
+  const hasCoords = hotel.latitude != null && hotel.longitude != null;
+
   return (
     <div>
       <Link href="/hotels" className="text-sm text-emerald-600 hover:underline">
@@ -35,15 +41,70 @@ export default async function HotelDetailPage({
       </Link>
       <div className="mt-6 rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
         <h1 className="text-2xl font-bold text-zinc-900">{hotel.name}</h1>
+
+        <div className="mt-6">
+          <HotelPhotoGallery images={hotel.images || []} hotelName={hotel.name} />
+        </div>
+
         {hotel.description && (
-          <p className="mt-4 text-zinc-600">{hotel.description}</p>
+          <p className="mt-6 text-zinc-600">{hotel.description}</p>
         )}
+
         {hotel.location && (
-          <p className="mt-2 text-zinc-500">{hotel.location}</p>
+          <p className="mt-2 flex items-center gap-2 text-zinc-600">
+            <svg className="h-4 w-4 flex-shrink-0 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            </svg>
+            {hotel.location}
+          </p>
         )}
-        <p className="mt-4 font-semibold text-emerald-600">
+
+        {hasCoords && (
+          <div className="mt-2">
+            <HotelDistance latitude={hotel.latitude!} longitude={hotel.longitude!} />
+          </div>
+        )}
+
+        {(hotel.contact_phone || hotel.contact_email) && (
+          <div className="mt-6 space-y-2">
+            <h3 className="text-sm font-medium text-zinc-700">Contact</h3>
+            <div className="flex flex-wrap gap-6">
+              {hotel.contact_phone && (
+                <a href={`tel:${hotel.contact_phone}`} className="flex items-center gap-2 text-zinc-600 hover:text-zinc-900">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  {hotel.contact_phone}
+                </a>
+              )}
+              {hotel.contact_email && (
+                <a href={`mailto:${hotel.contact_email}`} className="flex items-center gap-2 text-zinc-600 hover:text-zinc-900">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  {hotel.contact_email}
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
+        <p className="mt-6 font-semibold text-emerald-600">
           Coupon discount: {hotel.coupon_discount_value}
         </p>
+
+        {hasCoords && (
+          <div className="mt-6">
+            <h3 className="mb-2 text-sm font-medium text-zinc-700">Location</h3>
+            <HotelMap
+              latitude={hotel.latitude!}
+              longitude={hotel.longitude!}
+              hotelName={hotel.name}
+              location={hotel.location}
+            />
+          </div>
+        )}
+
         <div className="mt-8">
           <GetCouponButton hotelId={hotel.id} hotelName={hotel.name} />
         </div>
