@@ -8,7 +8,7 @@ function HotelLoginRedirect() {
   const searchParams = useSearchParams();
   useEffect(() => {
     const redirect = searchParams.get('redirect');
-    const url = redirect ? `/login?type=hotel&redirect=${encodeURIComponent(redirect)}` : '/login?type=hotel';
+    const url = redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login';
     router.replace(url);
   }, [router, searchParams]);
   return (

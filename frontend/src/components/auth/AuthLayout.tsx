@@ -1,7 +1,26 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+
+const SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200&q=80',
+    title: 'Find your sweet stay',
+    text: 'Subscribe to access property discount coupons. Generate unique coupons and save on your stay.',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80',
+    title: 'Exclusive member deals',
+    text: 'Get instant access to curated discounts at handpicked properties. No hidden fees.',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=1200&q=80',
+    title: 'Save more, travel more',
+    text: 'Join thousands of travelers who unlock better rates with Busy Beds coupons.',
+  },
+];
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -22,40 +41,60 @@ export default function AuthLayout({
   switchLabel,
   hideTopButton = false,
 }: AuthLayoutProps) {
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setSlideIndex((i) => (i + 1) % SLIDES.length);
+    }, 5000);
+    return () => clearInterval(t);
+  }, []);
+
   return (
     <div className="min-h-screen bg-zinc-900 flex items-center justify-center p-4">
       {/* Glassy dark container */}
       <div className="w-full max-w-5xl overflow-hidden rounded-2xl border border-zinc-700/50 bg-zinc-900/95 shadow-2xl backdrop-blur-xl">
         <div className="flex min-h-[600px] flex-col lg:flex-row">
-          {/* Left panel - image */}
-          <div className="relative hidden w-full lg:block lg:w-1/2">
-            <Image
-              src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200&q=80"
-              alt="Travel"
-              fill
-              className="object-cover"
-              priority
-              sizes="50vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-            <Link
-              href="/"
-              className="absolute right-6 top-6 rounded-lg border border-white/20 bg-black/30 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/10"
-            >
-              Back to website →
-            </Link>
-            <div className="absolute left-8 bottom-12 right-8">
-              <h2 className="text-2xl font-bold text-white md:text-3xl">
-                Find your sweet stay
-              </h2>
-              <p className="mt-2 text-white/90">
-                Subscribe to access property discount coupons. Generate unique coupons and save on your stay.
-              </p>
-              <div className="mt-6 flex gap-2">
-                <div className="h-1.5 w-8 rounded-full bg-white" />
-                <div className="h-1.5 w-6 rounded-full bg-white/40" />
-                <div className="h-1.5 w-6 rounded-full bg-white/40" />
+          {/* Left panel - slider */}
+          <div className="relative hidden w-full lg:block lg:w-1/2 overflow-hidden">
+            {SLIDES.map((slide, i) => (
+              <div
+                key={i}
+                className={`absolute inset-0 transition-opacity duration-500 ${
+                  i === slideIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                }`}
+              >
+                <Image
+                  src={slide.image}
+                  alt={slide.title}
+                  fill
+                  className="object-cover"
+                  priority={i === 0}
+                  sizes="50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <div className="absolute left-8 bottom-12 right-8">
+                  <h2 className="text-2xl font-bold text-white md:text-3xl">
+                    {slide.title}
+                  </h2>
+                  <p className="mt-2 text-white/90">
+                    {slide.text}
+                  </p>
+                </div>
               </div>
+            ))}
+            <div className="absolute left-8 bottom-8 z-20 flex gap-2">
+              {SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setSlideIndex(i)}
+                  aria-label={`Go to slide ${i + 1}`}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === slideIndex ? 'w-8 bg-white' : 'w-6 bg-white/40 hover:bg-white/60'
+                  }`}
+                />
+              ))}
             </div>
           </div>
 
