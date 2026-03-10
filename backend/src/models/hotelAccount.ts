@@ -6,6 +6,7 @@ export interface HotelAccount {
   email: string;
   password_hash: string;
   name: string;
+  approved: boolean;
   created_at: Date;
 }
 
@@ -49,4 +50,37 @@ export async function findHotelsWithoutAccount(): Promise<{ id: number; name: st
 export async function findHotelAccountByHotelId(hotelId: number): Promise<HotelAccount | null> {
   const result = await pool.query('SELECT * FROM hotel_accounts WHERE hotel_id = $1', [hotelId]);
   return result.rows[0] || null;
+}
+
+export async function findPendingHotelAccounts(): Promise<(HotelAccount & { hotel_name: string })[]> {
+  const result = await pool.query(
+    `SELECT ha.*, h.name as hotel_name FROM hotel_accounts ha
+     JOIN hotels h ON ha.hotel_id = h.id
+     WHERE ha.approved = false
+     ORDER BY ha.created_at DESC`
+  );
+  return result.rows;
+}
+
+export async function approveHotelAccount(id: number): Promise<HotelAccount | null> {
+  const result = await pool.query(
+    'UPDATE hotel_accounts SET approved = true WHERE id = $1 RETURNING *',
+    [id]
+  );
+  return result.rows[0] || null;
+}
+
+export async function createHotelAccountApproved(
+  hotelId: number,
+  email: string,
+  passwordHash: string,
+  name: string
+): Promise<HotelAccount> {
+  const result = await pool.query(
+    `INSERT INTO hotel_accounts (hotel_id, email, password_hash, name, approved)
+     VALUES ($1, $2, $3, $4, true)
+     RETURNING *`,
+    [hotelId, email, passwordHash, name]
+  );
+  return result.rows[0]!;
 }

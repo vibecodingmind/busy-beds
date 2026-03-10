@@ -42,6 +42,26 @@ export const auth = {
       { method: 'POST', body: JSON.stringify({ email, password }) }
     ),
   me: () => api<{ id: number; email: string; name: string; role: string }>('/auth/me'),
+  forgotPassword: (email: string) =>
+    api<{ message: string; resetUrl?: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+  resetPassword: (token: string, password: string) =>
+    api<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, password }),
+    }),
+  resendVerification: (email: string) =>
+    api<{ message: string; verifyUrl?: string }>('/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+  verifyEmail: (token: string) =>
+    api<{ message: string }>('/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    }),
 };
 
 // Hotel auth
@@ -142,6 +162,12 @@ export const admin = {
   users: () => api<{ users: User[] }>('/admin/users'),
   coupons: () => api<{ coupons: CouponAdmin[] }>('/admin/coupons'),
   redemptions: () => api<{ redemptions: RedemptionAdmin[] }>('/admin/redemptions'),
+  pendingHotelAccounts: () =>
+    api<{ accounts: { id: number; hotel_id: number; email: string; name: string; hotel_name: string; created_at: string }[] }>(
+      '/admin/hotel-accounts/pending'
+    ),
+  approveHotelAccount: (id: number) =>
+    api<{ success: boolean }>(`/admin/hotel-accounts/${id}/approve`, { method: 'POST' }),
 };
 
 // Types

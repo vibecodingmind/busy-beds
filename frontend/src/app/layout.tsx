@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { HotelAuthProvider } from '@/contexts/HotelAuthContext';
-import Header from '@/components/layout/Header';
+import ConditionalLayout from '@/components/layout/ConditionalLayout';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,8 +30,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}>
         <AuthProvider>
           <HotelAuthProvider>
-            <Header />
-            <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+            <ConditionalLayout>{children}</ConditionalLayout>
           </HotelAuthProvider>
         </AuthProvider>
       </body>

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body, validationResult } from 'express-validator';
-import { authMiddleware, hotelAuthMiddleware } from '../middleware/auth';
+import { authMiddleware, hotelAuthMiddleware, type JwtPayload } from '../middleware/auth';
 import * as couponService from '../services/couponService';
 import * as couponModel from '../models/coupon';
 
@@ -20,7 +20,7 @@ router.post(
       if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
 
       const { hotel_id } = req.body;
-      const coupon = await couponService.generateCoupon(req.user.userId, hotel_id);
+      const coupon = await couponService.generateCoupon((req.user as JwtPayload).userId, hotel_id);
       res.status(201).json(coupon);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to generate coupon';
@@ -33,7 +33,7 @@ router.post(
 router.get('/', authMiddleware, async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
-    const coupons = await couponModel.findCouponsByUserId(req.user.userId);
+    const coupons = await couponModel.findCouponsByUserId((req.user as JwtPayload).userId);
     res.json({ coupons });
   } catch (err) {
     console.error(err);

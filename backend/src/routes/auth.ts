@@ -1,12 +1,15 @@
 import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { body, validationResult } from 'express-validator';
 import * as userModel from '../models/user';
-import { authMiddleware, JwtPayload } from '../middleware/auth';
+import { authMiddleware, type JwtPayload } from '../middleware/auth';
 import { config } from '../config';
+import { Pool } from 'pg';
 
 const router = Router();
+const pool = new Pool({ connectionString: config.databaseUrl });
 
 router.post(
   '/register',
@@ -91,9 +94,135 @@ router.post(
 
 router.get('/me', authMiddleware, async (req, res) => {
   if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
-  const user = await userModel.findUserById(req.user.userId);
+  const user = await userModel.findUserById((req.user as JwtPayload).userId);
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json({ id: user.id, email: user.email, name: user.name, role: user.role });
 });
+
+// Forgot password
+router.post(
+  '/forgot-password',
+  body('email').isEmail().normalizeEmail(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const { email } = req.body;
+      const user = await userModel.findUserByEmail(email);
+      if (!user) {
+        return res.json({ message: 'If that email exists, we sent a reset link' });
+      }
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+      await pool.query(
+        'INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+        [user.id, token, expiresAt]
+      );
+      const resetUrl = `${config.frontendUrl}/reset-password?token=${token}`;
+      if (process.env.NODE_ENV === 'development' && !process.env.RESEND_API_KEY) {
+        return res.json({ message: 'Reset link (dev only)', resetUrl });
+      }
+      return res.json({ message: 'If that email exists, we sent a reset link' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to process request' });
+    }
+  }
+);
+
+// Reset password
+router.post(
+  '/reset-password',
+  body('token').notEmpty(),
+  body('password').isLength({ min: 6 }),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const { token, password } = req.body;
+      const r = await pool.query(
+        'SELECT user_id FROM password_reset_tokens WHERE token = $1 AND expires_at > NOW()',
+        [token]
+      );
+      if (r.rows.length === 0) {
+        return res.status(400).json({ error: 'Invalid or expired reset link' });
+      }
+      const userId = r.rows[0].user_id;
+      const hash = await bcrypt.hash(password, 10);
+      await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hash, userId]);
+      await pool.query('DELETE FROM password_reset_tokens WHERE token = $1', [token]);
+      res.json({ message: 'Password reset successfully' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to reset password' });
+    }
+  }
+);
+
+// Resend verification email
+router.post(
+  '/resend-verification',
+  body('email').isEmail().normalizeEmail(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const { email } = req.body;
+      const user = await userModel.findUserByEmail(email);
+      if (!user) {
+        return res.json({ message: 'If that email exists, we sent a verification link' });
+      }
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      await pool.query(
+        'DELETE FROM email_verification_tokens WHERE user_id = $1',
+        [user.id]
+      );
+      await pool.query(
+        'INSERT INTO email_verification_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+        [user.id, token, expiresAt]
+      );
+      const verifyUrl = `${config.frontendUrl}/verify-email?token=${token}`;
+      if (process.env.NODE_ENV === 'development' && !process.env.RESEND_API_KEY) {
+        return res.json({ message: 'Verification link (dev only)', verifyUrl });
+      }
+      return res.json({ message: 'If that email exists, we sent a verification link' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to process request' });
+    }
+  }
+);
+
+// Verify email
+router.post(
+  '/verify-email',
+  body('token').notEmpty(),
+  async (req, res) => {
+    try {
+      const { token } = req.body;
+      const r = await pool.query(
+        'SELECT user_id FROM email_verification_tokens WHERE token = $1 AND expires_at > NOW()',
+        [token]
+      );
+      if (r.rows.length === 0) {
+        return res.status(400).json({ error: 'Invalid or expired verification link' });
+      }
+      const userId = r.rows[0].user_id;
+      await pool.query('UPDATE users SET email_verified = true WHERE id = $1', [userId]);
+      await pool.query('DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]);
+      res.json({ message: 'Email verified successfully' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to verify email' });
+    }
+  }
+);
 
 export default router;

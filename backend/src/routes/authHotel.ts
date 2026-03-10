@@ -39,20 +39,11 @@ router.post(
       }
 
       const hash = await bcrypt.hash(password, 10);
-      const account = await hotelAccountModel.createHotelAccount(hotel_id, email, hash, name);
-
-      const payload: HotelJwtPayload = {
-        hotelAccountId: account.id,
-        hotelId: account.hotel_id,
-        email: account.email,
-        type: 'hotel',
-      };
-      const token = jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as jwt.SignOptions);
+      await hotelAccountModel.createHotelAccount(hotel_id, email, hash, name);
 
       res.status(201).json({
-        hotelAccount: { id: account.id, hotelId: account.hotel_id, email: account.email, name: account.name },
-        hotel: { id: hotel.id, name: hotel.name },
-        token,
+        pending: true,
+        message: 'Registration submitted. Please wait for admin approval before you can log in.',
       });
     } catch (err) {
       console.error(err);
@@ -76,6 +67,10 @@ router.post(
       const account = await hotelAccountModel.findHotelAccountByEmail(email);
       if (!account) {
         return res.status(401).json({ error: 'Invalid email or password' });
+      }
+
+      if (!account.approved) {
+        return res.status(403).json({ error: 'Your registration is pending admin approval. Please wait.' });
       }
 
       const match = await bcrypt.compare(password, account.password_hash);

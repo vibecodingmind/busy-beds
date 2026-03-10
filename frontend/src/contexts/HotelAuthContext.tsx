@@ -20,7 +20,7 @@ interface HotelAuthContextType {
   hotelAccount: HotelAccount | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (hotelId: number, email: string, password: string, name: string) => Promise<void>;
+  register: (hotelId: number, email: string, password: string, name: string) => Promise<{ pending?: boolean } | void>;
   logout: () => void;
 }
 
@@ -63,13 +63,20 @@ export function HotelAuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (hotelId: number, email: string, password: string, name: string) => {
     const res = (await hotelAuth.register(hotelId, email, password, name)) as {
-      token: string;
-      hotel: Hotel;
-      hotelAccount: { id: number; hotel_id: number; email: string; name: string };
+      pending?: boolean;
+      message?: string;
+      token?: string;
+      hotel?: Hotel;
+      hotelAccount?: { id: number; hotel_id: number; email: string; name: string };
     };
-    localStorage.setItem('hotelToken', res.token);
-    setHotel(res.hotel);
-    setHotelAccount(res.hotelAccount ? { ...res.hotelAccount, hotelId: res.hotelAccount.hotel_id } : null);
+    if (res.pending) {
+      return { pending: true };
+    }
+    if (res.token) {
+      localStorage.setItem('hotelToken', res.token);
+      setHotel(res.hotel ?? null);
+      setHotelAccount(res.hotelAccount ? { ...res.hotelAccount, hotelId: res.hotelAccount.hotel_id } : null);
+    }
   };
 
   const logout = () => {

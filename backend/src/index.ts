@@ -1,9 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import passport from 'passport';
 import { config } from './config';
 
 import authRoutes from './routes/auth';
+import oauthRoutes from './routes/oauth';
 import authHotelRoutes from './routes/authHotel';
 import hotelsRoutes from './routes/hotels';
 import couponsRoutes from './routes/coupons';
@@ -28,6 +30,10 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(passport.initialize());
+
+// OAuth routes (at /auth for redirect flow)
+app.use('/auth', oauthRoutes);
 
 // API routes
 app.use('/api/v1/auth', authRoutes);

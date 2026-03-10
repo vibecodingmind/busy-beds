@@ -9,7 +9,7 @@ import { admin } from '@/lib/api';
 export default function AdminDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [counts, setCounts] = useState<{ hotels: number; users: number; coupons: number } | null>(null);
+  const [counts, setCounts] = useState<{ hotels: number; users: number; coupons: number; pending: number } | null>(null);
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== 'admin')) router.push('/');
@@ -21,12 +21,14 @@ export default function AdminDashboardPage() {
       admin.hotels.list(),
       admin.users(),
       admin.coupons(),
+      admin.pendingHotelAccounts(),
     ])
-      .then(([h, u, c]) =>
+      .then(([h, u, c, p]) =>
         setCounts({
           hotels: h.hotels.length,
           users: u.users.length,
           coupons: c.coupons.length,
+          pending: p.accounts.length,
         })
       )
       .catch(() => {});
@@ -54,6 +56,12 @@ export default function AdminDashboardPage() {
           <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-md">
             <h3 className="font-semibold text-zinc-900">Coupons</h3>
             <p className="mt-2 text-3xl font-bold text-zinc-900">{counts?.coupons ?? '-'}</p>
+          </div>
+        </Link>
+        <Link href="/admin/hotel-accounts">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 shadow-sm hover:shadow-md">
+            <h3 className="font-semibold text-zinc-900">Pending Hotel Approvals</h3>
+            <p className="mt-2 text-3xl font-bold text-amber-700">{counts?.pending ?? '-'}</p>
           </div>
         </Link>
       </div>

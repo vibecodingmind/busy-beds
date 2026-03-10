@@ -66,7 +66,7 @@ export function hotelAuthMiddleware(req: Request, res: Response, next: NextFunct
 }
 
 export function adminMiddleware(req: Request, res: Response, next: NextFunction) {
-  if (!req.user || req.user.role !== 'admin') {
+  if (!req.user || (req.user as JwtPayload).role !== 'admin') {
     return res.status(403).json({ error: 'Admin access required' });
   }
   next();

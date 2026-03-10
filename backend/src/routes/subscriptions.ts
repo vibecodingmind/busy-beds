@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body, validationResult } from 'express-validator';
-import { authMiddleware } from '../middleware/auth';
+import { authMiddleware, type JwtPayload } from '../middleware/auth';
 import * as subscriptionModel from '../models/subscription';
 
 const router = Router();
@@ -18,7 +18,7 @@ router.get('/plans', async (_req, res) => {
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
-    const sub = await subscriptionModel.findSubscriptionByUserId(req.user.userId);
+    const sub = await subscriptionModel.findSubscriptionByUserId((req.user as JwtPayload).userId);
     if (!sub) {
       return res.json({ subscription: null });
     }
@@ -55,7 +55,7 @@ router.post(
         return res.status(400).json({ error: 'Invalid plan' });
       }
 
-      const sub = await subscriptionModel.createSubscription(req.user.userId, plan_id);
+      const sub = await subscriptionModel.createSubscription((req.user as JwtPayload).userId, plan_id);
       res.json({ subscription: sub });
     } catch (err) {
       console.error(err);

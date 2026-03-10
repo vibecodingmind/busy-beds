@@ -107,7 +107,7 @@ router.post(
       if (existing) return res.status(400).json({ error: 'Hotel already has an account' });
 
       const hash = await bcrypt.hash(req.body.password, 10);
-      const account = await hotelAccountModel.createHotelAccount(
+      const account = await hotelAccountModel.createHotelAccountApproved(
         hotelId,
         req.body.email,
         hash,
@@ -149,6 +149,29 @@ router.get('/coupons', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch coupons' });
+  }
+});
+
+// Pending hotel accounts (awaiting approval)
+router.get('/hotel-accounts/pending', async (_req, res) => {
+  try {
+    const accounts = await hotelAccountModel.findPendingHotelAccounts();
+    res.json({ accounts });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch pending accounts' });
+  }
+});
+
+router.post('/hotel-accounts/:id/approve', async (req, res) => {
+  try {
+    const id = parseInt(req.params?.id ?? '0');
+    const account = await hotelAccountModel.approveHotelAccount(id);
+    if (!account) return res.status(404).json({ error: 'Hotel account not found' });
+    res.json({ success: true, account });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to approve' });
   }
 });
 
