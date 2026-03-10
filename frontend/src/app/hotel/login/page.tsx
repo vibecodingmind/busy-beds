@@ -1,16 +1,27 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function HotelLoginPage() {
+function HotelLoginRedirect() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   useEffect(() => {
-    router.replace('/login?type=hotel');
-  }, [router]);
+    const redirect = searchParams.get('redirect');
+    const url = redirect ? `/login?type=hotel&redirect=${encodeURIComponent(redirect)}` : '/login?type=hotel';
+    router.replace(url);
+  }, [router, searchParams]);
   return (
     <div className="flex min-h-screen items-center justify-center">
       <p className="text-zinc-600">Redirecting...</p>
     </div>
+  );
+}
+
+export default function HotelLoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><p className="text-zinc-600">Loading...</p></div>}>
+      <HotelLoginRedirect />
+    </Suspense>
   );
 }

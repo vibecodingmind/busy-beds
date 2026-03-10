@@ -64,8 +64,8 @@ async function main() {
     if (existing.rows.length > 0) {
       const hash = await bcrypt.hash(h.password, 10);
       await pool.query(
-        'UPDATE hotel_accounts SET password_hash = $1, name = $2, approved = true WHERE hotel_id = $3',
-        [hash, h.name, hotelId]
+        'UPDATE hotel_accounts SET email = $1, password_hash = $2, name = $3, approved = true WHERE hotel_id = $4',
+        [h.email, hash, h.name, hotelId]
       );
       console.log(`Hotel account ${h.email} updated.`);
     } else {

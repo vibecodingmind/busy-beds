@@ -1,12 +1,17 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+/* Airbnb-inspired palette - bright and inviting */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #222222;
   --card-bg: #ffffff;
-  --border: #e4e4e7;
-  --muted: #71717a;
+  --border: #ebebeb;
+  --muted: #717171;
+  /* Airbnb primary accent - coral/red-orange */
+  --primary: #FF385C;
+  --primary-hover: #e31c5f;
+  --primary-light: #fff1f2;
 }
 
 .dark {
@@ -15,11 +20,15 @@
   --card-bg: #18181b;
   --border: #27272a;
   --muted: #a1a1aa;
+  --primary: #FF385C;
+  --primary-hover: #ff6b81;
+  --primary-light: #2d1a1f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

@@ -22,6 +22,7 @@ function LoginForm() {
   const { login } = useAuth();
   const hotelLogin = useHotelAuth().login;
   const router = useRouter();
+  const redirectTo = searchParams.get('redirect') || null;
 
   useEffect(() => {
     const err = searchParams.get('error');
@@ -37,7 +38,7 @@ function LoginForm() {
     try {
       if (loginType === 'hotel') {
         await hotelLogin(email, password);
-        router.push('/hotel/dashboard');
+        router.push(redirectTo || '/hotel/dashboard');
       } else {
         await login(email, password);
         router.push('/dashboard');
@@ -61,15 +62,41 @@ function LoginForm() {
 
   return (
     <AuthLayout
-      title="Welcome Back to Busy Beds!"
-      subtitle="Sign in to your account"
+      title={loginType === 'hotel' ? 'Hotel Staff Login' : 'Welcome Back to Busy Beds!'}
+      subtitle={loginType === 'hotel' ? 'Sign in to redeem coupons and manage your hotel' : 'Sign in to your account'}
       switchText="Don't have an account?"
-      switchLink="/register"
+      switchLink={loginType === 'hotel' ? '/register' : '/register'}
       switchLabel="Register"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Guest / Hotel toggle */}
+        <div className="flex rounded-lg border border-zinc-200 bg-zinc-50 p-1 dark:border-zinc-600 dark:bg-zinc-800">
+          <button
+            type="button"
+            onClick={() => { setLoginType('guest'); setError(''); }}
+            className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              loginType === 'guest' ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100' : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+            }`}
+          >
+            Guest
+          </button>
+          <button
+            type="button"
+            onClick={() => { setLoginType('hotel'); setError(''); }}
+            className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              loginType === 'hotel' ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100' : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+            }`}
+          >
+            Hotel Staff
+          </button>
+        </div>
+        {loginType === 'guest' && (
+          <p className="text-center text-xs text-zinc-500">
+            Hotel staff? <Link href="/hotel/login" className="font-medium text-[#FF385C] hover:underline">Log in here</Link>
+          </p>
+        )}
         {error && (
-          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</div>
         )}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-zinc-700">
@@ -126,9 +153,11 @@ function LoginForm() {
             />
             <span className="text-sm text-zinc-600">Remember Me</span>
           </label>
-          <Link href="/forgot-password" className="text-sm text-zinc-600 hover:text-zinc-900 hover:underline">
-            Forgot Password?
-          </Link>
+          {loginType === 'guest' && (
+            <Link href="/forgot-password" className="text-sm text-zinc-600 hover:text-zinc-900 hover:underline">
+              Forgot Password?
+            </Link>
+          )}
         </div>
         <button
           type="submit"

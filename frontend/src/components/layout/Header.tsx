@@ -19,7 +19,7 @@ export default function Header() {
     <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-          Busy Beds
+          <span className="text-[#FF385C]">Busy</span> Beds
         </Link>
         <nav className="flex items-center gap-3">
           <Link
@@ -37,7 +37,7 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setShowMenu(!showMenu)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-sm font-semibold text-white ring-2 ring-white dark:ring-zinc-900 hover:bg-emerald-700 transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FF385C] text-sm font-semibold text-white ring-2 ring-white dark:ring-zinc-900 hover:bg-[#e31c5f] transition-colors"
                 >
                   {user.name?.charAt(0)?.toUpperCase() || 'U'}
                 </button>
@@ -72,7 +72,7 @@ export default function Header() {
             </>
           ) : hotel && hotelLogout ? (
             <>
-              <Link href="/hotel/dashboard" className="rounded-lg px-3 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30">Hotel Dashboard</Link>
+              <Link href="/hotel/dashboard" className="rounded-lg px-3 py-2 text-sm font-medium text-[#FF385C] hover:bg-[#fff1f2] dark:text-[#ff6b81] dark:hover:bg-zinc-800">Hotel Dashboard</Link>
               <button onClick={hotelLogout} className="rounded-lg bg-zinc-200 px-3 py-2 text-sm hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:text-zinc-200">
                 Log out
               </button>
