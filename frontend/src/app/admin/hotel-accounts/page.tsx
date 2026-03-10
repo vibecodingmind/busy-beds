@@ -56,7 +56,7 @@ export default function AdminHotelAccountsPage() {
         Hotel owners who registered must be approved before they can log in.
       </p>
       {accounts.length === 0 ? (
-        <div className="mt-8 rounded-lg border border-zinc-200 bg-zinc-50 p-8 text-center text-black">
+        <div className="mt-8 rounded-lg border border-zinc-200 bg-white p-8 text-center text-black">
           No pending approvals.
         </div>
       ) : (

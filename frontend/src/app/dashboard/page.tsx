@@ -32,7 +32,7 @@ export default function DashboardPage() {
         <p className="mt-1 text-black dark:text-zinc-400">Welcome back, {user.name}</p>
       </div>
       <div className="grid gap-6 sm:grid-cols-2">
-        <div className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 shadow-sm">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 shadow-sm">
           <h3 className="font-semibold text-black dark:text-zinc-100">Subscription</h3>
           <p className="mt-2 text-black dark:text-zinc-400">
             {sub ? sub.plan.name : 'No subscription'}
@@ -49,7 +49,7 @@ export default function DashboardPage() {
             Manage subscription →
           </Link>
         </div>
-        <div className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 shadow-sm">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 shadow-sm">
           <h3 className="font-semibold text-black dark:text-zinc-100">My Coupons</h3>
           <p className="mt-2 text-3xl font-bold text-black dark:text-zinc-100">{couponCount}</p>
           <Link

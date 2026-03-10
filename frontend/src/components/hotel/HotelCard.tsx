@@ -25,7 +25,7 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
 
   return (
     <Link href={`/hotels/${hotel.id}`}>
-      <div className="group overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm shadow-sm transition-all hover:shadow-lg hover:border-zinc-300 dark:hover:border-zinc-600">
+      <div className="group overflow-hidden rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm shadow-sm transition-all hover:shadow-lg hover:border-zinc-300 dark:hover:border-zinc-600">
         <div className="relative aspect-[4/3] w-full overflow-hidden">
           <Image
             src={imageUrl}

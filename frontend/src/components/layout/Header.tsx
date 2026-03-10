@@ -17,7 +17,7 @@ export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/80 dark:border-zinc-800/80 dark:bg-zinc-900/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white dark:border-zinc-800/80 dark:bg-zinc-900/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="text-xl font-bold text-black dark:text-zinc-100">
           <span className="text-[#FF385C]">Busy</span> Beds

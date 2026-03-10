@@ -30,7 +30,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
         <button
           type="button"
           onClick={() => setShowAll(true)}
-          className="relative row-span-2 min-h-[200px] overflow-hidden bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:aspect-[4/3] md:min-h-0"
+          className="relative row-span-2 min-h-[200px] overflow-hidden bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:aspect-[4/3] md:min-h-0"
         >
           <Image
             src={list[selected] || mainImg}
@@ -54,7 +54,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
         <button
           type="button"
           onClick={() => setShowAll(true)}
-          className="relative aspect-square overflow-hidden bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:aspect-auto md:min-h-0"
+          className="relative aspect-square overflow-hidden bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:aspect-auto md:min-h-0"
         >
           <Image
             src={rightTop}
@@ -69,7 +69,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
         <button
           type="button"
           onClick={() => setShowAll(true)}
-          className="relative aspect-square overflow-hidden bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:aspect-auto md:min-h-0"
+          className="relative aspect-square overflow-hidden bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:aspect-auto md:min-h-0"
         >
           <Image
             src={rightBottom}
@@ -84,7 +84,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
         <button
           type="button"
           onClick={() => setShowAll(true)}
-          className="relative col-span-2 aspect-[16/9] overflow-hidden bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:col-span-1"
+          className="relative col-span-2 aspect-[16/9] overflow-hidden bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:col-span-1"
         >
           <Image
             src={bottomLeft}
@@ -98,7 +98,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
         <button
           type="button"
           onClick={() => setShowAll(true)}
-          className="relative col-span-2 aspect-[16/9] overflow-hidden bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:col-span-1"
+          className="relative col-span-2 aspect-[16/9] overflow-hidden bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 md:col-span-1"
         >
           <Image
             src={bottomRight}
@@ -150,7 +150,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
             <button
               type="button"
               onClick={() => setShowAll(false)}
-              className="rounded-full p-2 text-black hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              className="rounded-full p-2 text-black hover:bg-white dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800"
               aria-label="Close gallery"
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

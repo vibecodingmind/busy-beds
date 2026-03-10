@@ -58,7 +58,7 @@ export default function HotelsClient() {
 
   return (
     <div className="min-h-screen">
-      <div className="rounded-2xl border border-zinc-200/80 bg-white/70 dark:border-zinc-700/80 dark:bg-zinc-900/50 backdrop-blur-xl p-6 mb-6">
+      <div className="rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/50 backdrop-blur-xl p-6 mb-6">
         <h1 className="text-2xl font-bold text-black dark:text-zinc-100 flex items-center gap-2">
           <HouseIcon className="h-7 w-7 text-[#FF385C]" />
           Properties
@@ -72,12 +72,12 @@ export default function HotelsClient() {
               placeholder="Search by name, location..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 rounded-xl border border-zinc-200 px-4 py-2.5 bg-white/80 dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 focus:ring-2 focus:ring-[#FF385C]/30 focus:border-[#FF385C] transition-colors"
+              className="flex-1 rounded-xl border border-zinc-200 px-4 py-2.5 bg-white dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 focus:ring-2 focus:ring-[#FF385C]/30 focus:border-[#FF385C] transition-colors"
             />
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="rounded-xl border border-zinc-200 px-4 py-2.5 bg-white/80 dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100"
+              className="rounded-xl border border-zinc-200 px-4 py-2.5 bg-white dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100"
             >
               <option value="name">Sort by Name</option>
               <option value="location">Sort by Location</option>

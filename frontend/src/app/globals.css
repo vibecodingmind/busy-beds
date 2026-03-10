@@ -1,12 +1,12 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* Light mode - bright and airy, deep black text for max contrast */
+/* Light mode - pure white bg, deep black text for max contrast */
 :root {
-  --background: #f8fafc;
+  --background: #ffffff;
   --foreground: #000000;
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --card-border: rgba(226, 232, 240, 0.8);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --card-border: rgba(226, 232, 240, 0.9);
   --border: #e2e8f0;
   --muted: #000000;
   --primary: #FF385C;

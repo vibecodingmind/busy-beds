@@ -117,7 +117,7 @@ export default function HotelDashboardPage() {
         </div>
         <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
           <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-            <thead className="bg-zinc-50 dark:bg-zinc-800">
+            <thead className="bg-white dark:bg-zinc-800">
               <tr>
                 <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Code</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Guest</th>

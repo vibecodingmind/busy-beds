@@ -165,7 +165,7 @@ export default function MyCouponsPage() {
               </div>
 
               {/* Code + QR (ticket style) */}
-              <div className="mt-6 rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-50 p-4 dark:border-zinc-600 dark:bg-zinc-800/50">
+              <div className="mt-6 rounded-lg border-2 border-dashed border-zinc-300 bg-white p-4 dark:border-zinc-600 dark:bg-zinc-800/50">
                 <p className="mb-2 text-center font-mono text-xl font-bold text-black dark:text-zinc-100">
                   {selected.code}
                 </p>
@@ -210,7 +210,7 @@ export default function MyCouponsPage() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-200 bg-zinc-50 p-12 dark:border-zinc-700 dark:bg-zinc-900/50">
+            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-200 bg-white p-12 dark:border-zinc-700 dark:bg-zinc-900/50">
               <p className="text-black dark:text-zinc-400">Select a coupon to view details</p>
             </div>
           )}

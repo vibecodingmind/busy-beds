@@ -99,7 +99,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
         </p>
       )}
       {user && (
-        <form onSubmit={handleSubmit} className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800">
+        <form onSubmit={handleSubmit} className="mt-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
           <div className="flex items-center gap-1">
             <StarRating interactive value={rating} onChange={setRating} size="lg" />
           </div>

@@ -41,7 +41,7 @@ export default function FavoritesPage() {
       {loading ? (
         <p className="text-black dark:text-zinc-400">Loading favourites...</p>
       ) : hotels.length === 0 ? (
-        <div className="rounded-2xl border-2 border-dashed border-zinc-200/80 bg-white/60 dark:border-zinc-700/80 dark:bg-zinc-900/40 p-12 text-center backdrop-blur-sm">
+        <div className="rounded-2xl border-2 border-dashed border-zinc-200/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/40 border-2 border-zinc-200/80 p-12 text-center backdrop-blur-sm">
           <p className="text-black dark:text-zinc-400">No favourites yet.</p>
           <Link href="/hotels" className="mt-4 inline-block font-medium text-[#FF385C] hover:underline">
             Browse properties →

@@ -60,7 +60,7 @@ export default function PhotosInput({ value, onChange, placeholder = 'https://ex
         <button
           type="button"
           onClick={addPhoto}
-          className="mt-2 rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-2 text-sm text-black hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          className="mt-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm text-black hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
         >
           Add first photo
         </button>
