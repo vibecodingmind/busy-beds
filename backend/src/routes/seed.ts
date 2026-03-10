@@ -28,8 +28,8 @@ router.get('/', async (req: Request, res: Response) => {
     await pool.query(schema);
     console.log('[seed] Migration completed');
 
-    // 2. Seed (plans + hotels)
-    const seedPath = join(__dirname, '../../../database/seed.sql');
+    // 2. Seed (plans + hotels) - use backend/scripts/seed-data.sql (database/ not deployed with backend)
+    const seedPath = join(__dirname, '../../scripts/seed-data.sql');
     const seed = readFileSync(seedPath, 'utf-8');
     await pool.query(seed);
     console.log('[seed] Plans + hotels seeded');
