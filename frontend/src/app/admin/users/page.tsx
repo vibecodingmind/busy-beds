@@ -23,15 +23,15 @@ export default function AdminUsersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-zinc-900">Users</h1>
+      <h1 className="text-2xl font-bold text-black">Users</h1>
       <div className="mt-8 overflow-x-auto rounded-lg border border-zinc-200">
         <table className="min-w-full divide-y divide-zinc-200">
           <thead className="bg-zinc-50">
             <tr>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">ID</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Name</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Email</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Role</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-black">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-black">Name</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-black">Email</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-black">Role</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 bg-white">

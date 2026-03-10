@@ -22,8 +22,8 @@ export default function PhotosInput({ value, onChange, placeholder = 'https://ex
 
   return (
     <div>
-      <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-300">Photos</label>
-      <p className="mt-1 text-xs text-zinc-900 dark:text-zinc-400">
+      <label className="block text-sm font-medium text-black dark:text-zinc-300">Photos</label>
+      <p className="mt-1 text-xs text-black dark:text-zinc-400">
         Add multiple photo URLs. First photo is the main/cover image.
       </p>
       <div className="mt-2 space-y-2">
@@ -50,7 +50,7 @@ export default function PhotosInput({ value, onChange, placeholder = 'https://ex
           <button
             type="button"
             onClick={addPhoto}
-            className="rounded-lg border border-dashed border-zinc-300 px-4 py-2 text-sm text-zinc-900 hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="rounded-lg border border-dashed border-zinc-300 px-4 py-2 text-sm text-black hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
             + Add photo
           </button>
@@ -60,7 +60,7 @@ export default function PhotosInput({ value, onChange, placeholder = 'https://ex
         <button
           type="button"
           onClick={addPhoto}
-          className="mt-2 rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-2 text-sm text-zinc-900 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          className="mt-2 rounded-lg border border-zinc-300 bg-zinc-50 px-4 py-2 text-sm text-black hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
         >
           Add first photo
         </button>

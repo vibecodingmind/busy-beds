@@ -58,13 +58,13 @@ export default function ProfilePage() {
     }
   };
 
-  if (authLoading || !user) return <div className="py-12 text-zinc-900 dark:text-zinc-400">Loading...</div>;
+  if (authLoading || !user) return <div className="py-12 text-black dark:text-zinc-400">Loading...</div>;
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Account</h1>
-        <p className="mt-1 text-zinc-900 dark:text-zinc-400">Manage your profile and security.</p>
+        <h1 className="text-2xl font-bold text-black dark:text-zinc-100">Account</h1>
+        <p className="mt-1 text-black dark:text-zinc-400">Manage your profile and security.</p>
       </div>
 
       <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-700">
@@ -74,7 +74,7 @@ export default function ProfilePage() {
           className={`border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
             tab === 'profile'
               ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400'
-              : 'border-transparent text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-300'
+              : 'border-transparent text-black dark:text-zinc-400 dark:hover:text-zinc-300'
           }`}
         >
           Profile
@@ -85,7 +85,7 @@ export default function ProfilePage() {
           className={`border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
             tab === 'password'
               ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400'
-              : 'border-transparent text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-300'
+              : 'border-transparent text-black dark:text-zinc-400 dark:hover:text-zinc-300'
           }`}
         >
           Change Password
@@ -106,7 +106,7 @@ export default function ProfilePage() {
         {tab === 'profile' && (
           <form onSubmit={handleProfileSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-300">Name</label>
+              <label className="block text-sm font-medium text-black dark:text-zinc-300">Name</label>
               <input
                 type="text"
                 value={name}
@@ -116,7 +116,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-300">Email</label>
+              <label className="block text-sm font-medium text-black dark:text-zinc-300">Email</label>
               <input
                 type="email"
                 value={email}
@@ -138,7 +138,7 @@ export default function ProfilePage() {
         {tab === 'password' && (
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-300">Current Password</label>
+              <label className="block text-sm font-medium text-black dark:text-zinc-300">Current Password</label>
               <input
                 type="password"
                 value={currentPassword}
@@ -148,7 +148,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-300">New Password</label>
+              <label className="block text-sm font-medium text-black dark:text-zinc-300">New Password</label>
               <input
                 type="password"
                 value={newPassword}

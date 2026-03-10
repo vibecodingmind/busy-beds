@@ -25,16 +25,16 @@ export default function AdminCouponsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-zinc-900">Coupons</h1>
+      <h1 className="text-2xl font-bold text-black">Coupons</h1>
       <div className="mt-8 overflow-x-auto rounded-lg border border-zinc-200">
         <table className="min-w-full divide-y divide-zinc-200">
           <thead className="bg-zinc-50">
             <tr>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Code</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">User</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Hotel</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Status</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Created</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-black">Code</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-black">User</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-black">Hotel</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-black">Status</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-black">Created</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 bg-white">
@@ -56,7 +56,7 @@ export default function AdminCouponsPage() {
                     {c.status}
                   </span>
                 </td>
-                <td className="px-4 py-2 text-sm text-zinc-900">
+                <td className="px-4 py-2 text-sm text-black">
                   {new Date(c.created_at).toLocaleString()}
                 </td>
               </tr>

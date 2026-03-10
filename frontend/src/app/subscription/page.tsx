@@ -73,13 +73,13 @@ function SubscriptionContent() {
     }
   };
 
-  if (authLoading || !user) return <div className="py-12 text-zinc-900 dark:text-zinc-400">Loading...</div>;
+  if (authLoading || !user) return <div className="py-12 text-black dark:text-zinc-400">Loading...</div>;
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Subscription</h1>
-        <p className="mt-1 text-zinc-900 dark:text-zinc-400">
+        <h1 className="text-2xl font-bold text-black dark:text-zinc-100">Subscription</h1>
+        <p className="mt-1 text-black dark:text-zinc-400">
           {currentSub
             ? `Current plan: ${currentSub.plan.name} (${currentSub.plan.monthly_coupon_limit} coupons/month)`
             : 'Choose a plan to start generating coupons.'}
@@ -104,10 +104,10 @@ function SubscriptionContent() {
                 : 'border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900'
             }`}
           >
-            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{plan.name}</h3>
-            <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100">${plan.price}</p>
-            <p className="text-sm text-zinc-900 dark:text-zinc-400">/ month</p>
-            <p className="mt-2 text-zinc-900 dark:text-zinc-400">{plan.monthly_coupon_limit} coupons per month</p>
+            <h3 className="font-semibold text-black dark:text-zinc-100">{plan.name}</h3>
+            <p className="mt-2 text-2xl font-bold text-black dark:text-zinc-100">${plan.price}</p>
+            <p className="text-sm text-black dark:text-zinc-400">/ month</p>
+            <p className="mt-2 text-black dark:text-zinc-400">{plan.monthly_coupon_limit} coupons per month</p>
             <button
               onClick={() => handleSubscribe(plan.id)}
               disabled={loading !== null || currentSub?.plan.id === plan.id}

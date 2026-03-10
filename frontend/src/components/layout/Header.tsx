@@ -7,7 +7,7 @@ import { HotelAuthContext } from '@/contexts/HotelAuthContext';
 import ThemeToggle from '@/components/ThemeToggle';
 import { HouseIcon, UserIcon } from '@/components/icons';
 
-const menuLink = "flex items-center gap-2 px-4 py-2.5 text-sm text-zinc-900 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700/80 transition-colors";
+const menuLink = "flex items-center gap-2 px-4 py-2.5 text-sm text-black hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700/80 transition-colors";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -19,13 +19,13 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/80 dark:border-zinc-800/80 dark:bg-zinc-900/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+        <Link href="/" className="text-xl font-bold text-black dark:text-zinc-100">
           <span className="text-[#FF385C]">Busy</span> Beds
         </Link>
         <nav className="flex items-center gap-3">
           <Link
             href="/hotels"
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-100 transition-colors"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-black hover:bg-zinc-100 hover:text-black dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-100 transition-colors"
           >
             <HouseIcon />
             Browse Properties
@@ -44,7 +44,7 @@ export default function Header() {
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
                     <div className="absolute right-0 top-full z-20 mt-2 w-56 rounded-xl border border-zinc-200 bg-white py-1 shadow-xl dark:border-zinc-700 dark:bg-zinc-800">
-                      <p className="px-4 py-2 text-xs text-zinc-900 dark:text-zinc-400 truncate">{user.email}</p>
+                      <p className="px-4 py-2 text-xs text-black dark:text-zinc-400 truncate">{user.email}</p>
                       <div className="border-t border-zinc-100 dark:border-zinc-700" />
                       <Link href="/dashboard" onClick={() => setShowMenu(false)} className={menuLink}>Dashboard</Link>
                       <Link href="/favorites" onClick={() => setShowMenu(false)} className={menuLink}>Favourites</Link>
@@ -60,7 +60,7 @@ export default function Header() {
                       <Link href="/profile" onClick={() => setShowMenu(false)} className={menuLink}>Account</Link>
                       <button
                         onClick={() => { logout(); setShowMenu(false); }}
-                        className="w-full px-4 py-2.5 text-left text-sm text-zinc-900 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                        className="w-full px-4 py-2.5 text-left text-sm text-black hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700"
                       >
                         Log out
                       </button>
@@ -79,7 +79,7 @@ export default function Header() {
           ) : (
             <Link
               href="/login"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-zinc-900 hover:bg-zinc-300 hover:text-zinc-900 dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-black hover:bg-zinc-300 hover:text-black dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
               title="Login / Register"
             >
               <UserIcon />

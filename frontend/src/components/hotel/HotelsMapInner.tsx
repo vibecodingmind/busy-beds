@@ -66,7 +66,7 @@ export default function HotelsMapInner({ hotels }: HotelsMapInnerProps) {
               <Link href={`/hotels/${hotel.id}`} className="font-semibold text-[#FF385C] hover:underline">
                 {hotel.name}
               </Link>
-              {hotel.location && <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">{hotel.location}</p>}
+              {hotel.location && <p className="mt-1 text-sm text-black dark:text-zinc-400">{hotel.location}</p>}
               <div className="mt-1 flex items-center gap-2">
                 {hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0 && (
                   <StarRating rating={Number(hotel.avg_rating)} size="sm" />

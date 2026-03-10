@@ -33,10 +33,10 @@ export default function CouponQRCard({
           <QRCodeSVG value={redeemUrl} size={160} level="M" />
         </div>
         <div className="flex-1 text-center sm:text-left">
-          <p className="font-mono text-lg font-bold text-zinc-900 dark:text-zinc-100">{code}</p>
-          <p className="mt-1 text-zinc-900 dark:text-zinc-400">{hotelName}</p>
+          <p className="font-mono text-lg font-bold text-black dark:text-zinc-100">{code}</p>
+          <p className="mt-1 text-black dark:text-zinc-400">{hotelName}</p>
           <p className="mt-1 font-medium text-emerald-600 dark:text-emerald-400">{discountValue}</p>
-          <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">
+          <p className="mt-1 text-sm text-black dark:text-zinc-400">
             Expires: {new Date(expiresAt).toLocaleDateString()}
           </p>
           <span

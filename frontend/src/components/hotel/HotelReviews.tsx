@@ -80,7 +80,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
   return (
     <div className="mt-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Reviews</h3>
+        <h3 className="text-lg font-semibold text-black dark:text-zinc-100">Reviews</h3>
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as typeof sort)}
@@ -93,7 +93,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
         </select>
       </div>
       {data.averageRating != null && (
-        <p className="mt-1 flex items-center gap-2 text-zinc-900 dark:text-zinc-400">
+        <p className="mt-1 flex items-center gap-2 text-black dark:text-zinc-400">
           <StarRating rating={data.averageRating} size="md" />
           {data.averageRating.toFixed(1)} ({data.totalCount} {data.totalCount === 1 ? 'review' : 'reviews'})
         </p>
@@ -124,7 +124,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
           <li key={r.id} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-zinc-900 dark:text-zinc-100">{r.user_name}</span>
+                <span className="font-medium text-black dark:text-zinc-100">{r.user_name}</span>
                 {r.verified_guest && (
                   <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300">
                     Verified guest
@@ -133,7 +133,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
               </div>
               <div className="flex items-center gap-2">
                 <StarRating rating={r.rating} size="sm" />
-                <span className="flex items-center gap-1 text-xs text-zinc-900 dark:text-zinc-400">
+                <span className="flex items-center gap-1 text-xs text-black dark:text-zinc-400">
                   {user ? (
                     <>
                       <button
@@ -163,7 +163,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
                             //
                           }
                         }}
-                        className={`hover:text-zinc-900 dark:hover:text-zinc-300 ${r.user_vote === false ? 'font-medium' : ''}`}
+                        className={`hover:text-black dark:hover:text-zinc-300 ${r.user_vote === false ? 'font-medium' : ''}`}
                       >
                         Not helpful {(r.not_helpful_count ?? 0) > 0 ? `(${r.not_helpful_count})` : ''}
                       </button>
@@ -188,18 +188,18 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
                       navigator.clipboard?.writeText(window.location.href + '#reviews');
                     }
                   }}
-                  className="text-xs text-zinc-900 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-300"
+                  className="text-xs text-black hover:text-black dark:text-zinc-400 dark:hover:text-zinc-300"
                 >
                   Share
                 </button>
               </div>
             </div>
-            {r.comment && <p className="mt-2 text-sm text-zinc-900 dark:text-zinc-400">{r.comment}</p>}
+            {r.comment && <p className="mt-2 text-sm text-black dark:text-zinc-400">{r.comment}</p>}
             {r.hotel_response && (
               <div className="mt-3 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 p-3 dark:bg-emerald-950/30 dark:border-emerald-600">
-                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Hotel response</p>
-                <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">{r.hotel_response.response_text}</p>
-                <p className="mt-1 text-xs text-zinc-900 dark:text-zinc-400">{new Date(r.hotel_response.created_at).toLocaleDateString()}</p>
+                <p className="text-sm font-medium text-black dark:text-zinc-300">Hotel response</p>
+                <p className="mt-1 text-sm text-black dark:text-zinc-400">{r.hotel_response.response_text}</p>
+                <p className="mt-1 text-xs text-black dark:text-zinc-400">{new Date(r.hotel_response.created_at).toLocaleDateString()}</p>
               </div>
             )}
             {isHotelForThisProperty && !r.hotel_response && (
@@ -257,12 +257,12 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
                 )}
               </div>
             )}
-            <p className="mt-1 text-xs text-zinc-900 dark:text-zinc-400">{new Date(r.created_at).toLocaleDateString()}</p>
+            <p className="mt-1 text-xs text-black dark:text-zinc-400">{new Date(r.created_at).toLocaleDateString()}</p>
           </li>
         ))}
       </ul>
       {data.reviews.length === 0 && (
-        <p className="mt-4 text-zinc-900 dark:text-zinc-400">No reviews yet. Be the first to review!</p>
+        <p className="mt-4 text-black dark:text-zinc-400">No reviews yet. Be the first to review!</p>
       )}
     </div>
   );

@@ -75,32 +75,32 @@ export default function RedeemPage() {
   return (
     <div className="mx-auto max-w-lg">
       <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 p-8 shadow-sm">
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Coupon Validation</h1>
+        <h1 className="text-xl font-bold text-black dark:text-zinc-100">Coupon Validation</h1>
         <div className="mt-6 space-y-2">
           <p>
-            <span className="text-zinc-900 dark:text-zinc-400">Code:</span>{' '}
-            <span className="font-mono font-semibold text-zinc-900 dark:text-zinc-100">{coupon.code}</span>
+            <span className="text-black dark:text-zinc-400">Code:</span>{' '}
+            <span className="font-mono font-semibold text-black dark:text-zinc-100">{coupon.code}</span>
           </p>
           <p>
-            <span className="text-zinc-900 dark:text-zinc-400">Guest:</span>{' '}
-            <span className="text-zinc-900 dark:text-zinc-100">{coupon.user_name}</span>
+            <span className="text-black dark:text-zinc-400">Guest:</span>{' '}
+            <span className="text-black dark:text-zinc-100">{coupon.user_name}</span>
           </p>
           <p>
-            <span className="text-zinc-900 dark:text-zinc-400">Hotel:</span>{' '}
-            <span className="text-zinc-900 dark:text-zinc-100">{coupon.hotel_name}</span>
+            <span className="text-black dark:text-zinc-400">Hotel:</span>{' '}
+            <span className="text-black dark:text-zinc-100">{coupon.hotel_name}</span>
           </p>
           <p>
-            <span className="text-zinc-900 dark:text-zinc-400">Discount:</span>{' '}
+            <span className="text-black dark:text-zinc-400">Discount:</span>{' '}
             <span className="font-medium text-emerald-600 dark:text-emerald-400">{coupon.discount_value}</span>
           </p>
           <p>
-            <span className="text-zinc-900 dark:text-zinc-400">Status:</span>{' '}
+            <span className="text-black dark:text-zinc-400">Status:</span>{' '}
             <span
               className={
                 coupon.status === 'active'
                   ? 'text-emerald-600 dark:text-emerald-400'
                   : coupon.status === 'redeemed'
-                    ? 'text-zinc-900 dark:text-zinc-400'
+                    ? 'text-black dark:text-zinc-400'
                     : 'text-amber-600 dark:text-amber-400'
               }
             >
@@ -144,7 +144,7 @@ export default function RedeemPage() {
                 </button>
               </div>
             ) : (
-              <p className="text-zinc-900 dark:text-zinc-400">
+              <p className="text-black dark:text-zinc-400">
                 This coupon cannot be redeemed (already used or expired).
               </p>
             )}

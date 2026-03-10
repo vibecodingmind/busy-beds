@@ -34,10 +34,10 @@ export default async function HomePage() {
     <div className="min-h-screen bg-[var(--background)]">
       {/* Hero - glassy and inviting */}
       <section className="rounded-2xl border border-zinc-200/80 bg-white/70 dark:border-zinc-700/80 dark:bg-zinc-900/50 backdrop-blur-xl bg-gradient-to-br from-[#fff1f2]/80 via-white/60 to-[#f0f9ff]/80 dark:from-zinc-900/80 dark:via-zinc-900/60 dark:to-zinc-800/80 px-6 sm:px-8 py-12 sm:py-16">
-        <h1 className="text-4xl font-bold text-zinc-900 dark:text-white md:text-5xl">
+        <h1 className="text-4xl font-bold text-black dark:text-white md:text-5xl">
           Busy Beds
         </h1>
-        <p className="mt-4 max-w-xl text-lg text-zinc-900 dark:text-zinc-300">
+        <p className="mt-4 max-w-xl text-lg text-black dark:text-zinc-300">
           Subscribe to access hotel discount coupons. Generate unique coupons, show QR codes at
           check-in, and save on your stay.
         </p>
@@ -50,7 +50,7 @@ export default async function HomePage() {
           </Link>
           <Link
             href="/hotels"
-            className="rounded-lg border-2 border-zinc-300 px-6 py-3 font-medium text-zinc-900 dark:text-zinc-300 transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded-lg border-2 border-zinc-300 px-6 py-3 font-medium text-black dark:text-zinc-300 transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
             Browse Properties
           </Link>
@@ -59,7 +59,7 @@ export default async function HomePage() {
 
       {/* 3 Steps - bright cards */}
       <section className="mt-16">
-        <h2 className="text-center text-2xl font-semibold text-zinc-900 dark:text-white">
+        <h2 className="text-center text-2xl font-semibold text-black dark:text-white">
           Get Started in 3 Steps
         </h2>
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-8">
@@ -69,8 +69,8 @@ export default async function HomePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <h3 className="mt-4 font-medium text-zinc-900 dark:text-zinc-100">1. Create account</h3>
-            <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">Sign up in seconds</p>
+            <h3 className="mt-4 font-medium text-black dark:text-zinc-100">1. Create account</h3>
+            <p className="mt-1 text-sm text-black dark:text-zinc-400">Sign up in seconds</p>
           </div>
           <div className="flex flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 text-center shadow-sm">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f2] text-[#FF385C] dark:bg-zinc-800">
@@ -78,8 +78,8 @@ export default async function HomePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
             </div>
-            <h3 className="mt-4 font-medium text-zinc-900 dark:text-zinc-100">2. Choose a plan</h3>
-            <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">Pick a subscription</p>
+            <h3 className="mt-4 font-medium text-black dark:text-zinc-100">2. Choose a plan</h3>
+            <p className="mt-1 text-sm text-black dark:text-zinc-400">Pick a subscription</p>
           </div>
           <div className="flex flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 text-center shadow-sm">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f2] text-[#FF385C] dark:bg-zinc-800">
@@ -87,8 +87,8 @@ export default async function HomePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0-4h2m-2 4h-6m-2-6H5a2 2 0 00-2 2v6a2 2 0 002 2h2m-6-2h6m-6-2V9a2 2 0 012-2h2m0 0V5" />
               </svg>
             </div>
-            <h3 className="mt-4 font-medium text-zinc-900 dark:text-zinc-100">3. Get coupons</h3>
-            <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">Show QR at check-in</p>
+            <h3 className="mt-4 font-medium text-black dark:text-zinc-100">3. Get coupons</h3>
+            <p className="mt-1 text-sm text-black dark:text-zinc-400">Show QR at check-in</p>
           </div>
         </div>
       </section>
@@ -96,10 +96,10 @@ export default async function HomePage() {
       {/* Explore More Destinations - grid layout */}
       {featuredHotels.length > 0 && (
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">
+          <h2 className="text-2xl font-semibold text-black dark:text-white">
             Explore More Destinations
           </h2>
-          <p className="mt-1 text-zinc-900 dark:text-zinc-400">
+          <p className="mt-1 text-black dark:text-zinc-400">
             Discover properties with exclusive coupon discounts
           </p>
           <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
@@ -123,10 +123,10 @@ export default async function HomePage() {
 
       {totalReviews > 0 && recentReviews.length > 0 && (
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">
+          <h2 className="text-2xl font-semibold text-black dark:text-white">
             What travelers say
           </h2>
-          <p className="mt-1 text-zinc-900 dark:text-zinc-400">
+          <p className="mt-1 text-black dark:text-zinc-400">
             {totalReviews} reviews from real guests
           </p>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
@@ -135,14 +135,14 @@ export default async function HomePage() {
                 key={r.id}
                 className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900"
               >
-                <p className="font-medium text-zinc-900 dark:text-zinc-100">{r.hotel_name}</p>
+                <p className="font-medium text-black dark:text-zinc-100">{r.hotel_name}</p>
                 <div className="mt-2">
                   <StarRating rating={r.rating} size="md" />
                 </div>
-                <p className="mt-2 text-sm text-zinc-900 dark:text-zinc-400">
+                <p className="mt-2 text-sm text-black dark:text-zinc-400">
                   {truncate(r.comment, 80) || '—'}
                 </p>
-                <p className="mt-2 text-xs text-zinc-900 dark:text-zinc-500">— {r.user_name}</p>
+                <p className="mt-2 text-xs text-black dark:text-zinc-500">— {r.user_name}</p>
               </div>
             ))}
           </div>

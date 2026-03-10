@@ -74,10 +74,10 @@ export default function AdminPlansPage() {
   return (
     <div>
       <Link href="/admin" className="text-sm text-emerald-600 hover:underline">← Admin</Link>
-      <h1 className="mt-6 text-2xl font-bold text-zinc-900 dark:text-zinc-100">Subscription Plans</h1>
+      <h1 className="mt-6 text-2xl font-bold text-black dark:text-zinc-100">Subscription Plans</h1>
 
       <form onSubmit={handleCreate} className="mt-8 max-w-md space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
-        <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">Add Plan</h2>
+        <h2 className="font-semibold text-black dark:text-zinc-100">Add Plan</h2>
         <input
           placeholder="Name"
           value={form.name}
@@ -126,8 +126,8 @@ export default function AdminPlansPage() {
               </>
             ) : (
               <>
-                <span className="font-medium text-zinc-900 dark:text-zinc-100">{p.name}</span>
-                <span className="text-zinc-900 dark:text-zinc-400">{p.monthly_coupon_limit} coupons/mo · ${p.price}</span>
+                <span className="font-medium text-black dark:text-zinc-100">{p.name}</span>
+                <span className="text-black dark:text-zinc-400">{p.monthly_coupon_limit} coupons/mo · ${p.price}</span>
                 <div className="flex gap-2">
                   <button onClick={() => { setEditing(p.id); setEditForm({ name: p.name, monthly_coupon_limit: p.monthly_coupon_limit, price: p.price, stripe_price_id: p.stripe_price_id || '' }); }} className="rounded bg-zinc-200 px-2 py-1 text-sm dark:bg-zinc-600">Edit</button>
                   <button onClick={() => handleDelete(p.id)} className="rounded bg-red-100 px-2 py-1 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-400">Delete</button>

@@ -59,13 +59,13 @@ function ReferralContent() {
   const getRewardForReferred = (referredId: number) =>
     data?.rewards.find((r) => r.referred_id === referredId);
 
-  if (authLoading || !user) return <div className="py-12 text-zinc-900 dark:text-zinc-400">Loading...</div>;
+  if (authLoading || !user) return <div className="py-12 text-black dark:text-zinc-400">Loading...</div>;
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Refer & Earn</h1>
-        <p className="mt-1 text-zinc-900 dark:text-zinc-400">
+        <h1 className="text-2xl font-bold text-black dark:text-zinc-100">Refer & Earn</h1>
+        <p className="mt-1 text-black dark:text-zinc-400">
           Share your code. When friends subscribe, you earn 25% of their first payment.
         </p>
       </div>
@@ -74,8 +74,8 @@ function ReferralContent() {
         <div className="space-y-8">
           {!data.stripe_connected && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-950/30">
-              <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">Connect Stripe to receive payouts</h2>
-              <p className="mt-2 text-sm text-zinc-900 dark:text-zinc-400">
+              <h2 className="font-semibold text-black dark:text-zinc-100">Connect Stripe to receive payouts</h2>
+              <p className="mt-2 text-sm text-black dark:text-zinc-400">
                 Link your Stripe account to get paid when your referrals subscribe.
               </p>
               <button
@@ -89,23 +89,23 @@ function ReferralContent() {
           )}
 
           <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
-            <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">Earnings</h2>
+            <h2 className="font-semibold text-black dark:text-zinc-100">Earnings</h2>
             <div className="mt-4 flex gap-6">
               <div>
-                <span className="text-sm text-zinc-900 dark:text-zinc-400">Total earned</span>
+                <span className="text-sm text-black dark:text-zinc-400">Total earned</span>
                 <p className="text-xl font-bold text-emerald-600">${data.total_earned.toFixed(2)}</p>
               </div>
               <div>
-                <span className="text-sm text-zinc-900 dark:text-zinc-400">Pending</span>
+                <span className="text-sm text-black dark:text-zinc-400">Pending</span>
                 <p className="text-xl font-bold text-amber-600">${data.total_pending.toFixed(2)}</p>
               </div>
             </div>
           </div>
 
           <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
-            <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">Your referral code</h2>
+            <h2 className="font-semibold text-black dark:text-zinc-100">Your referral code</h2>
             <p className="mt-2 font-mono text-2xl font-bold text-emerald-600">{data.code}</p>
-            <p className="mt-2 text-sm text-zinc-900 dark:text-zinc-400">Share this link:</p>
+            <p className="mt-2 text-sm text-black dark:text-zinc-400">Share this link:</p>
             <div className="mt-2 flex gap-2">
               <input
                 readOnly
@@ -114,7 +114,7 @@ function ReferralContent() {
               />
               <button
                 onClick={() => { navigator.clipboard.writeText(shareUrl); toast('Link copied!', 'success'); }}
-                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white dark:bg-zinc-100 dark:text-zinc-900"
+                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white dark:bg-zinc-100 dark:text-black"
               >
                 Copy
               </button>
@@ -122,13 +122,13 @@ function ReferralContent() {
           </div>
 
           <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
-            <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">People you referred ({data.referred.length})</h2>
+            <h2 className="font-semibold text-black dark:text-zinc-100">People you referred ({data.referred.length})</h2>
             {data.referred.length > 0 ? (
               <ul className="mt-4 space-y-2">
                 {data.referred.map((r) => {
                   const reward = getRewardForReferred(r.id);
                   return (
-                    <li key={r.id} className="flex items-center justify-between text-sm text-zinc-900 dark:text-zinc-400">
+                    <li key={r.id} className="flex items-center justify-between text-sm text-black dark:text-zinc-400">
                       <span>{r.name} ({r.email})</span>
                       <div className="flex items-center gap-3">
                         {reward && (
@@ -151,7 +151,7 @@ function ReferralContent() {
                 })}
               </ul>
             ) : (
-              <p className="mt-4 text-zinc-900 dark:text-zinc-400">No referrals yet. Share your link to get started!</p>
+              <p className="mt-4 text-black dark:text-zinc-400">No referrals yet. Share your link to get started!</p>
             )}
           </div>
         </div>

@@ -47,16 +47,16 @@ export default function AdminHotelAccountsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center gap-4">
-        <Link href="/admin" className="text-zinc-900 hover:text-zinc-900">
+        <Link href="/admin" className="text-black hover:text-black">
           ← Admin
         </Link>
       </div>
-      <h1 className="text-2xl font-bold text-zinc-900">Pending Hotel Approvals</h1>
-      <p className="mt-2 text-sm text-zinc-900">
+      <h1 className="text-2xl font-bold text-black">Pending Hotel Approvals</h1>
+      <p className="mt-2 text-sm text-black">
         Hotel owners who registered must be approved before they can log in.
       </p>
       {accounts.length === 0 ? (
-        <div className="mt-8 rounded-lg border border-zinc-200 bg-zinc-50 p-8 text-center text-zinc-900">
+        <div className="mt-8 rounded-lg border border-zinc-200 bg-zinc-50 p-8 text-center text-black">
           No pending approvals.
         </div>
       ) : (
@@ -64,11 +64,11 @@ export default function AdminHotelAccountsPage() {
           <table className="min-w-full divide-y divide-zinc-200">
             <thead className="bg-zinc-50">
               <tr>
-                <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Hotel</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Name</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Email</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Submitted</th>
-                <th className="px-4 py-2 text-right text-sm font-medium text-zinc-900">Action</th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-black">Hotel</th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-black">Name</th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-black">Email</th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-black">Submitted</th>
+                <th className="px-4 py-2 text-right text-sm font-medium text-black">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 bg-white">
@@ -77,7 +77,7 @@ export default function AdminHotelAccountsPage() {
                   <td className="px-4 py-2 font-medium">{a.hotel_name}</td>
                   <td className="px-4 py-2">{a.name}</td>
                   <td className="px-4 py-2 text-sm">{a.email}</td>
-                  <td className="px-4 py-2 text-sm text-zinc-900">
+                  <td className="px-4 py-2 text-sm text-black">
                     {new Date(a.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-2 text-right">

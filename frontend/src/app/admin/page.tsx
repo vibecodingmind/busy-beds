@@ -49,30 +49,30 @@ export default function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-zinc-900">Admin Dashboard</h1>
+      <h1 className="text-2xl font-bold text-black">Admin Dashboard</h1>
       {analytics && (
         <div className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50 p-6">
-          <h2 className="font-semibold text-zinc-900">Analytics Overview</h2>
+          <h2 className="font-semibold text-black">Analytics Overview</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <div>
-              <p className="text-sm text-zinc-900">Total users</p>
-              <p className="text-2xl font-bold text-zinc-900">{analytics.total_users}</p>
+              <p className="text-sm text-black">Total users</p>
+              <p className="text-2xl font-bold text-black">{analytics.total_users}</p>
             </div>
             <div>
-              <p className="text-sm text-zinc-900">Total hotels</p>
-              <p className="text-2xl font-bold text-zinc-900">{analytics.total_hotels}</p>
+              <p className="text-sm text-black">Total hotels</p>
+              <p className="text-2xl font-bold text-black">{analytics.total_hotels}</p>
             </div>
             <div>
-              <p className="text-sm text-zinc-900">Active subscriptions</p>
-              <p className="text-2xl font-bold text-zinc-900">{analytics.active_subscriptions}</p>
+              <p className="text-sm text-black">Active subscriptions</p>
+              <p className="text-2xl font-bold text-black">{analytics.active_subscriptions}</p>
             </div>
             <div>
-              <p className="text-sm text-zinc-900">Active coupons</p>
-              <p className="text-2xl font-bold text-zinc-900">{analytics.active_coupons}</p>
+              <p className="text-sm text-black">Active coupons</p>
+              <p className="text-2xl font-bold text-black">{analytics.active_coupons}</p>
             </div>
             <div>
-              <p className="text-sm text-zinc-900">Total redemptions</p>
-              <p className="text-2xl font-bold text-zinc-900">{analytics.total_redemptions}</p>
+              <p className="text-sm text-black">Total redemptions</p>
+              <p className="text-2xl font-bold text-black">{analytics.total_redemptions}</p>
             </div>
           </div>
         </div>
@@ -80,31 +80,31 @@ export default function AdminDashboardPage() {
       <div className="mt-8 grid gap-6 sm:grid-cols-3">
         <Link href="/admin/hotels">
           <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-md">
-            <h3 className="font-semibold text-zinc-900">Hotels</h3>
-            <p className="mt-2 text-3xl font-bold text-zinc-900">{counts?.hotels ?? '-'}</p>
+            <h3 className="font-semibold text-black">Hotels</h3>
+            <p className="mt-2 text-3xl font-bold text-black">{counts?.hotels ?? '-'}</p>
           </div>
         </Link>
         <Link href="/admin/users">
           <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-md">
-            <h3 className="font-semibold text-zinc-900">Users</h3>
-            <p className="mt-2 text-3xl font-bold text-zinc-900">{counts?.users ?? '-'}</p>
+            <h3 className="font-semibold text-black">Users</h3>
+            <p className="mt-2 text-3xl font-bold text-black">{counts?.users ?? '-'}</p>
           </div>
         </Link>
         <Link href="/admin/coupons">
           <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-md">
-            <h3 className="font-semibold text-zinc-900">Coupons</h3>
-            <p className="mt-2 text-3xl font-bold text-zinc-900">{counts?.coupons ?? '-'}</p>
+            <h3 className="font-semibold text-black">Coupons</h3>
+            <p className="mt-2 text-3xl font-bold text-black">{counts?.coupons ?? '-'}</p>
           </div>
         </Link>
         <Link href="/admin/plans">
           <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900">
-            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Subscription Plans</h3>
-            <p className="mt-2 text-sm text-zinc-900 dark:text-zinc-400">Manage plans and pricing</p>
+            <h3 className="font-semibold text-black dark:text-zinc-100">Subscription Plans</h3>
+            <p className="mt-2 text-sm text-black dark:text-zinc-400">Manage plans and pricing</p>
           </div>
         </Link>
         <Link href="/admin/hotel-accounts">
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 shadow-sm hover:shadow-md">
-            <h3 className="font-semibold text-zinc-900">Pending Hotel Approvals</h3>
+            <h3 className="font-semibold text-black">Pending Hotel Approvals</h3>
             <p className="mt-2 text-3xl font-bold text-amber-700">{counts?.pending ?? '-'}</p>
           </div>
         </Link>

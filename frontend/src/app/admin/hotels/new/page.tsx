@@ -57,7 +57,7 @@ export default function NewHotelPage() {
       <Link href="/admin/hotels" className="text-sm text-emerald-600 hover:underline">
         ← Back to hotels
       </Link>
-      <h1 className="mt-6 text-2xl font-bold text-zinc-900">Add Hotel</h1>
+      <h1 className="mt-6 text-2xl font-bold text-black">Add Hotel</h1>
       <form onSubmit={handleSubmit} className="mt-6 max-w-lg space-y-4">
         {error && (
           <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>

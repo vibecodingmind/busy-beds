@@ -59,11 +59,11 @@ export default function HotelsClient() {
   return (
     <div className="min-h-screen">
       <div className="rounded-2xl border border-zinc-200/80 bg-white/70 dark:border-zinc-700/80 dark:bg-zinc-900/50 backdrop-blur-xl p-6 mb-6">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+        <h1 className="text-2xl font-bold text-black dark:text-zinc-100 flex items-center gap-2">
           <HouseIcon className="h-7 w-7 text-[#FF385C]" />
           Properties
         </h1>
-        <p className="mt-2 text-zinc-900 dark:text-zinc-400">Browse properties and generate discount coupons.</p>
+        <p className="mt-2 text-black dark:text-zinc-400">Browse properties and generate discount coupons.</p>
 
         <div className="mt-6 flex flex-col gap-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
@@ -96,14 +96,14 @@ export default function HotelsClient() {
               <button
                 type="button"
                 onClick={() => setViewMode('grid')}
-                className={`px-4 py-2 text-sm transition-colors ${viewMode === 'grid' ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
+                className={`px-4 py-2 text-sm transition-colors ${viewMode === 'grid' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-zinc-100' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
               >
                 Grid
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode('map')}
-                className={`px-4 py-2 text-sm transition-colors ${viewMode === 'map' ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
+                className={`px-4 py-2 text-sm transition-colors ${viewMode === 'map' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-zinc-100' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
               >
                 Map
               </button>
@@ -117,10 +117,10 @@ export default function HotelsClient() {
                 onChange={(e) => setFeaturedOnly(e.target.checked)}
                 className="h-4 w-4 rounded border-zinc-300"
               />
-              <span className="text-sm text-zinc-900 dark:text-zinc-300">Featured only</span>
+              <span className="text-sm text-black dark:text-zinc-300">Featured only</span>
             </label>
             <label className="flex items-center gap-2">
-              <span className="text-sm text-zinc-900 dark:text-zinc-300">Min rating:</span>
+              <span className="text-sm text-black dark:text-zinc-300">Min rating:</span>
               <select
                 value={minRating ?? ''}
                 onChange={(e) => setMinRating(e.target.value ? parseFloat(e.target.value) : undefined)}
