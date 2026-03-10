@@ -43,7 +43,7 @@ export default function HotelDistance({ latitude, longitude }: HotelDistanceProp
 
   if (loading) {
     return (
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">Getting distance...</p>
+      <p className="text-sm text-zinc-900 dark:text-zinc-400">Getting distance...</p>
     );
   }
   if (error || distance === null) {
@@ -51,8 +51,8 @@ export default function HotelDistance({ latitude, longitude }: HotelDistanceProp
   }
   const display = distance < 1 ? `${(distance * 1000).toFixed(0)} m away` : `${distance.toFixed(1)} km away`;
   return (
-    <p className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
-      <svg className="h-4 w-4 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <p className="flex items-center gap-1.5 text-sm text-zinc-900 dark:text-zinc-400">
+      <svg className="h-4 w-4 text-zinc-900 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>

@@ -55,23 +55,23 @@ export default function AdminDashboardPage() {
           <h2 className="font-semibold text-zinc-900">Analytics Overview</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <div>
-              <p className="text-sm text-zinc-600">Total users</p>
+              <p className="text-sm text-zinc-900">Total users</p>
               <p className="text-2xl font-bold text-zinc-900">{analytics.total_users}</p>
             </div>
             <div>
-              <p className="text-sm text-zinc-600">Total hotels</p>
+              <p className="text-sm text-zinc-900">Total hotels</p>
               <p className="text-2xl font-bold text-zinc-900">{analytics.total_hotels}</p>
             </div>
             <div>
-              <p className="text-sm text-zinc-600">Active subscriptions</p>
+              <p className="text-sm text-zinc-900">Active subscriptions</p>
               <p className="text-2xl font-bold text-zinc-900">{analytics.active_subscriptions}</p>
             </div>
             <div>
-              <p className="text-sm text-zinc-600">Active coupons</p>
+              <p className="text-sm text-zinc-900">Active coupons</p>
               <p className="text-2xl font-bold text-zinc-900">{analytics.active_coupons}</p>
             </div>
             <div>
-              <p className="text-sm text-zinc-600">Total redemptions</p>
+              <p className="text-sm text-zinc-900">Total redemptions</p>
               <p className="text-2xl font-bold text-zinc-900">{analytics.total_redemptions}</p>
             </div>
           </div>
@@ -99,7 +99,7 @@ export default function AdminDashboardPage() {
         <Link href="/admin/plans">
           <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900">
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Subscription Plans</h3>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">Manage plans and pricing</p>
+            <p className="mt-2 text-sm text-zinc-900 dark:text-zinc-400">Manage plans and pricing</p>
           </div>
         </Link>
         <Link href="/admin/hotel-accounts">

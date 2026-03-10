@@ -127,7 +127,7 @@ export default function AdminPlansPage() {
             ) : (
               <>
                 <span className="font-medium text-zinc-900 dark:text-zinc-100">{p.name}</span>
-                <span className="text-zinc-600 dark:text-zinc-400">{p.monthly_coupon_limit} coupons/mo · ${p.price}</span>
+                <span className="text-zinc-900 dark:text-zinc-400">{p.monthly_coupon_limit} coupons/mo · ${p.price}</span>
                 <div className="flex gap-2">
                   <button onClick={() => { setEditing(p.id); setEditForm({ name: p.name, monthly_coupon_limit: p.monthly_coupon_limit, price: p.price, stripe_price_id: p.stripe_price_id || '' }); }} className="rounded bg-zinc-200 px-2 py-1 text-sm dark:bg-zinc-600">Edit</button>
                   <button onClick={() => handleDelete(p.id)} className="rounded bg-red-100 px-2 py-1 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-400">Delete</button>

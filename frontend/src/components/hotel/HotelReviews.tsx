@@ -93,7 +93,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
         </select>
       </div>
       {data.averageRating != null && (
-        <p className="mt-1 flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 flex items-center gap-2 text-zinc-900 dark:text-zinc-400">
           <StarRating rating={data.averageRating} size="md" />
           {data.averageRating.toFixed(1)} ({data.totalCount} {data.totalCount === 1 ? 'review' : 'reviews'})
         </p>
@@ -133,7 +133,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
               </div>
               <div className="flex items-center gap-2">
                 <StarRating rating={r.rating} size="sm" />
-                <span className="flex items-center gap-1 text-xs text-zinc-500">
+                <span className="flex items-center gap-1 text-xs text-zinc-900 dark:text-zinc-400">
                   {user ? (
                     <>
                       <button
@@ -163,7 +163,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
                             //
                           }
                         }}
-                        className={`hover:text-zinc-700 dark:hover:text-zinc-300 ${r.user_vote === false ? 'font-medium' : ''}`}
+                        className={`hover:text-zinc-900 dark:hover:text-zinc-300 ${r.user_vote === false ? 'font-medium' : ''}`}
                       >
                         Not helpful {(r.not_helpful_count ?? 0) > 0 ? `(${r.not_helpful_count})` : ''}
                       </button>
@@ -188,18 +188,18 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
                       navigator.clipboard?.writeText(window.location.href + '#reviews');
                     }
                   }}
-                  className="text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-400"
+                  className="text-xs text-zinc-900 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-300"
                 >
                   Share
                 </button>
               </div>
             </div>
-            {r.comment && <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{r.comment}</p>}
+            {r.comment && <p className="mt-2 text-sm text-zinc-900 dark:text-zinc-400">{r.comment}</p>}
             {r.hotel_response && (
               <div className="mt-3 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 p-3 dark:bg-emerald-950/30 dark:border-emerald-600">
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Hotel response</p>
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{r.hotel_response.response_text}</p>
-                <p className="mt-1 text-xs text-zinc-500">{new Date(r.hotel_response.created_at).toLocaleDateString()}</p>
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Hotel response</p>
+                <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">{r.hotel_response.response_text}</p>
+                <p className="mt-1 text-xs text-zinc-900 dark:text-zinc-400">{new Date(r.hotel_response.created_at).toLocaleDateString()}</p>
               </div>
             )}
             {isHotelForThisProperty && !r.hotel_response && (
@@ -257,12 +257,12 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
                 )}
               </div>
             )}
-            <p className="mt-1 text-xs text-zinc-500">{new Date(r.created_at).toLocaleDateString()}</p>
+            <p className="mt-1 text-xs text-zinc-900 dark:text-zinc-400">{new Date(r.created_at).toLocaleDateString()}</p>
           </li>
         ))}
       </ul>
       {data.reviews.length === 0 && (
-        <p className="mt-4 text-zinc-500 dark:text-zinc-400">No reviews yet. Be the first to review!</p>
+        <p className="mt-4 text-zinc-900 dark:text-zinc-400">No reviews yet. Be the first to review!</p>
       )}
     </div>
   );

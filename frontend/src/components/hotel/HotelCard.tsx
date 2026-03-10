@@ -55,20 +55,20 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
         <div className="p-4">
           <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{hotel.name}</h3>
           {hotel.location && (
-            <p className="mt-2 flex items-center gap-1.5 text-sm text-zinc-700 dark:text-zinc-400">
-              <MapPinIcon className="h-4 w-4 flex-shrink-0 text-zinc-600 dark:text-zinc-400" />
+            <p className="mt-2 flex items-center gap-1.5 text-sm text-zinc-900 dark:text-zinc-400">
+              <MapPinIcon className="h-4 w-4 flex-shrink-0 text-zinc-900 dark:text-zinc-400" />
               <span className="line-clamp-1">{hotel.location}</span>
             </p>
           )}
           {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
             <p className="mt-2 flex items-center gap-1.5 text-sm">
               <StarRating rating={Number(hotel.avg_rating)} size="sm" />
-              <span className="text-zinc-700 dark:text-zinc-400">
+              <span className="text-zinc-900 dark:text-zinc-400">
                 {Number(hotel.avg_rating).toFixed(1)} ({hotel.review_count})
               </span>
             </p>
           ) : (
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-500">No reviews yet</p>
+            <p className="mt-2 text-sm text-zinc-900 dark:text-zinc-500">No reviews yet</p>
           )}
           <p className="mt-3 font-medium text-[#FF385C] dark:text-[#ff6b81]">
             {hotel.coupon_discount_value}

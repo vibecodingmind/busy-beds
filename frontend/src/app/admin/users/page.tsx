@@ -28,10 +28,10 @@ export default function AdminUsersPage() {
         <table className="min-w-full divide-y divide-zinc-200">
           <thead className="bg-zinc-50">
             <tr>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">ID</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Name</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Email</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Role</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Name</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Email</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Role</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 bg-white">

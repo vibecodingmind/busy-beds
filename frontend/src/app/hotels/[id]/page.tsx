@@ -30,7 +30,7 @@ export default async function HotelDetailPage({
   if (!hotel) {
     return (
       <div className="rounded-xl border border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-900">
-        <p className="text-zinc-600 dark:text-zinc-400">Property not found.</p>
+        <p className="text-zinc-900 dark:text-zinc-400">Property not found.</p>
         <Link href="/hotels" className="mt-4 inline-block text-[#FF385C] hover:underline">
           Back to properties
         </Link>
@@ -61,14 +61,14 @@ export default async function HotelDetailPage({
                   {hotel.name}
                 </h1>
                 {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) && (
-                  <p className="mt-1 flex items-center gap-1.5 text-sm text-zinc-700 dark:text-zinc-400">
+                  <p className="mt-1 flex items-center gap-1.5 text-sm text-zinc-900 dark:text-zinc-400">
                     <StarRating rating={Number(hotel.avg_rating)} size="sm" />
                     {Number(hotel.avg_rating).toFixed(1)} ({hotel.review_count} reviews)
                   </p>
                 )}
                 {hotel.location && (
-                  <p className="mt-1 flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-400">
-                    <MapPinIcon className="h-4 w-4 flex-shrink-0 text-zinc-600 dark:text-zinc-400" />
+                  <p className="mt-1 flex items-center gap-2 text-sm text-zinc-900 dark:text-zinc-400">
+                    <MapPinIcon className="h-4 w-4 flex-shrink-0 text-zinc-900 dark:text-zinc-400" />
                     {hotel.location}
                   </p>
                 )}
@@ -85,7 +85,7 @@ export default async function HotelDetailPage({
             </div>
 
             {hotel.description && (
-              <p className="mt-6 text-zinc-700 dark:text-zinc-400">{hotel.description}</p>
+              <p className="mt-6 text-zinc-900 dark:text-zinc-400">{hotel.description}</p>
             )}
 
             {hasCoords && (
@@ -96,7 +96,7 @@ export default async function HotelDetailPage({
 
             {(hotel.contact_phone || hotel.contact_email || hotel.contact_whatsapp) && (
               <div className="mt-6 space-y-2">
-                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Contact</h3>
+                <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Contact</h3>
                 <div className="flex flex-wrap gap-6">
                   {hotel.contact_phone && (
                     <a href={`tel:${hotel.contact_phone}`} className="flex items-center gap-2 text-zinc-700 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
@@ -133,7 +133,7 @@ export default async function HotelDetailPage({
 
             {hasCoords && (
               <div className="mt-6">
-                <h3 className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">Location</h3>
+                <h3 className="mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-300">Location</h3>
                 <HotelMap
                   latitude={hotel.latitude!}
                   longitude={hotel.longitude!}
@@ -154,16 +154,16 @@ export default async function HotelDetailPage({
             {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) && (
               <div className="mb-4 flex items-center gap-2">
                 <StarRating rating={Number(hotel.avg_rating)} size="md" />
-                <span className="text-sm text-zinc-700 dark:text-zinc-400">
+                <span className="text-sm text-zinc-900 dark:text-zinc-400">
                   {Number(hotel.avg_rating).toFixed(1)} · {hotel.review_count} reviews
                 </span>
               </div>
             )}
             {/* Coupon discount preview */}
             <div className="rounded-lg bg-[#fff1f2] p-4 dark:bg-zinc-800">
-              <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Save with coupon</p>
+              <p className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Save with coupon</p>
               <p className="mt-1 text-xl font-bold text-[#FF385C]">{hotel.coupon_discount_value}</p>
-              <p className="mt-1 text-xs text-zinc-700 dark:text-zinc-400">
+              <p className="mt-1 text-xs text-zinc-900 dark:text-zinc-400">
                 Show QR code at check-in to redeem
               </p>
             </div>

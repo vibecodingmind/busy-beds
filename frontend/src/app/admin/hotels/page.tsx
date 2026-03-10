@@ -38,18 +38,18 @@ export default function AdminHotelsPage() {
         <table className="min-w-full divide-y divide-zinc-200">
           <thead className="bg-zinc-50">
             <tr>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Name</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Location</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Discount</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Limit</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Actions</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Name</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Location</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Discount</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Limit</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 bg-white">
             {hotels.map((h) => (
               <tr key={h.id}>
                 <td className="px-4 py-2 font-medium">{h.name}</td>
-                <td className="px-4 py-2 text-sm text-zinc-600">{h.location ?? '-'}</td>
+                <td className="px-4 py-2 text-sm text-zinc-900">{h.location ?? '-'}</td>
                 <td className="px-4 py-2 text-sm">{h.coupon_discount_value}</td>
                 <td className="px-4 py-2 text-sm">{h.coupon_limit} / {h.limit_period}</td>
                 <td className="px-4 py-2">

@@ -30,11 +30,11 @@ export default function AdminCouponsPage() {
         <table className="min-w-full divide-y divide-zinc-200">
           <thead className="bg-zinc-50">
             <tr>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Code</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">User</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Hotel</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Status</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-700">Created</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Code</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">User</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Hotel</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Status</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-zinc-900">Created</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 bg-white">
@@ -56,7 +56,7 @@ export default function AdminCouponsPage() {
                     {c.status}
                   </span>
                 </td>
-                <td className="px-4 py-2 text-sm text-zinc-500">
+                <td className="px-4 py-2 text-sm text-zinc-900">
                   {new Date(c.created_at).toLocaleString()}
                 </td>
               </tr>

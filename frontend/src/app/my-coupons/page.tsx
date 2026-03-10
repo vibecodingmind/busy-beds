@@ -62,7 +62,7 @@ export default function MyCouponsPage() {
     }
   };
 
-  if (authLoading || !user) return <div className="py-12 text-zinc-500 dark:text-zinc-400">Loading...</div>;
+  if (authLoading || !user) return <div className="py-12 text-zinc-900 dark:text-zinc-400">Loading...</div>;
 
   return (
     <div className="space-y-6">
@@ -80,7 +80,7 @@ export default function MyCouponsPage() {
             className={`border-b-2 px-4 py-2 text-sm font-medium ${
               tab === t
                 ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400'
-                : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300'
+                : 'border-transparent text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-300'
             }`}
           >
             {t === 'active' && 'Active'}
@@ -109,7 +109,7 @@ export default function MyCouponsPage() {
               <div className="min-w-0 flex-1 border-l-2 border-dashed border-zinc-200 pl-4 dark:border-zinc-600">
                 <p className="font-semibold text-zinc-900 dark:text-zinc-100">{c.hotel_name}</p>
                 <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{c.discount_value}</p>
-                <p className={`text-xs ${c.status === 'active' ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                <p className={`text-xs ${c.status === 'active' ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-zinc-900 dark:text-zinc-400'}`}>
                   {c.status === 'active' ? getExpiryCountdown(c.expires_at) : `Expired ${new Date(c.expires_at).toLocaleDateString()}`}
                 </p>
               </div>
@@ -143,7 +143,7 @@ export default function MyCouponsPage() {
                 <div>
                   <p className="font-semibold text-zinc-900 dark:text-zinc-100">{selected.hotel_name}</p>
                   <p className="font-medium text-emerald-600 dark:text-emerald-400">{selected.discount_value} Coupon</p>
-                  <p className={`text-sm ${selected.status === 'active' ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                  <p className={`text-sm ${selected.status === 'active' ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-zinc-900 dark:text-zinc-400'}`}>
                     {selected.status === 'active'
                       ? `${getExpiryCountdown(selected.expires_at)} · ${new Date(selected.expires_at).toLocaleDateString()}`
                       : `Expired ${new Date(selected.expires_at).toLocaleDateString()}`}
@@ -153,7 +153,7 @@ export default function MyCouponsPage() {
 
               {/* Terms */}
               <div className="mt-6">
-                <h3 className="text-sm font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Terms of Use</h3>
+                <h3 className="text-sm font-bold uppercase tracking-wide text-zinc-900 dark:text-zinc-400">Terms of Use</h3>
                 <ul className="mt-2 space-y-1 text-sm text-zinc-600 dark:text-zinc-300">
                   {DEFAULT_TERMS.map((t, i) => (
                     <li key={i} className="flex items-start gap-2">
@@ -176,10 +176,10 @@ export default function MyCouponsPage() {
                     level="M"
                   />
                 </div>
-                <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="mt-2 text-center text-xs text-zinc-900 dark:text-zinc-400">
                   Show at hotel check-in
                 </p>
-                <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="mt-2 text-center text-xs text-zinc-900 dark:text-zinc-400">
                   Can&apos;t scan? Give the code <strong>{selected.code}</strong> to the front desk
                 </p>
               </div>
@@ -211,7 +211,7 @@ export default function MyCouponsPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-200 bg-zinc-50 p-12 dark:border-zinc-700 dark:bg-zinc-900/50">
-              <p className="text-zinc-500 dark:text-zinc-400">Select a coupon to view details</p>
+              <p className="text-zinc-900 dark:text-zinc-400">Select a coupon to view details</p>
             </div>
           )}
         </div>

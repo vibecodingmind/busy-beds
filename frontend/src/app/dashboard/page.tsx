@@ -23,22 +23,22 @@ export default function DashboardPage() {
     coupons.list().then((r) => setCouponCount(r.coupons.length)).catch(() => {});
   }, [user]);
 
-  if (authLoading || !user) return <div className="py-12 text-zinc-500 dark:text-zinc-400">Loading...</div>;
+  if (authLoading || !user) return <div className="py-12 text-zinc-900 dark:text-zinc-400">Loading...</div>;
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Dashboard</h1>
-        <p className="mt-1 text-zinc-600 dark:text-zinc-400">Welcome back, {user.name}</p>
+        <p className="mt-1 text-zinc-900 dark:text-zinc-400">Welcome back, {user.name}</p>
       </div>
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 shadow-sm">
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Subscription</h3>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 text-zinc-900 dark:text-zinc-400">
             {sub ? sub.plan.name : 'No subscription'}
           </p>
           {sub && (
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">
               Renews: {new Date(sub.current_period_end).toLocaleDateString()}
             </p>
           )}

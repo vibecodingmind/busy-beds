@@ -27,22 +27,22 @@ export default function FavoritesPage() {
       .finally(() => setLoading(false));
   }, [user]);
 
-  if (authLoading || !user) return <div className="py-12 text-zinc-500 dark:text-zinc-400">Loading...</div>;
+  if (authLoading || !user) return <div className="py-12 text-zinc-900 dark:text-zinc-400">Loading...</div>;
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Favourites</h1>
-        <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1 text-zinc-900 dark:text-zinc-400">
           Properties you&apos;ve saved for later. Remove by clicking the heart on any property card.
         </p>
       </div>
 
       {loading ? (
-        <p className="text-zinc-500 dark:text-zinc-400">Loading favourites...</p>
+        <p className="text-zinc-900 dark:text-zinc-400">Loading favourites...</p>
       ) : hotels.length === 0 ? (
         <div className="rounded-2xl border-2 border-dashed border-zinc-200/80 bg-white/60 dark:border-zinc-700/80 dark:bg-zinc-900/40 p-12 text-center backdrop-blur-sm">
-          <p className="text-zinc-500 dark:text-zinc-400">No favourites yet.</p>
+          <p className="text-zinc-900 dark:text-zinc-400">No favourites yet.</p>
           <Link href="/hotels" className="mt-4 inline-block font-medium text-[#FF385C] hover:underline">
             Browse properties →
           </Link>

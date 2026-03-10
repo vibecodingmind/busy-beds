@@ -63,7 +63,7 @@ export default function HotelsClient() {
           <HouseIcon className="h-7 w-7 text-[#FF385C]" />
           Properties
         </h1>
-        <p className="mt-2 text-zinc-700 dark:text-zinc-400">Browse properties and generate discount coupons.</p>
+        <p className="mt-2 text-zinc-900 dark:text-zinc-400">Browse properties and generate discount coupons.</p>
 
         <div className="mt-6 flex flex-col gap-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
@@ -117,10 +117,10 @@ export default function HotelsClient() {
                 onChange={(e) => setFeaturedOnly(e.target.checked)}
                 className="h-4 w-4 rounded border-zinc-300"
               />
-              <span className="text-sm text-zinc-700 dark:text-zinc-300">Featured only</span>
+              <span className="text-sm text-zinc-900 dark:text-zinc-300">Featured only</span>
             </label>
             <label className="flex items-center gap-2">
-              <span className="text-sm text-zinc-700 dark:text-zinc-300">Min rating:</span>
+              <span className="text-sm text-zinc-900 dark:text-zinc-300">Min rating:</span>
               <select
                 value={minRating ?? ''}
                 onChange={(e) => setMinRating(e.target.value ? parseFloat(e.target.value) : undefined)}

@@ -27,7 +27,7 @@ export default function WaitlistForm() {
   return (
     <section className="mt-12 rounded-2xl border border-zinc-200 bg-zinc-50 px-8 py-10 dark:border-zinc-700 dark:bg-zinc-900/50">
       <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">New hotels coming soon</h2>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">Get notified when we add new partner hotels.</p>
+      <p className="mt-2 text-zinc-900 dark:text-zinc-400">Get notified when we add new partner hotels.</p>
       <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <input
           type="email"

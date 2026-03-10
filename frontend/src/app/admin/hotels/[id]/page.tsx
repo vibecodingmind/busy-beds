@@ -106,7 +106,7 @@ export default function EditHotelPage() {
           <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
         )}
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Name</label>
+          <label className="block text-sm font-medium text-zinc-900">Name</label>
           <input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -115,7 +115,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Description</label>
+          <label className="block text-sm font-medium text-zinc-900">Description</label>
           <textarea
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -124,7 +124,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Location</label>
+          <label className="block text-sm font-medium text-zinc-900">Location</label>
           <input
             value={form.location}
             onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
@@ -132,7 +132,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Booking URL</label>
+          <label className="block text-sm font-medium text-zinc-900">Booking URL</label>
           <input
             type="url"
             value={form.booking_url}
@@ -142,7 +142,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Contact Phone</label>
+          <label className="block text-sm font-medium text-zinc-900">Contact Phone</label>
           <input
             value={form.contact_phone}
             onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))}
@@ -150,7 +150,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Contact Email</label>
+          <label className="block text-sm font-medium text-zinc-900">Contact Email</label>
           <input
             type="email"
             value={form.contact_email}
@@ -159,7 +159,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">WhatsApp (optional)</label>
+          <label className="block text-sm font-medium text-zinc-900">WhatsApp (optional)</label>
           <input
             value={form.contact_whatsapp}
             onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))}
@@ -175,7 +175,7 @@ export default function EditHotelPage() {
             onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
             className="h-4 w-4 rounded border-zinc-300"
           />
-          <label htmlFor="featured" className="text-sm font-medium text-zinc-700">Featured hotel</label>
+          <label htmlFor="featured" className="text-sm font-medium text-zinc-900">Featured hotel</label>
         </div>
         <PhotosInput
           value={form.images}
@@ -184,7 +184,7 @@ export default function EditHotelPage() {
         />
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-zinc-700">Latitude</label>
+            <label className="block text-sm font-medium text-zinc-900">Latitude</label>
             <input
               type="number"
               step="any"
@@ -195,7 +195,7 @@ export default function EditHotelPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-zinc-700">Longitude</label>
+            <label className="block text-sm font-medium text-zinc-900">Longitude</label>
             <input
               type="number"
               step="any"
@@ -207,7 +207,7 @@ export default function EditHotelPage() {
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Coupon Discount</label>
+          <label className="block text-sm font-medium text-zinc-900">Coupon Discount</label>
           <input
             value={form.coupon_discount_value}
             onChange={(e) => setForm((f) => ({ ...f, coupon_discount_value: e.target.value }))}
@@ -216,7 +216,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Coupon Limit</label>
+          <label className="block text-sm font-medium text-zinc-900">Coupon Limit</label>
           <input
             type="number"
             min={1}
@@ -226,7 +226,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Limit Period</label>
+          <label className="block text-sm font-medium text-zinc-900">Limit Period</label>
           <select
             value={form.limit_period}
             onChange={(e) => setForm((f) => ({ ...f, limit_period: e.target.value }))}
@@ -247,12 +247,12 @@ export default function EditHotelPage() {
       </form>
 
       <h2 className="mt-12 text-lg font-semibold text-zinc-900">Create Hotel Account</h2>
-      <p className="mt-1 text-sm text-zinc-600">
+      <p className="mt-1 text-sm text-zinc-900">
         Create an account so the hotel can log in and redeem coupons.
       </p>
       <form onSubmit={handleCreateAccount} className="mt-4 max-w-lg space-y-4">
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Name</label>
+          <label className="block text-sm font-medium text-zinc-900">Name</label>
           <input
             value={accountForm.name}
             onChange={(e) => setAccountForm((f) => ({ ...f, name: e.target.value }))}
@@ -261,7 +261,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Email</label>
+          <label className="block text-sm font-medium text-zinc-900">Email</label>
           <input
             type="email"
             value={accountForm.email}
@@ -271,7 +271,7 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-zinc-700">Password</label>
+          <label className="block text-sm font-medium text-zinc-900">Password</label>
           <input
             type="password"
             value={accountForm.password}

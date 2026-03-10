@@ -144,13 +144,13 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
           aria-label="Photo gallery"
         >
           <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-700">
-            <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+            <span className="text-sm font-medium text-zinc-900 dark:text-zinc-400">
               {selected + 1} / {list.length}
             </span>
             <button
               type="button"
               onClick={() => setShowAll(false)}
-              className="rounded-full p-2 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              className="rounded-full p-2 text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
               aria-label="Close gallery"
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

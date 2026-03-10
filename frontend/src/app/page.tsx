@@ -37,7 +37,7 @@ export default async function HomePage() {
         <h1 className="text-4xl font-bold text-zinc-900 dark:text-white md:text-5xl">
           Busy Beds
         </h1>
-        <p className="mt-4 max-w-xl text-lg text-zinc-700 dark:text-zinc-300">
+        <p className="mt-4 max-w-xl text-lg text-zinc-900 dark:text-zinc-300">
           Subscribe to access hotel discount coupons. Generate unique coupons, show QR codes at
           check-in, and save on your stay.
         </p>
@@ -50,7 +50,7 @@ export default async function HomePage() {
           </Link>
           <Link
             href="/hotels"
-            className="rounded-lg border-2 border-zinc-300 px-6 py-3 font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded-lg border-2 border-zinc-300 px-6 py-3 font-medium text-zinc-900 dark:text-zinc-300 transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
             Browse Properties
           </Link>
@@ -70,7 +70,7 @@ export default async function HomePage() {
               </svg>
             </div>
             <h3 className="mt-4 font-medium text-zinc-900 dark:text-zinc-100">1. Create account</h3>
-            <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-400">Sign up in seconds</p>
+            <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">Sign up in seconds</p>
           </div>
           <div className="flex flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 text-center shadow-sm">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f2] text-[#FF385C] dark:bg-zinc-800">
@@ -79,7 +79,7 @@ export default async function HomePage() {
               </svg>
             </div>
             <h3 className="mt-4 font-medium text-zinc-900 dark:text-zinc-100">2. Choose a plan</h3>
-            <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-400">Pick a subscription</p>
+            <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">Pick a subscription</p>
           </div>
           <div className="flex flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 text-center shadow-sm">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f2] text-[#FF385C] dark:bg-zinc-800">
@@ -88,7 +88,7 @@ export default async function HomePage() {
               </svg>
             </div>
             <h3 className="mt-4 font-medium text-zinc-900 dark:text-zinc-100">3. Get coupons</h3>
-            <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-400">Show QR at check-in</p>
+            <p className="mt-1 text-sm text-zinc-900 dark:text-zinc-400">Show QR at check-in</p>
           </div>
         </div>
       </section>
@@ -99,7 +99,7 @@ export default async function HomePage() {
           <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">
             Explore More Destinations
           </h2>
-          <p className="mt-1 text-zinc-700 dark:text-zinc-400">
+          <p className="mt-1 text-zinc-900 dark:text-zinc-400">
             Discover properties with exclusive coupon discounts
           </p>
           <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
@@ -126,7 +126,7 @@ export default async function HomePage() {
           <h2 className="text-2xl font-semibold text-zinc-900 dark:text-white">
             What travelers say
           </h2>
-          <p className="mt-1 text-zinc-700 dark:text-zinc-400">
+          <p className="mt-1 text-zinc-900 dark:text-zinc-400">
             {totalReviews} reviews from real guests
           </p>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
@@ -139,10 +139,10 @@ export default async function HomePage() {
                 <div className="mt-2">
                   <StarRating rating={r.rating} size="md" />
                 </div>
-                <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-400">
+                <p className="mt-2 text-sm text-zinc-900 dark:text-zinc-400">
                   {truncate(r.comment, 80) || '—'}
                 </p>
-                <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-500">— {r.user_name}</p>
+                <p className="mt-2 text-xs text-zinc-900 dark:text-zinc-500">— {r.user_name}</p>
               </div>
             ))}
           </div>

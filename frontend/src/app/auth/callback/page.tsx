@@ -33,14 +33,14 @@ function AuthCallbackContent() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <p className="text-zinc-600">Signing you in...</p>
+      <p className="text-zinc-900">Signing you in...</p>
     </div>
   );
 }
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><p className="text-zinc-600">Loading...</p></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><p className="text-zinc-900">Loading...</p></div>}>
       <AuthCallbackContent />
     </Suspense>
   );
