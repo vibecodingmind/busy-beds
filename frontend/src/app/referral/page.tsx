@@ -1,12 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { referrals, stripe, type ReferralMeResponse } from '@/lib/api';
 import { useToast } from '@/contexts/ToastContext';
 
-export default function ReferralPage() {
+function ReferralContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -155,5 +155,13 @@ export default function ReferralPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ReferralPage() {
+  return (
+    <Suspense fallback={<div className="py-8">Loading...</div>}>
+      <ReferralContent />
+    </Suspense>
   );
 }
