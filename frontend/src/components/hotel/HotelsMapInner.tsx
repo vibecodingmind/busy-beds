@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import Link from 'next/link';
 import type { Hotel } from '@/lib/api';
+import StarRating from '@/components/StarRating';
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -62,11 +63,16 @@ export default function HotelsMapInner({ hotels }: HotelsMapInnerProps) {
         <Marker key={hotel.id} position={[hotel.latitude, hotel.longitude]}>
           <Popup>
             <div className="min-w-[200px]">
-              <Link href={`/hotels/${hotel.id}`} className="font-semibold text-emerald-600 hover:underline">
+              <Link href={`/hotels/${hotel.id}`} className="font-semibold text-[#FF385C] hover:underline">
                 {hotel.name}
               </Link>
               {hotel.location && <p className="mt-1 text-sm text-zinc-600">{hotel.location}</p>}
-              <p className="mt-1 text-sm font-medium text-emerald-600">{hotel.coupon_discount_value}</p>
+              <div className="mt-1 flex items-center gap-2">
+                {hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0 && (
+                  <StarRating rating={Number(hotel.avg_rating)} size="sm" />
+                )}
+                <span className="text-sm font-medium text-[#FF385C]">{hotel.coupon_discount_value}</span>
+              </div>
             </div>
           </Popup>
         </Marker>

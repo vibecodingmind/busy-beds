@@ -17,7 +17,7 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
   return (
     <ErrorBoundary>
       <Header />
-      <main className="mx-auto max-w-6xl px-4 py-8 bg-white dark:bg-zinc-950">{children}</main>
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:py-8 bg-[var(--background)]">{children}</main>
     </ErrorBoundary>
   );
 }

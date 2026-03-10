@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { HotelAuthContext } from '@/contexts/HotelAuthContext';
 import { useContext } from 'react';
 import { reviews } from '@/lib/api';
+import StarRating from '@/components/StarRating';
 
 interface Props {
   hotelId: number;
@@ -92,23 +93,15 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
         </select>
       </div>
       {data.averageRating != null && (
-        <p className="mt-1 text-zinc-600 dark:text-zinc-400">
-          {data.averageRating.toFixed(1)} ★ ({data.totalCount} {data.totalCount === 1 ? 'review' : 'reviews'})
+        <p className="mt-1 flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
+          <StarRating rating={data.averageRating} size="md" />
+          {data.averageRating.toFixed(1)} ({data.totalCount} {data.totalCount === 1 ? 'review' : 'reviews'})
         </p>
       )}
       {user && (
         <form onSubmit={handleSubmit} className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800">
-          <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => setRating(n)}
-                className={`text-2xl ${rating >= n ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600'}`}
-              >
-                ★
-              </button>
-            ))}
+          <div className="flex items-center gap-1">
+            <StarRating interactive value={rating} onChange={setRating} size="lg" />
           </div>
           <textarea
             value={comment}
@@ -139,7 +132,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-amber-500">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+                <StarRating rating={r.rating} size="sm" />
                 <span className="flex items-center gap-1 text-xs text-zinc-500">
                   {user ? (
                     <>

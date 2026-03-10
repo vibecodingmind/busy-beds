@@ -2,35 +2,35 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark' | 'system';
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: Theme;
   setTheme: (t: Theme) => void;
-  resolved: 'light' | 'dark';
+  resolved: Theme;
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('system');
-  const [resolved, setResolved] = useState<'light' | 'dark'>('light');
+  const [theme, setThemeState] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const stored = (localStorage.getItem('theme') as Theme) || 'system';
-    setThemeState(stored);
+    const stored = localStorage.getItem('theme') as Theme | 'system' | null;
+    if (stored === 'light' || stored === 'dark') {
+      setThemeState(stored);
+    } else if (stored === 'system' || !stored) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setThemeState(prefersDark ? 'dark' : 'light');
+    }
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
     const root = document.documentElement;
-    const isDark =
-      theme === 'dark' ||
-      (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    root.classList.toggle('dark', isDark);
-    setResolved(isDark ? 'dark' : 'light');
+    root.classList.toggle('dark', theme === 'dark');
   }, [theme, mounted]);
 
   const setTheme = (t: Theme) => {
@@ -39,7 +39,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, resolved }}>
+    <ThemeContext.Provider value={{ theme, setTheme, resolved: theme }}>
       {children}
     </ThemeContext.Provider>
   );

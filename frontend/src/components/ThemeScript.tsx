@@ -3,8 +3,8 @@ export default function ThemeScript() {
     <script
       dangerouslySetInnerHTML={{
         __html: `(function(){
-  var t=localStorage.getItem('theme')||'system';
-  var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var t=localStorage.getItem('theme');
+  var d=(t==='dark')||((t==='system'||!t)&&window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.documentElement.classList.toggle('dark',d);
 })();`,
       }}

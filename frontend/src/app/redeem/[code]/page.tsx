@@ -116,19 +116,19 @@ export default function RedeemPage() {
         {!redeemed && (
           <div className="mt-6">
             {!hotelAuth?.hotel ? (
-              <div className="rounded-lg bg-amber-50 p-4 text-amber-800">
-                <p>Log in as the hotel to redeem this coupon.</p>
+              <div className="rounded-lg bg-amber-50 p-4 text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                <p>Log in as the property to redeem this coupon.</p>
                 <Link
                   href={`/hotel/login?redirect=/redeem/${code}`}
-                  className="mt-2 inline-block font-medium text-amber-900 hover:underline"
+                  className="mt-2 inline-block font-medium text-amber-900 hover:underline dark:text-amber-100"
                 >
-                  Hotel Login →
+                  Property Login →
                 </Link>
               </div>
             ) : wrongHotel ? (
-              <div className="rounded-lg bg-red-50 p-4 text-red-800">
+              <div className="rounded-lg bg-red-50 p-4 text-red-800 dark:bg-red-900/20 dark:text-red-200">
                 This coupon is for <strong>{coupon.hotel_name}</strong>. You are logged in as{' '}
-                <strong>{hotelAuth.hotel.name}</strong>. Please log in as the correct hotel.
+                <strong>{hotelAuth.hotel.name}</strong>. Please log in as the correct property.
               </div>
             ) : canRedeem ? (
               <div>

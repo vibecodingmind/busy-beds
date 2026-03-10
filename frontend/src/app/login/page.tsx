@@ -62,8 +62,8 @@ function LoginForm() {
 
   return (
     <AuthLayout
-      title={loginType === 'hotel' ? 'Hotel Staff Login' : 'Welcome Back to Busy Beds!'}
-      subtitle={loginType === 'hotel' ? 'Sign in to redeem coupons and manage your hotel' : 'Sign in to your account'}
+      title={loginType === 'hotel' ? 'Property Staff Login' : 'Welcome Back to Busy Beds!'}
+      subtitle={loginType === 'hotel' ? 'Sign in to redeem coupons and manage your property' : 'Sign in to your account'}
       switchText="Don't have an account?"
       switchLink={loginType === 'hotel' ? '/register' : '/register'}
       switchLabel="Register"
@@ -87,12 +87,12 @@ function LoginForm() {
               loginType === 'hotel' ? 'bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-zinc-100' : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
             }`}
           >
-            Hotel Staff
+            Property Staff
           </button>
         </div>
         {loginType === 'guest' && (
           <p className="text-center text-xs text-zinc-500">
-            Hotel staff? <Link href="/hotel/login" className="font-medium text-[#FF385C] hover:underline">Log in here</Link>
+            Property staff? <Link href="/hotel/login" className="font-medium text-[#FF385C] hover:underline">Log in here</Link>
           </p>
         )}
         {error && (

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { subscriptions, coupons } from '@/lib/api';
+import { HouseIcon } from '@/components/icons';
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
@@ -31,7 +32,7 @@ export default function DashboardPage() {
         <p className="mt-1 text-zinc-600 dark:text-zinc-400">Welcome back, {user.name}</p>
       </div>
       <div className="grid gap-6 sm:grid-cols-2">
-        <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 shadow-sm">
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Subscription</h3>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             {sub ? sub.plan.name : 'No subscription'}
@@ -43,17 +44,17 @@ export default function DashboardPage() {
           )}
           <Link
             href="/subscription"
-            className="mt-4 inline-block text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+            className="mt-4 inline-block text-sm font-medium text-[#FF385C] hover:underline"
           >
             Manage subscription →
           </Link>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 shadow-sm">
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">My Coupons</h3>
           <p className="mt-2 text-3xl font-bold text-zinc-900 dark:text-zinc-100">{couponCount}</p>
           <Link
             href="/my-coupons"
-            className="mt-4 inline-block text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+            className="mt-4 inline-block text-sm font-medium text-[#FF385C] hover:underline"
           >
             View coupons →
           </Link>
@@ -61,12 +62,10 @@ export default function DashboardPage() {
       </div>
       <Link
         href="/hotels"
-        className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-medium text-white shadow-md hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 transition-colors"
+        className="inline-flex items-center gap-2 rounded-xl bg-[#FF385C] px-6 py-3 font-medium text-white shadow-md hover:bg-[#e31c5f] transition-colors"
       >
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-        Browse Hotels & Get Coupons
+        <HouseIcon />
+        Browse Properties & Get Coupons
       </Link>
     </div>
   );

@@ -5,6 +5,7 @@ import { useContext, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { HotelAuthContext } from '@/contexts/HotelAuthContext';
 import ThemeToggle from '@/components/ThemeToggle';
+import { HouseIcon, UserIcon } from '@/components/icons';
 
 const menuLink = "flex items-center gap-2 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700/80 transition-colors";
 
@@ -16,7 +17,7 @@ export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/80 dark:border-zinc-800/80 dark:bg-zinc-900/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
           <span className="text-[#FF385C]">Busy</span> Beds
@@ -24,12 +25,10 @@ export default function Header() {
         <nav className="flex items-center gap-3">
           <Link
             href="/hotels"
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-100 transition-colors"
           >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            Browse Hotels
+            <HouseIcon />
+            Browse Properties
           </Link>
           <ThemeToggle />
           {user ? (
@@ -72,7 +71,7 @@ export default function Header() {
             </>
           ) : hotel && hotelLogout ? (
             <>
-              <Link href="/hotel/dashboard" className="rounded-lg px-3 py-2 text-sm font-medium text-[#FF385C] hover:bg-[#fff1f2] dark:text-[#ff6b81] dark:hover:bg-zinc-800">Hotel Dashboard</Link>
+              <Link href="/hotel/dashboard" className="rounded-lg px-3 py-2 text-sm font-medium text-[#FF385C] hover:bg-[#fff1f2] dark:text-[#ff6b81] dark:hover:bg-white/10">Property Dashboard</Link>
               <button onClick={hotelLogout} className="rounded-lg bg-zinc-200 px-3 py-2 text-sm hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:text-zinc-200">
                 Log out
               </button>
@@ -83,9 +82,7 @@ export default function Header() {
               className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-zinc-600 hover:bg-zinc-300 hover:text-zinc-900 dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
               title="Login / Register"
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+              <UserIcon />
             </Link>
           )}
         </nav>

@@ -55,7 +55,7 @@ export default function AuthLayout({
         <div className="absolute bottom-12 left-8 right-8">
           <h2 className="text-3xl font-bold text-white">Find your sweet stay</h2>
           <p className="mt-2 text-white/90">
-            Subscribe to access hotel discount coupons. Generate unique coupons and save on your
+            Subscribe to access property discount coupons. Generate unique coupons and save on your
             stay.
           </p>
           <div className="mt-6 flex gap-2">
@@ -67,11 +67,11 @@ export default function AuthLayout({
       </div>
 
       {/* Right panel - form */}
-      <div className="flex w-full flex-col justify-center bg-white px-8 py-12 lg:w-1/2 lg:px-16">
+      <div className="flex w-full flex-col justify-center bg-[var(--background)] px-8 py-12 lg:w-1/2 lg:px-16">
         <div className="mx-auto w-full max-w-md">
           <Link
             href="/"
-            className="mb-6 flex items-center gap-2 text-zinc-600 hover:text-zinc-900 lg:mb-8"
+            className="mb-6 flex items-center gap-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 lg:mb-8"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -88,12 +88,12 @@ export default function AuthLayout({
               </Link>
             </div>
           )}
-          <h1 className="text-2xl font-bold text-zinc-900">{title}</h1>
-          <p className="mt-1 text-zinc-600">{subtitle}</p>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{title}</h1>
+          <p className="mt-1 text-zinc-600 dark:text-zinc-400">{subtitle}</p>
           <div className="mt-8">{children}</div>
-          <p className="mt-8 text-center text-sm text-zinc-600">
+          <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400">
             {switchText}{' '}
-            <Link href={switchLink} className="font-medium text-zinc-900 underline hover:no-underline">
+            <Link href={switchLink} className="font-medium text-zinc-900 dark:text-zinc-100 underline hover:no-underline">
               {switchLabel}
             </Link>
           </p>

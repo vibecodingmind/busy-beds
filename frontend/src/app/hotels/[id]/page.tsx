@@ -9,6 +9,8 @@ import RecentlyViewedTracker from '@/components/hotel/RecentlyViewedTracker';
 import HotelDistance from '@/components/hotel/HotelDistance';
 import HotelReviews from '@/components/hotel/HotelReviews';
 import ShareButton from '@/components/hotel/ShareButton';
+import { MapPinIcon } from '@/components/icons';
+import StarRating from '@/components/StarRating';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,9 +30,9 @@ export default async function HotelDetailPage({
   if (!hotel) {
     return (
       <div className="rounded-xl border border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-900">
-        <p className="text-zinc-600 dark:text-zinc-400">Hotel not found.</p>
+        <p className="text-zinc-600 dark:text-zinc-400">Property not found.</p>
         <Link href="/hotels" className="mt-4 inline-block text-[#FF385C] hover:underline">
-          Back to hotels
+          Back to properties
         </Link>
       </div>
     );
@@ -39,19 +41,19 @@ export default async function HotelDetailPage({
   const hasCoords = hotel.latitude != null && hotel.longitude != null;
 
   return (
-    <div className="min-h-screen bg-[#f7f7f7] dark:bg-zinc-950">
+    <div className="min-h-screen bg-[var(--background)]">
       <RecentlyViewedTracker hotelId={hotel.id} />
       <Link
         href="/hotels"
         className="mb-4 inline-block text-sm text-[#FF385C] hover:underline"
       >
-        ← Back to hotels
+        ← Back to properties
       </Link>
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         {/* Left column - main content */}
         <div className="flex-1 min-w-0">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 md:p-8">
+          <div className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-xl p-6 shadow-sm md:p-8">
             {/* Title row with Share and Save */}
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -59,16 +61,14 @@ export default async function HotelDetailPage({
                   {hotel.name}
                 </h1>
                 {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) && (
-                  <p className="mt-1 flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400">
-                    <span className="text-amber-500">★</span>
+                  <p className="mt-1 flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+                    <StarRating rating={Number(hotel.avg_rating)} size="sm" />
                     {Number(hotel.avg_rating).toFixed(1)} ({hotel.review_count} reviews)
                   </p>
                 )}
                 {hotel.location && (
                   <p className="mt-1 flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                    <svg className="h-4 w-4 flex-shrink-0 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    </svg>
+                    <MapPinIcon className="h-4 w-4 flex-shrink-0 text-zinc-500" />
                     {hotel.location}
                   </p>
                 )}
@@ -148,8 +148,17 @@ export default async function HotelDetailPage({
         </div>
 
         {/* Right sidebar - sticky booking widget with Get Coupon */}
-        <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-96">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+        <aside className="w-full shrink-0 lg:sticky lg:top-24 lg:w-96">
+          <div className="rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-xl p-6 shadow-sm">
+            {/* Rating */}
+            {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) && (
+              <div className="mb-4 flex items-center gap-2">
+                <StarRating rating={Number(hotel.avg_rating)} size="md" />
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                  {Number(hotel.avg_rating).toFixed(1)} · {hotel.review_count} reviews
+                </span>
+              </div>
+            )}
             {/* Coupon discount preview */}
             <div className="rounded-lg bg-[#fff1f2] p-4 dark:bg-zinc-800">
               <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Save with coupon</p>

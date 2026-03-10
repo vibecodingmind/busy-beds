@@ -3,6 +3,7 @@ import { hotels, reviews } from '@/lib/api';
 import type { Hotel } from '@/lib/api';
 import HotelCard from '@/components/hotel/HotelCard';
 import WaitlistForm from '@/components/WaitlistForm';
+import StarRating from '@/components/StarRating';
 
 // Avoid fetching API at build time (backend may be unreachable during Vercel build)
 export const dynamic = 'force-dynamic';
@@ -10,15 +11,6 @@ export const dynamic = 'force-dynamic';
 function truncate(s: string | null | undefined, len: number): string {
   if (!s) return '';
   return s.length <= len ? s : s.slice(0, len) + '…';
-}
-
-function StarRating({ rating }: { rating: number }) {
-  return (
-    <span className="inline-flex text-amber-500" aria-label={`${rating} stars`}>
-      {'★'.repeat(Math.round(rating))}
-      <span className="text-zinc-300 dark:text-zinc-600">{'★'.repeat(5 - Math.round(rating))}</span>
-    </span>
-  );
 }
 
 export default async function HomePage() {
@@ -39,9 +31,9 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950">
-      {/* Hero - bright and inviting */}
-      <section className="rounded-2xl bg-gradient-to-br from-[#fff1f2] via-white to-[#f0f9ff] px-8 py-16 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800">
+    <div className="min-h-screen bg-[var(--background)]">
+      {/* Hero - glassy and inviting */}
+      <section className="rounded-2xl border border-zinc-200/80 bg-white/70 dark:border-zinc-700/80 dark:bg-zinc-900/50 backdrop-blur-xl bg-gradient-to-br from-[#fff1f2]/80 via-white/60 to-[#f0f9ff]/80 dark:from-zinc-900/80 dark:via-zinc-900/60 dark:to-zinc-800/80 px-6 sm:px-8 py-12 sm:py-16">
         <h1 className="text-4xl font-bold text-zinc-900 dark:text-white md:text-5xl">
           Busy Beds
         </h1>
@@ -60,7 +52,7 @@ export default async function HomePage() {
             href="/hotels"
             className="rounded-lg border-2 border-zinc-300 px-6 py-3 font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
-            Browse Hotels
+            Browse Properties
           </Link>
         </div>
       </section>
@@ -70,29 +62,29 @@ export default async function HomePage() {
         <h2 className="text-center text-2xl font-semibold text-zinc-900 dark:text-white">
           Get Started in 3 Steps
         </h2>
-        <div className="mt-8 grid gap-8 sm:grid-cols-3">
-          <div className="flex flex-col items-center rounded-xl border border-zinc-200 bg-white p-6 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-8">
+          <div className="flex flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 text-center shadow-sm">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f2] text-[#FF385C] dark:bg-zinc-800">
-              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
             <h3 className="mt-4 font-medium text-zinc-900 dark:text-zinc-100">1. Create account</h3>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Sign up in seconds</p>
           </div>
-          <div className="flex flex-col items-center rounded-xl border border-zinc-200 bg-white p-6 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+          <div className="flex flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 text-center shadow-sm">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f2] text-[#FF385C] dark:bg-zinc-800">
-              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
             </div>
             <h3 className="mt-4 font-medium text-zinc-900 dark:text-zinc-100">2. Choose a plan</h3>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Pick a subscription</p>
           </div>
-          <div className="flex flex-col items-center rounded-xl border border-zinc-200 bg-white p-6 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+          <div className="flex flex-col items-center rounded-2xl border border-zinc-200/80 bg-white/80 dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm p-6 text-center shadow-sm">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f2] text-[#FF385C] dark:bg-zinc-800">
-              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0-4h2m-2 4h-6m-2-6H5a2 2 0 00-2 2v6a2 2 0 002 2h2m-6-2h6m-6-2V9a2 2 0 012-2h2m0 0V5" />
+              <svg className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0-4h2m-2 4h-6m-2-6H5a2 2 0 00-2 2v6a2 2 0 002 2h2m-6-2h6m-6-2V9a2 2 0 012-2h2m0 0V5" />
               </svg>
             </div>
             <h3 className="mt-4 font-medium text-zinc-900 dark:text-zinc-100">3. Get coupons</h3>
@@ -108,9 +100,9 @@ export default async function HomePage() {
             Explore More Destinations
           </h2>
           <p className="mt-1 text-zinc-600 dark:text-zinc-400">
-            Discover hotels with exclusive coupon discounts
+            Discover properties with exclusive coupon discounts
           </p>
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
             {featuredHotels.map((hotel) => (
               <HotelCard key={hotel.id} hotel={hotel} />
             ))}
@@ -120,9 +112,9 @@ export default async function HomePage() {
               href="/hotels"
               className="inline-flex items-center gap-2 rounded-lg bg-[#FF385C] px-6 py-3 font-medium text-white transition-colors hover:bg-[#e31c5f]"
             >
-              View all hotels
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              View all properties
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </Link>
           </div>
@@ -137,7 +129,7 @@ export default async function HomePage() {
           <p className="mt-1 text-zinc-600 dark:text-zinc-400">
             {totalReviews} reviews from real guests
           </p>
-          <div className="mt-6 grid gap-6 sm:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
             {recentReviews.map((r) => (
               <div
                 key={r.id}
@@ -145,7 +137,7 @@ export default async function HomePage() {
               >
                 <p className="font-medium text-zinc-900 dark:text-zinc-100">{r.hotel_name}</p>
                 <div className="mt-2">
-                  <StarRating rating={r.rating} />
+                  <StarRating rating={r.rating} size="md" />
                 </div>
                 <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                   {truncate(r.comment, 80) || '—'}
@@ -156,7 +148,7 @@ export default async function HomePage() {
           </div>
           <div className="mt-6">
             <Link href="/hotels" className="font-medium text-[#FF385C] hover:underline">
-              Browse hotels →
+              Browse properties →
             </Link>
           </div>
         </section>
