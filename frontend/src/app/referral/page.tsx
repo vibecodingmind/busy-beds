@@ -59,17 +59,19 @@ function ReferralContent() {
   const getRewardForReferred = (referredId: number) =>
     data?.rewards.find((r) => r.referred_id === referredId);
 
-  if (authLoading || !user) return <div className="py-8">Loading...</div>;
+  if (authLoading || !user) return <div className="py-12 text-zinc-500 dark:text-zinc-400">Loading...</div>;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Referral Program</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-        Share your code. When friends subscribe, you earn 25% of their first payment.
-      </p>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Refer & Earn</h1>
+        <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+          Share your code. When friends subscribe, you earn 25% of their first payment.
+        </p>
+      </div>
 
       {data && (
-        <div className="mt-8 space-y-8">
+        <div className="space-y-8">
           {!data.stripe_connected && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-950/30">
               <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">Connect Stripe to receive payouts</h2>

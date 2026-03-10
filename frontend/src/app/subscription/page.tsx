@@ -73,43 +73,45 @@ function SubscriptionContent() {
     }
   };
 
-  if (authLoading || !user) return <div className="py-8">Loading...</div>;
+  if (authLoading || !user) return <div className="py-12 text-zinc-500 dark:text-zinc-400">Loading...</div>;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-zinc-900">Subscription</h1>
-      <p className="mt-2 text-zinc-600">
-        {currentSub
-          ? `Current plan: ${currentSub.plan.name} (${currentSub.plan.monthly_coupon_limit} coupons/month)`
-          : 'Choose a plan to start generating coupons.'}
-      </p>
-      {currentSub && (
-        <button
-          onClick={handleCancel}
-          disabled={loading !== null}
-          className="mt-4 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm text-red-700 hover:bg-red-50 disabled:opacity-50"
-        >
-          Cancel Subscription
-        </button>
-      )}
-      <div className="mt-8 grid gap-6 sm:grid-cols-3">
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Subscription</h1>
+        <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+          {currentSub
+            ? `Current plan: ${currentSub.plan.name} (${currentSub.plan.monthly_coupon_limit} coupons/month)`
+            : 'Choose a plan to start generating coupons.'}
+        </p>
+        {currentSub && (
+          <button
+            onClick={handleCancel}
+            disabled={loading !== null}
+            className="mt-4 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50 dark:border-red-800 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-950/30"
+          >
+            Cancel Subscription
+          </button>
+        )}
+      </div>
+      <div className="grid gap-6 sm:grid-cols-3">
         {plans.map((plan) => (
           <div
             key={plan.id}
-            className={`rounded-xl border p-6 ${
+            className={`rounded-xl border p-6 transition-colors ${
               currentSub?.plan.id === plan.id
-                ? 'border-emerald-500 bg-emerald-50'
-                : 'border-zinc-200 bg-white'
+                ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950/30'
+                : 'border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900'
             }`}
           >
-            <h3 className="font-semibold text-zinc-900">{plan.name}</h3>
-            <p className="mt-2 text-2xl font-bold text-zinc-900">${plan.price}</p>
-            <p className="text-sm text-zinc-600">/ month</p>
-            <p className="mt-2 text-zinc-600">{plan.monthly_coupon_limit} coupons per month</p>
+            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{plan.name}</h3>
+            <p className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100">${plan.price}</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">/ month</p>
+            <p className="mt-2 text-zinc-600 dark:text-zinc-400">{plan.monthly_coupon_limit} coupons per month</p>
             <button
               onClick={() => handleSubscribe(plan.id)}
               disabled={loading !== null || currentSub?.plan.id === plan.id}
-              className="mt-4 w-full rounded-lg bg-zinc-900 py-2 font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+              className="mt-4 w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-emerald-600 dark:hover:bg-emerald-500"
             >
               {currentSub?.plan.id === plan.id
                 ? 'Current Plan'

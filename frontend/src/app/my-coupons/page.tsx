@@ -62,14 +62,16 @@ export default function MyCouponsPage() {
     }
   };
 
-  if (authLoading || !user) return <div className="py-8">Loading...</div>;
+  if (authLoading || !user) return <div className="py-12 text-zinc-500 dark:text-zinc-400">Loading...</div>;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">My Coupons</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">Select a coupon to view details and QR code.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">My Coupons</h1>
+        <p className="mt-1 text-zinc-600 dark:text-zinc-400">Select a coupon to view details and QR code.</p>
+      </div>
 
-      <div className="mt-6 flex gap-2 border-b border-zinc-200 dark:border-zinc-700">
+      <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-700">
         {(['active', 'used', 'expired'] as const).map((t) => (
           <button
             key={t}
