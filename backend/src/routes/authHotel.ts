@@ -6,11 +6,13 @@ import * as hotelAccountModel from '../models/hotelAccount';
 import * as hotelModel from '../models/hotel';
 import { hotelAuthMiddleware, HotelJwtPayload } from '../middleware/auth';
 import { config } from '../config';
+import { authLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
 router.post(
   '/register',
+  authLimiter,
   body('hotel_id').isInt(),
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
@@ -54,6 +56,7 @@ router.post(
 
 router.post(
   '/login',
+  authLimiter,
   body('email').isEmail().normalizeEmail(),
   body('password').notEmpty(),
   async (req, res) => {

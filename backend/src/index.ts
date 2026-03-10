@@ -3,6 +3,10 @@ import cors from 'cors';
 import helmet from 'helmet';
 import passport from 'passport';
 import { config } from './config';
+import { generalLimiter } from './middleware/rateLimiter';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { logger, logStream } from './config/logger';
+import { refreshTokenService } from './middleware/refreshToken';
 
 import authRoutes from './routes/auth';
 import stripeRoutes, { webhookHandler } from './routes/stripe';
@@ -24,6 +28,7 @@ import waitlistRoutes from './routes/waitlist';
 const app = express();
 
 app.use(helmet());
+app.use(generalLimiter);
 app.use(
   cors({
     origin: (origin, cb) => {
@@ -64,7 +69,18 @@ app.use('/api/v1/cron', cronRoutes);
 // Health check
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
+// 404 handler
+app.use(notFoundHandler);
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
+
+// Initialize refresh token service
+refreshTokenService.setupRefreshTokenTable().catch(error => {
+  logger.error('Failed to setup refresh token service', { error });
+});
+
 const port = process.env.PORT || config.port;
 app.listen(port, () => {
-  console.log(`Busy Beds API running on port ${port}`);
+  logger.info(`Busy Beds API running on port ${port}`, { port, environment: process.env.NODE_ENV });
 });

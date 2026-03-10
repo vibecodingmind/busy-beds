@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
@@ -9,21 +9,21 @@ import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/email';
 import { authMiddleware, type JwtPayload } from '../middleware/auth';
 import { config } from '../config';
 import { Pool } from 'pg';
+import { authLimiter, passwordResetLimiter } from '../middleware/rateLimiter';
+import { logger } from '../config/logger';
+import { validate, validationSchemas, sanitizeInput, commonValidations } from '../middleware/validation';
+import { asyncHandler } from '../middleware/errorHandler';
+import { refreshTokenHandler, invalidateTokensHandler, refreshTokenService } from '../middleware/refreshToken';
 
 const router = Router();
 const pool = new Pool({ connectionString: config.databaseUrl });
 
 router.post(
   '/register',
-  body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 6 }),
-  body('name').trim().notEmpty(),
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+  sanitizeInput,
+  authLimiter,
+  validate(validationSchemas.register),
+  asyncHandler(async (req: Request, res: Response) => {
       const { email, password, name } = req.body;
 
       const existing = await userModel.findUserByEmail(email);
@@ -44,35 +44,23 @@ router.post(
 
       sendWelcomeEmail(user.email, user.name).catch(() => {});
 
-      const payload: JwtPayload = {
-        userId: user.id,
-        email: user.email,
-        role: user.role,
-        type: 'user',
-      };
-      const token = jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as jwt.SignOptions);
+      // Generate token pair
+      const tokenPair = refreshTokenService.generateTokenPair(user);
 
       res.status(201).json({
         user: { id: user.id, email: user.email, name: user.name, role: user.role },
-        token,
+        accessToken: tokenPair.accessToken,
+        refreshToken: tokenPair.refreshToken,
       });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Registration failed' });
-    }
-  }
-);
+    })
+  );
 
 router.post(
   '/login',
-  body('email').isEmail().normalizeEmail(),
-  body('password').notEmpty(),
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+  sanitizeInput,
+  authLimiter,
+  validate(validationSchemas.login),
+  asyncHandler(async (req: Request, res: Response) => {
       const { email, password } = req.body;
 
       const user = await userModel.findUserByEmail(email);
@@ -85,41 +73,30 @@ router.post(
         return res.status(401).json({ error: 'Invalid email or password' });
       }
 
-      const payload: JwtPayload = {
-        userId: user.id,
-        email: user.email,
-        role: user.role,
-        type: 'user',
-      };
-      const token = jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as jwt.SignOptions);
+      // Generate token pair
+      const tokenPair = refreshTokenService.generateTokenPair(user);
 
       res.json({
         user: { id: user.id, email: user.email, name: user.name, role: user.role },
-        token,
+        accessToken: tokenPair.accessToken,
+        refreshToken: tokenPair.refreshToken,
       });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Login failed' });
-    }
-  }
-);
+    })
+  );
 
-router.get('/me', authMiddleware, async (req, res) => {
+router.get('/me', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
   const user = await userModel.findUserById((req.user as JwtPayload).userId);
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json({ id: user.id, email: user.email, name: user.name, role: user.role });
-});
+}));
 
 router.put(
   '/profile',
+  sanitizeInput,
   authMiddleware,
-  body('name').optional().trim().notEmpty(),
-  body('email').optional().isEmail().normalizeEmail(),
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  validate(validationSchemas.updateProfile),
+  asyncHandler(async (req: Request, res: Response) => {
       if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
       const { name, email } = req.body;
       if (email) {
@@ -131,22 +108,15 @@ router.put(
       const user = await userModel.updateUser((req.user as JwtPayload).userId, { name, email });
       if (!user) return res.status(404).json({ error: 'User not found' });
       res.json({ id: user.id, email: user.email, name: user.name, role: user.role });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to update profile' });
-    }
-  }
-);
+    })
+  );
 
 router.put(
   '/change-password',
+  sanitizeInput,
   authMiddleware,
-  body('current_password').notEmpty(),
-  body('new_password').isLength({ min: 6 }),
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  validate(validationSchemas.changePassword),
+  asyncHandler(async (req: Request, res: Response) => {
       if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
       const user = await userModel.findUserById((req.user as JwtPayload).userId);
       if (!user) return res.status(404).json({ error: 'User not found' });
@@ -155,23 +125,16 @@ router.put(
       const hash = await bcrypt.hash(req.body.new_password, 10);
       await userModel.updateUser(user.id, { password_hash: hash });
       res.json({ message: 'Password updated successfully' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to change password' });
-    }
-  }
-);
+    })
+  );
 
 // Forgot password
 router.post(
   '/forgot-password',
-  body('email').isEmail().normalizeEmail(),
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+  sanitizeInput,
+  passwordResetLimiter,
+  validate(validationSchemas.forgotPassword),
+  asyncHandler(async (req: Request, res: Response) => {
       const { email } = req.body;
       const user = await userModel.findUserByEmail(email);
       if (!user) {
@@ -189,24 +152,15 @@ router.post(
         return res.json({ message: 'Reset link (dev only)', resetUrl });
       }
       return res.json({ message: 'If that email exists, we sent a reset link' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to process request' });
-    }
-  }
-);
+    })
+  );
 
 // Reset password
 router.post(
   '/reset-password',
-  body('token').notEmpty(),
-  body('password').isLength({ min: 6 }),
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+  sanitizeInput,
+  validate(validationSchemas.resetPassword),
+  asyncHandler(async (req: Request, res: Response) => {
       const { token, password } = req.body;
       const r = await pool.query(
         'SELECT user_id FROM password_reset_tokens WHERE token = $1 AND expires_at > NOW()',
@@ -220,23 +174,15 @@ router.post(
       await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hash, userId]);
       await pool.query('DELETE FROM password_reset_tokens WHERE token = $1', [token]);
       res.json({ message: 'Password reset successfully' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to reset password' });
-    }
-  }
-);
+    })
+  );
 
 // Resend verification email
 router.post(
   '/resend-verification',
-  body('email').isEmail().normalizeEmail(),
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+  sanitizeInput,
+  validate([commonValidations.email]),
+  asyncHandler(async (req: Request, res: Response) => {
       const { email } = req.body;
       const user = await userModel.findUserByEmail(email);
       if (!user) {
@@ -257,19 +203,15 @@ router.post(
         return res.json({ message: 'Verification link (dev only)', verifyUrl });
       }
       return res.json({ message: 'If that email exists, we sent a verification link' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to process request' });
-    }
-  }
-);
+    })
+  );
 
 // Verify email
 router.post(
   '/verify-email',
-  body('token').notEmpty(),
-  async (req, res) => {
-    try {
+  sanitizeInput,
+  validate([body('token').notEmpty().withMessage('Token is required')]),
+  asyncHandler(async (req: Request, res: Response) => {
       const { token } = req.body;
       const r = await pool.query(
         'SELECT user_id FROM email_verification_tokens WHERE token = $1 AND expires_at > NOW()',
@@ -282,11 +224,22 @@ router.post(
       await pool.query('UPDATE users SET email_verified = true WHERE id = $1', [userId]);
       await pool.query('DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]);
       res.json({ message: 'Email verified successfully' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Failed to verify email' });
-    }
-  }
+    })
+  );
+
+// Refresh token endpoint
+router.post(
+  '/refresh-token',
+  sanitizeInput,
+  validate([body('refreshToken').notEmpty().withMessage('Refresh token is required')]),
+  asyncHandler(refreshTokenHandler)
+);
+
+// Logout/invalidate tokens endpoint
+router.post(
+  '/logout',
+  authMiddleware,
+  asyncHandler(invalidateTokensHandler)
 );
 
 export default router;
