@@ -83,6 +83,19 @@ export async function countHotelCouponsInPeriod(
   return result.rows[0]!.count;
 }
 
+export async function cancelCoupon(couponId: number, userId: number): Promise<boolean> {
+  const result = await pool.query(
+    `UPDATE coupons SET status = 'cancelled' WHERE id = $1 AND user_id = $2 AND status = 'active' RETURNING id`,
+    [couponId, userId]
+  );
+  return (result.rowCount ?? 0) > 0;
+}
+
+export async function findCouponById(id: number): Promise<Coupon | null> {
+  const result = await pool.query('SELECT * FROM coupons WHERE id = $1', [id]);
+  return result.rows[0] || null;
+}
+
 export async function redeemCoupon(
   couponId: number,
   hotelAccountId: number,

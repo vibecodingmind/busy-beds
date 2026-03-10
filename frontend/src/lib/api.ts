@@ -31,10 +31,10 @@ export async function api<T>(
 
 // Auth
 export const auth = {
-  register: (email: string, password: string, name: string) =>
+  register: (email: string, password: string, name: string, referralCode?: string) =>
     api<{ user: { id: number; email: string; name: string; role: string }; token: string }>(
       '/auth/register',
-      { method: 'POST', body: JSON.stringify({ email, password, name }) }
+      { method: 'POST', body: JSON.stringify({ email, password, name, referral_code: referralCode }) }
     ),
   login: (email: string, password: string) =>
     api<{ user: { id: number; email: string; name: string; role: string }; token: string }>(
@@ -42,6 +42,16 @@ export const auth = {
       { method: 'POST', body: JSON.stringify({ email, password }) }
     ),
   me: () => api<{ id: number; email: string; name: string; role: string }>('/auth/me'),
+  updateProfile: (data: { name?: string; email?: string }) =>
+    api<{ id: number; email: string; name: string; role: string }>('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    api<{ message: string }>('/auth/change-password', {
+      method: 'PUT',
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+    }),
   forgotPassword: (email: string) =>
     api<{ message: string; resetUrl?: string }>('/auth/forgot-password', {
       method: 'POST',
@@ -85,8 +95,14 @@ export const hotelAuth = {
 
 // Hotels
 export const hotels = {
-  list: (limit?: number, offset?: number) =>
-    api<{ hotels: Hotel[] }>(`/hotels?limit=${limit || 50}&offset=${offset || 0}`),
+  list: (opts?: { limit?: number; offset?: number; search?: string; sort?: string }) => {
+    const params = new URLSearchParams();
+    params.set('limit', String(opts?.limit || 50));
+    params.set('offset', String(opts?.offset || 0));
+    if (opts?.search) params.set('search', opts.search);
+    if (opts?.sort) params.set('sort', opts.sort);
+    return api<{ hotels: Hotel[] }>(`/hotels?${params}`);
+  },
   get: (id: number) => api<Hotel>(`/hotels/${id}`),
 };
 
@@ -98,6 +114,11 @@ export const coupons = {
       body: JSON.stringify({ hotel_id: hotelId }),
     }),
   list: () => api<{ coupons: CouponWithHotel[] }>('/coupons'),
+  cancel: (couponId: number) =>
+    api<{ success: boolean }>('/coupons/cancel', {
+      method: 'POST',
+      body: JSON.stringify({ coupon_id: couponId }),
+    }),
   validate: (code: string) =>
     api<{ code: string; user_name: string; hotel_name: string; hotel_id: number; discount_value: string; status: string; expires_at: string }>(
       `/coupons/${encodeURIComponent(code)}/validate`
@@ -127,6 +148,39 @@ export const subscriptions = {
       method: 'POST',
       body: JSON.stringify({ plan_id: planId }),
     }),
+  cancel: () =>
+    api<{ success: boolean }>('/subscriptions/cancel', { method: 'POST' }),
+};
+
+export const stripe = {
+  createCheckoutSession: (planId: number, successUrl?: string, cancelUrl?: string) =>
+    api<{ url: string; sessionId: string }>('/stripe/create-checkout-session', {
+      method: 'POST',
+      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
+    }),
+};
+
+// Reviews
+export const reviews = {
+  list: (hotelId: number) =>
+    api<{ reviews: { id: number; rating: number; comment: string | null; user_name: string; created_at: string }[]; averageRating: number | null; totalCount: number }>(
+      `/reviews/hotels/${hotelId}`
+    ),
+  myReview: (hotelId: number) =>
+    api<{ review: { id: number; rating: number; comment: string | null } | null }>(`/reviews/hotels/${hotelId}/me`),
+  create: (hotelId: number, rating: number, comment?: string) =>
+    api<{ id: number; rating: number; comment: string | null }>(`/reviews/hotels/${hotelId}`, {
+      method: 'POST',
+      body: JSON.stringify({ rating, comment }),
+    }),
+};
+
+// Referrals
+export const referrals = {
+  me: () =>
+    api<{ code: string; referred: { id: number; name: string; email: string; created_at: string }[] }>(
+      '/referrals/me'
+    ),
 };
 
 // Hotel dashboard
@@ -140,6 +194,11 @@ export const hotelDashboard = {
     api<{ today: number; this_week: number; this_month: number }>('/hotel/stats', {
       tokenType: 'hotel',
     }),
+  chart: (days?: number) =>
+    api<{ data: { date: string; count: number }[] }>(
+      `/hotel/chart${days ? `?days=${days}` : ''}`,
+      { tokenType: 'hotel' }
+    ),
 };
 
 // Admin
@@ -168,6 +227,22 @@ export const admin = {
     ),
   approveHotelAccount: (id: number) =>
     api<{ success: boolean }>(`/admin/hotel-accounts/${id}/approve`, { method: 'POST' }),
+  analytics: () =>
+    api<{
+      total_users: number;
+      total_hotels: number;
+      active_subscriptions: number;
+      active_coupons: number;
+      total_redemptions: number;
+    }>('/admin/analytics'),
+  plans: {
+    list: () => api<{ plans: { id: number; name: string; monthly_coupon_limit: number; price: number; stripe_price_id: string | null }[] }>('/admin/plans'),
+    create: (data: { name: string; monthly_coupon_limit: number; price: number; stripe_price_id?: string }) =>
+      api<object>('/admin/plans', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: number, data: Partial<{ name: string; monthly_coupon_limit: number; price: number; stripe_price_id: string }>) =>
+      api<object>(`/admin/plans/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id: number) => api<{ success: boolean }>(`/admin/plans/${id}`, { method: 'DELETE' }),
+  },
 };
 
 // Types
@@ -181,6 +256,7 @@ export interface Hotel {
   images: string[];
   latitude?: number | null;
   longitude?: number | null;
+  booking_url?: string | null;
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;

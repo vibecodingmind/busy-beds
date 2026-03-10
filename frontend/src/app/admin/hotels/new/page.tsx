@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { admin } from '@/lib/api';
+import PhotosInput from '@/components/admin/PhotosInput';
 
 export default function NewHotelPage() {
   const { user } = useAuth();
@@ -15,6 +16,7 @@ export default function NewHotelPage() {
     location: '',
     contact_phone: '',
     contact_email: '',
+    booking_url: '',
     images: [] as string[],
     latitude: '' as string | number,
     longitude: '' as string | number,
@@ -92,6 +94,16 @@ export default function NewHotelPage() {
           />
         </div>
         <div>
+          <label className="block text-sm font-medium text-zinc-700">Booking URL</label>
+          <input
+            type="url"
+            value={form.booking_url}
+            onChange={(e) => setForm((f) => ({ ...f, booking_url: e.target.value }))}
+            placeholder="https://example.com/book"
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+          />
+        </div>
+        <div>
           <label className="block text-sm font-medium text-zinc-700">Contact Phone</label>
           <input
             value={form.contact_phone}
@@ -99,16 +111,11 @@ export default function NewHotelPage() {
             className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Image URLs</label>
-          <textarea
-            value={form.images.join('\n')}
-            onChange={(e) => setForm((f) => ({ ...f, images: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) }))}
-            placeholder="One URL per line (e.g. Unsplash)"
-            rows={3}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
-          />
-        </div>
+        <PhotosInput
+          value={form.images}
+          onChange={(urls) => setForm((f) => ({ ...f, images: urls }))}
+          placeholder="https://images.unsplash.com/photo-..."
+        />
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-zinc-700">Latitude</label>

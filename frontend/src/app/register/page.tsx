@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHotelAuth } from '@/contexts/HotelAuthContext';
 import { hotelAuth } from '@/lib/api';
@@ -10,7 +10,7 @@ import AuthLayout from '@/components/auth/AuthLayout';
 
 type RegisterType = 'guest' | 'hotel' | null;
 
-export default function RegisterPage() {
+function RegisterContent() {
   const [registerType, setRegisterType] = useState<RegisterType>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,6 +23,8 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const { register: hotelRegister } = useHotelAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const refCode = searchParams.get('ref') || undefined;
 
   useEffect(() => {
     if (registerType === 'hotel') {
@@ -35,7 +37,7 @@ export default function RegisterPage() {
     setError('');
     setLoading(true);
     try {
-      await register(email, password, name);
+      await register(email, password, name, refCode);
       router.push('/subscription');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
@@ -376,5 +378,13 @@ export default function RegisterPage() {
         </div>
       </form>
     </AuthLayout>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+      <RegisterContent />
+    </Suspense>
   );
 }

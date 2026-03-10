@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { admin } from '@/lib/api';
+import PhotosInput from '@/components/admin/PhotosInput';
 
 export default function EditHotelPage() {
   const params = useParams();
@@ -17,6 +18,7 @@ export default function EditHotelPage() {
     location: '',
     contact_phone: '',
     contact_email: '',
+    booking_url: '',
     images: [] as string[],
     latitude: '' as string | number,
     longitude: '' as string | number,
@@ -39,6 +41,7 @@ export default function EditHotelPage() {
         contact_phone: h.contact_phone || '',
         contact_email: h.contact_email || '',
         images: h.images || [],
+        booking_url: h.booking_url || '',
         latitude: h.latitude ?? '',
         longitude: h.longitude ?? '',
         coupon_discount_value: h.coupon_discount_value,
@@ -57,6 +60,7 @@ export default function EditHotelPage() {
       await admin.hotels.update(id, {
         ...form,
         images: form.images,
+        booking_url: form.booking_url || null,
         latitude: form.latitude === '' ? null : Number(form.latitude),
         longitude: form.longitude === '' ? null : Number(form.longitude),
       });
@@ -122,6 +126,16 @@ export default function EditHotelPage() {
           />
         </div>
         <div>
+          <label className="block text-sm font-medium text-zinc-700">Booking URL</label>
+          <input
+            type="url"
+            value={form.booking_url}
+            onChange={(e) => setForm((f) => ({ ...f, booking_url: e.target.value }))}
+            placeholder="https://example.com/book"
+            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+          />
+        </div>
+        <div>
           <label className="block text-sm font-medium text-zinc-700">Contact Phone</label>
           <input
             value={form.contact_phone}
@@ -138,16 +152,11 @@ export default function EditHotelPage() {
             className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Image URLs</label>
-          <textarea
-            value={form.images.join('\n')}
-            onChange={(e) => setForm((f) => ({ ...f, images: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) }))}
-            placeholder="One URL per line (e.g. Unsplash)"
-            rows={3}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
-          />
-        </div>
+        <PhotosInput
+          value={form.images}
+          onChange={(urls) => setForm((f) => ({ ...f, images: urls }))}
+          placeholder="https://images.unsplash.com/photo-..."
+        />
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-zinc-700">Latitude</label>

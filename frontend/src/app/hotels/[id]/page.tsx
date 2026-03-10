@@ -5,6 +5,7 @@ import GetCouponButton from './GetCouponButton';
 import HotelPhotoGallery from '@/components/hotel/HotelPhotoGallery';
 import HotelMap from '@/components/hotel/HotelMap';
 import HotelDistance from '@/components/hotel/HotelDistance';
+import HotelReviews from '@/components/hotel/HotelReviews';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,6 +90,20 @@ export default async function HotelDetailPage({
           </div>
         )}
 
+        {hotel.booking_url && (
+          <a
+            href={hotel.booking_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700"
+          >
+            Book now
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        )}
+
         <p className="mt-6 font-semibold text-emerald-600">
           Coupon discount: {hotel.coupon_discount_value}
         </p>
@@ -108,6 +123,8 @@ export default async function HotelDetailPage({
         <div className="mt-8">
           <GetCouponButton hotelId={hotel.id} hotelName={hotel.name} />
         </div>
+
+        <HotelReviews hotelId={hotel.id} />
       </div>
     </div>
   );

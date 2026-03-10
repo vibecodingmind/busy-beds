@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS coupons (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     hotel_id INTEGER NOT NULL REFERENCES hotels(id) ON DELETE CASCADE,
     discount_value VARCHAR(100) NOT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'redeemed', 'expired')),
+    status VARCHAR(50) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'redeemed', 'expired', 'cancelled')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
@@ -131,4 +131,51 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='longitude') THEN
     ALTER TABLE hotels ADD COLUMN longitude DECIMAL(11, 8);
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='booking_url') THEN
+    ALTER TABLE hotels ADD COLUMN booking_url VARCHAR(500);
+  END IF;
 END $$;
+
+-- Allow 'cancelled' status on coupons
+DO $$
+BEGIN
+  ALTER TABLE coupons DROP CONSTRAINT IF EXISTS coupons_status_check;
+  ALTER TABLE coupons ADD CONSTRAINT coupons_status_check
+    CHECK (status IN ('active', 'redeemed', 'expired', 'cancelled'));
+EXCEPTION WHEN OTHERS THEN
+  NULL;
+END $$;
+
+-- Reviews (hotel ratings by users)
+CREATE TABLE IF NOT EXISTS hotel_reviews (
+    id SERIAL PRIMARY KEY,
+    hotel_id INTEGER NOT NULL REFERENCES hotels(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(hotel_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_hotel_reviews_hotel_id ON hotel_reviews(hotel_id);
+
+-- Referral codes (user gets unique code, referred users get tracked)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='referral_code') THEN
+    ALTER TABLE users ADD COLUMN referral_code VARCHAR(20) UNIQUE;
+  END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS referrals (
+    id SERIAL PRIMARY KEY,
+    referrer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    referred_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(referred_id)
+);
+CREATE INDEX IF NOT EXISTS idx_referrals_referrer_id ON referrals(referrer_id);
+
+-- Track which coupons have had expiry reminder sent
+CREATE TABLE IF NOT EXISTS coupon_reminder_sent (
+    coupon_id INTEGER PRIMARY KEY REFERENCES coupons(id) ON DELETE CASCADE
+);

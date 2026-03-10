@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import { authMiddleware, adminMiddleware } from '../middleware/auth';
 import * as hotelModel from '../models/hotel';
 import * as hotelAccountModel from '../models/hotelAccount';
+import { sendHotelApprovalEmail } from '../services/email';
 import * as userModel from '../models/user';
 import { pool } from '../config/db';
 
@@ -43,6 +44,7 @@ router.post(
         images: Array.isArray(req.body.images) ? req.body.images : undefined,
         latitude: req.body.latitude != null ? parseFloat(req.body.latitude) : undefined,
         longitude: req.body.longitude != null ? parseFloat(req.body.longitude) : undefined,
+        booking_url: req.body.booking_url || null,
         coupon_discount_value: req.body.coupon_discount_value,
         coupon_limit: req.body.coupon_limit,
         limit_period: req.body.limit_period,
@@ -155,6 +157,29 @@ router.get('/coupons', async (req, res) => {
   }
 });
 
+// Admin analytics
+router.get('/analytics', async (req, res) => {
+  try {
+    const [usersRes, hotelsRes, subsRes, couponsRes, redemptionsRes] = await Promise.all([
+      pool.query('SELECT COUNT(*)::int as c FROM users'),
+      pool.query('SELECT COUNT(*)::int as c FROM hotels'),
+      pool.query('SELECT COUNT(*)::int as c FROM subscriptions WHERE status = $1', ['active']),
+      pool.query('SELECT COUNT(*)::int as c FROM coupons WHERE status = $1', ['active']),
+      pool.query('SELECT COUNT(*)::int as c FROM redemptions'),
+    ]);
+    res.json({
+      total_users: usersRes.rows[0]!.c,
+      total_hotels: hotelsRes.rows[0]!.c,
+      active_subscriptions: subsRes.rows[0]!.c,
+      active_coupons: couponsRes.rows[0]!.c,
+      total_redemptions: redemptionsRes.rows[0]!.c,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch analytics' });
+  }
+});
+
 // Pending hotel accounts (awaiting approval)
 router.get('/hotel-accounts/pending', async (_req, res) => {
   try {
@@ -171,10 +196,85 @@ router.post('/hotel-accounts/:id/approve', async (req, res) => {
     const id = parseInt(req.params?.id ?? '0');
     const account = await hotelAccountModel.approveHotelAccount(id);
     if (!account) return res.status(404).json({ error: 'Hotel account not found' });
+    const hotel = await hotelModel.findHotelById(account.hotel_id);
+    if (hotel) sendHotelApprovalEmail(account.email, hotel.name).catch(() => {});
     res.json({ success: true, account });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to approve' });
+  }
+});
+
+// Subscription plans
+router.get('/plans', async (_req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM subscription_plans ORDER BY monthly_coupon_limit');
+    res.json({ plans: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch plans' });
+  }
+});
+
+router.post(
+  '/plans',
+  body('name').trim().notEmpty(),
+  body('monthly_coupon_limit').isInt({ min: 1 }),
+  body('price').isFloat({ min: 0 }),
+  body('stripe_price_id').optional().trim(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+      const { name, monthly_coupon_limit, price, stripe_price_id } = req.body;
+      const result = await pool.query(
+        `INSERT INTO subscription_plans (name, monthly_coupon_limit, price, stripe_price_id)
+         VALUES ($1, $2, $3, $4) RETURNING *`,
+        [name, monthly_coupon_limit, price, stripe_price_id || null]
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to create plan' });
+    }
+  }
+);
+
+router.put('/plans/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id || '0');
+    const { name, monthly_coupon_limit, price, stripe_price_id } = req.body;
+    const updates: string[] = [];
+    const values: unknown[] = [];
+    let i = 2;
+    if (name !== undefined) { updates.push(`name = $${i++}`); values.push(name); }
+    if (monthly_coupon_limit !== undefined) { updates.push(`monthly_coupon_limit = $${i++}`); values.push(monthly_coupon_limit); }
+    if (price !== undefined) { updates.push(`price = $${i++}`); values.push(price); }
+    if (stripe_price_id !== undefined) { updates.push(`stripe_price_id = $${i++}`); values.push(stripe_price_id || null); }
+    if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
+    values.unshift(id);
+    const result = await pool.query(
+      `UPDATE subscription_plans SET ${updates.join(', ')} WHERE id = $1 RETURNING *`,
+      values
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Plan not found' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update plan' });
+  }
+});
+
+router.delete('/plans/:id', async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM subscription_plans WHERE id = $1 RETURNING id', [
+      parseInt(req.params.id || '0'),
+    ]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Plan not found' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete plan' });
   }
 });
 

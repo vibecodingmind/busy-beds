@@ -10,6 +10,7 @@ export interface Hotel {
   images: string[];
   latitude: number | null;
   longitude: number | null;
+  booking_url: string | null;
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: 'daily' | 'weekly' | 'monthly';
@@ -17,10 +18,24 @@ export interface Hotel {
   updated_at: Date;
 }
 
-export async function findAllHotels(limit = 50, offset = 0): Promise<Hotel[]> {
+export async function findAllHotels(
+  limit = 50,
+  offset = 0,
+  opts?: { search?: string; sort?: 'name' | 'location' }
+): Promise<Hotel[]> {
+  let where = '';
+  const params: unknown[] = [];
+  let i = 1;
+  if (opts?.search?.trim()) {
+    where = `WHERE name ILIKE $${i} OR location ILIKE $${i} OR description ILIKE $${i}`;
+    params.push(`%${opts.search.trim()}%`);
+    i++;
+  }
+  const sortCol = opts?.sort === 'location' ? 'location' : 'name';
+  params.push(limit, offset);
   const result = await pool.query(
-    `SELECT * FROM hotels ORDER BY name LIMIT $1 OFFSET $2`,
-    [limit, offset]
+    `SELECT * FROM hotels ${where} ORDER BY ${sortCol} NULLS LAST, name LIMIT $${i} OFFSET $${i + 1}`,
+    params
   );
   return result.rows.map((r: Record<string, unknown>) => ({
     ...r,
@@ -46,13 +61,14 @@ export async function createHotel(data: {
   images?: string[];
   latitude?: number | null;
   longitude?: number | null;
+  booking_url?: string | null;
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;
 }): Promise<Hotel> {
   const result = await pool.query(
-    `INSERT INTO hotels (name, description, location, contact_phone, contact_email, images, latitude, longitude, coupon_discount_value, coupon_limit, limit_period)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    `INSERT INTO hotels (name, description, location, contact_phone, contact_email, images, latitude, longitude, booking_url, coupon_discount_value, coupon_limit, limit_period)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
      RETURNING *`,
     [
       data.name,
@@ -63,6 +79,7 @@ export async function createHotel(data: {
       JSON.stringify(data.images || []),
       data.latitude ?? null,
       data.longitude ?? null,
+      data.booking_url || null,
       data.coupon_discount_value,
       data.coupon_limit,
       data.limit_period,
@@ -83,6 +100,7 @@ export async function updateHotel(
     images: string[];
     latitude: number | null;
     longitude: number | null;
+    booking_url: string | null;
     coupon_discount_value: string;
     coupon_limit: number;
     limit_period: string;

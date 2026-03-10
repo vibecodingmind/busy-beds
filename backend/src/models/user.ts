@@ -36,3 +36,31 @@ export async function findUserById(id: number): Promise<User | null> {
   const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
   return result.rows[0] || null;
 }
+
+export async function updateUser(
+  id: number,
+  data: { name?: string; email?: string; password_hash?: string }
+): Promise<User | null> {
+  const updates: string[] = [];
+  const values: unknown[] = [];
+  let i = 1;
+  if (data.name !== undefined) {
+    updates.push(`name = $${i++}`);
+    values.push(data.name);
+  }
+  if (data.email !== undefined) {
+    updates.push(`email = $${i++}`);
+    values.push(data.email);
+  }
+  if (data.password_hash !== undefined) {
+    updates.push(`password_hash = $${i++}`);
+    values.push(data.password_hash);
+  }
+  if (updates.length === 0) return findUserById(id);
+  values.push(id);
+  const result = await pool.query(
+    `UPDATE users SET ${updates.join(', ')} WHERE id = $${i} RETURNING *`,
+    values
+  );
+  return result.rows[0] || null;
+}

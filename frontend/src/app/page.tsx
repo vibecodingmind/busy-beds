@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export default async function HomePage() {
   let featuredHotels: Hotel[] = [];
   try {
-    const res = await hotels.list(6);
+    const res = await hotels.list({ limit: 6 });
     featuredHotels = res.hotels;
   } catch {
     // API may not be running

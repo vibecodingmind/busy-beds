@@ -64,4 +64,15 @@ router.post(
   }
 );
 
+router.post('/cancel', authMiddleware, async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
+    await subscriptionModel.cancelSubscription((req.user as JwtPayload).userId);
+    res.json({ success: true, message: 'Subscription cancelled' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to cancel' });
+  }
+});
+
 export default router;

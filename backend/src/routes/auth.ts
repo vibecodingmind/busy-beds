@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { body, validationResult } from 'express-validator';
 import * as userModel from '../models/user';
+import * as referralModel from '../models/referral';
+import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/email';
 import { authMiddleware, type JwtPayload } from '../middleware/auth';
 import { config } from '../config';
 import { Pool } from 'pg';
@@ -31,6 +33,16 @@ router.post(
 
       const hash = await bcrypt.hash(password, 10);
       const user = await userModel.createUser(email, hash, name);
+
+      const refCode = req.body.referral_code || (req.query && req.query.ref);
+      if (refCode) {
+        const referrerId = await referralModel.findReferrerByCode(String(refCode));
+        if (referrerId && referrerId !== user.id) {
+          await referralModel.createReferral(referrerId, user.id).catch(() => {});
+        }
+      }
+
+      sendWelcomeEmail(user.email, user.name).catch(() => {});
 
       const payload: JwtPayload = {
         userId: user.id,
@@ -99,6 +111,57 @@ router.get('/me', authMiddleware, async (req, res) => {
   res.json({ id: user.id, email: user.email, name: user.name, role: user.role });
 });
 
+router.put(
+  '/profile',
+  authMiddleware,
+  body('name').optional().trim().notEmpty(),
+  body('email').optional().isEmail().normalizeEmail(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+      if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
+      const { name, email } = req.body;
+      if (email) {
+        const existing = await userModel.findUserByEmail(email);
+        if (existing && existing.id !== (req.user as JwtPayload).userId) {
+          return res.status(400).json({ error: 'Email already in use' });
+        }
+      }
+      const user = await userModel.updateUser((req.user as JwtPayload).userId, { name, email });
+      if (!user) return res.status(404).json({ error: 'User not found' });
+      res.json({ id: user.id, email: user.email, name: user.name, role: user.role });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to update profile' });
+    }
+  }
+);
+
+router.put(
+  '/change-password',
+  authMiddleware,
+  body('current_password').notEmpty(),
+  body('new_password').isLength({ min: 6 }),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+      if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
+      const user = await userModel.findUserById((req.user as JwtPayload).userId);
+      if (!user) return res.status(404).json({ error: 'User not found' });
+      const match = await bcrypt.compare(req.body.current_password, user.password_hash);
+      if (!match) return res.status(400).json({ error: 'Current password is incorrect' });
+      const hash = await bcrypt.hash(req.body.new_password, 10);
+      await userModel.updateUser(user.id, { password_hash: hash });
+      res.json({ message: 'Password updated successfully' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to change password' });
+    }
+  }
+);
+
 // Forgot password
 router.post(
   '/forgot-password',
@@ -121,6 +184,7 @@ router.post(
         [user.id, token, expiresAt]
       );
       const resetUrl = `${config.frontendUrl}/reset-password?token=${token}`;
+      await sendPasswordResetEmail(user.email, resetUrl);
       if (process.env.NODE_ENV === 'development' && !process.env.RESEND_API_KEY) {
         return res.json({ message: 'Reset link (dev only)', resetUrl });
       }

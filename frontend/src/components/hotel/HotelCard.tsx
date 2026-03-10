@@ -7,6 +7,12 @@ interface HotelCardProps {
 }
 
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80';
+const DESC_LIMIT = 49;
+
+function truncate(s: string | null | undefined, len: number): string {
+  if (!s) return '';
+  return s.length <= len ? s : s.slice(0, len) + '…';
+}
 
 export default function HotelCard({ hotel }: HotelCardProps) {
   const imageUrl = hotel.images?.length ? hotel.images[0] : PLACEHOLDER;
@@ -26,7 +32,7 @@ export default function HotelCard({ hotel }: HotelCardProps) {
         </div>
         <div className="p-4">
           <h3 className="text-lg font-semibold text-zinc-900">{hotel.name}</h3>
-          <p className="mt-2 line-clamp-2 text-sm text-zinc-600">{hotel.description}</p>
+          <p className="mt-2 text-sm text-zinc-600">{truncate(hotel.description, DESC_LIMIT)}</p>
           {hotel.location && (
             <p className="mt-2 text-sm text-zinc-500">{hotel.location}</p>
           )}

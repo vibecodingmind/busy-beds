@@ -7,7 +7,9 @@ router.get('/', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
     const offset = parseInt(req.query.offset as string) || 0;
-    const hotels = await hotelModel.findAllHotels(limit, offset);
+    const search = req.query.search as string | undefined;
+    const sort = (req.query.sort as string) === 'location' ? 'location' as const : undefined;
+    const hotels = await hotelModel.findAllHotels(limit, offset, { search, sort });
     res.json({ hotels });
   } catch (err) {
     console.error(err);

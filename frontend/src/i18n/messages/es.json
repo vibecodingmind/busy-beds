@@ -1,0 +1,34 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "back": "Atrás",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "submit": "Enviar"
+  },
+  "nav": {
+    "browse": "Explorar hoteles",
+    "dashboard": "Panel",
+    "myCoupons": "Mis cupones",
+    "subscription": "Suscripción",
+    "referral": "Referir",
+    "admin": "Admin",
+    "account": "Configuración",
+    "logout": "Cerrar sesión"
+  },
+  "home": {
+    "title": "Busy Beds",
+    "subtitle": "Suscríbete para acceder a cupones de descuento en hoteles. Genera cupones únicos, muestra códigos QR al hacer check-in y ahorra en tu estadía.",
+    "getStarted": "Empezar",
+    "browseHotels": "Explorar hoteles",
+    "featuredHotels": "Hoteles destacados",
+    "viewAll": "Ver todos los hoteles"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "name": "Nombre"
+  }
+}

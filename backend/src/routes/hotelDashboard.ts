@@ -33,6 +33,26 @@ router.get('/redemptions', hotelAuthMiddleware, async (req, res) => {
   }
 });
 
+router.get('/chart', hotelAuthMiddleware, async (req, res) => {
+  try {
+    if (!req.hotel) return res.status(401).json({ error: 'Not authenticated' });
+    const days = Math.min(14, parseInt(String(req.query.days || '7'), 10) || 7);
+    const result = await pool.query(
+      `SELECT DATE(r.redeemed_at) as date, COUNT(*)::int as count
+       FROM redemptions r
+       JOIN hotel_accounts ha ON r.hotel_account_id = ha.id
+       WHERE ha.hotel_id = $1 AND r.redeemed_at >= CURRENT_DATE - $2::int
+       GROUP BY DATE(r.redeemed_at)
+       ORDER BY date`,
+      [req.hotel.hotelId, days]
+    );
+    res.json({ data: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch chart data' });
+  }
+});
+
 router.get('/stats', hotelAuthMiddleware, async (req, res) => {
   try {
     if (!req.hotel) return res.status(401).json({ error: 'Not authenticated' });

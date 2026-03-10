@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import { subscriptions } from '@/lib/api';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { subscriptions, stripe } from '@/lib/api';
 import type { SubscriptionPlan } from '@/lib/api';
 
-export default function SubscriptionPage() {
+function SubscriptionContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [currentSub, setCurrentSub] = useState<{
     plan: SubscriptionPlan;
@@ -28,13 +29,43 @@ export default function SubscriptionPage() {
       }).catch(() => {});
     }
   }, [user]);
+  useEffect(() => {
+    if (searchParams.get('success') && user) {
+      subscriptions.me().then((r) => {
+        if (r.subscription) setCurrentSub(r.subscription as { plan: SubscriptionPlan; current_period_end: string });
+      }).catch(() => {});
+      router.replace('/subscription');
+    }
+  }, [searchParams, user, router]);
 
   const handleSubscribe = async (planId: number) => {
     setLoading(String(planId));
     try {
+      const session = await stripe.createCheckoutSession(planId);
+      if (session?.url) {
+        window.location.href = session.url;
+        return;
+      }
+    } catch {
+      // Stripe not configured, fall through to direct subscribe
+    }
+    try {
       await subscriptions.subscribe(planId);
       const r = await subscriptions.me();
       if (r.subscription) setCurrentSub(r.subscription as { plan: SubscriptionPlan; current_period_end: string });
+    } catch {
+      // ignore
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!confirm('Cancel your subscription? You will keep access until the end of the billing period.')) return;
+    setLoading('cancel');
+    try {
+      await subscriptions.cancel();
+      setCurrentSub(null);
     } catch {
       // ignore
     } finally {
@@ -52,6 +83,15 @@ export default function SubscriptionPage() {
           ? `Current plan: ${currentSub.plan.name} (${currentSub.plan.monthly_coupon_limit} coupons/month)`
           : 'Choose a plan to start generating coupons.'}
       </p>
+      {currentSub && (
+        <button
+          onClick={handleCancel}
+          disabled={loading !== null}
+          className="mt-4 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm text-red-700 hover:bg-red-50 disabled:opacity-50"
+        >
+          Cancel Subscription
+        </button>
+      )}
       <div className="mt-8 grid gap-6 sm:grid-cols-3">
         {plans.map((plan) => (
           <div
@@ -81,5 +121,13 @@ export default function SubscriptionPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function SubscriptionPage() {
+  return (
+    <Suspense fallback={<div className="py-8">Loading...</div>}>
+      <SubscriptionContent />
+    </Suspense>
   );
 }

@@ -29,6 +29,26 @@ router.post(
   }
 );
 
+// Cancel coupon (traveler auth)
+router.post(
+  '/cancel',
+  authMiddleware,
+  body('coupon_id').isInt(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+      if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
+      const ok = await couponModel.cancelCoupon(req.body.coupon_id, (req.user as JwtPayload).userId);
+      if (!ok) return res.status(404).json({ error: 'Coupon not found or already used' });
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to cancel' });
+    }
+  }
+);
+
 // Get user's coupons (traveler auth)
 router.get('/', authMiddleware, async (req, res) => {
   try {

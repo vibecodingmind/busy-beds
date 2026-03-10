@@ -3,19 +3,23 @@
 import { QRCodeSVG } from 'qrcode.react';
 
 interface CouponQRCardProps {
+  id?: number;
   code: string;
   hotelName: string;
   discountValue: string;
   expiresAt: string;
   status: string;
+  onCancel?: (id: number) => void;
 }
 
 export default function CouponQRCard({
+  id,
   code,
   hotelName,
   discountValue,
   expiresAt,
   status,
+  onCancel,
 }: CouponQRCardProps) {
   const redeemUrl =
     typeof window !== 'undefined'
@@ -41,11 +45,21 @@ export default function CouponQRCard({
                 ? 'bg-emerald-100 text-emerald-800'
                 : status === 'redeemed'
                   ? 'bg-zinc-200 text-zinc-700'
-                  : 'bg-amber-100 text-amber-800'
+                  : status === 'cancelled'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-amber-100 text-amber-800'
             }`}
           >
             {status}
           </span>
+          {status === 'active' && id !== undefined && onCancel && (
+            <button
+              onClick={() => onCancel(id)}
+              className="mt-2 rounded border border-red-200 bg-white px-2 py-1 text-xs text-red-600 hover:bg-red-50"
+            >
+              Cancel coupon
+            </button>
+          )}
         </div>
       </div>
     </div>
