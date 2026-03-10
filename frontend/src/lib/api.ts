@@ -183,7 +183,7 @@ export const stripe = {
       body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
     }),
   connectOnboard: () =>
-    api<{ url: string }>('/stripe/connect/onboard', {
+    api<{ url: string | null; message?: string }>('/stripe/connect/onboard', {
       method: 'POST',
     }),
   connectComplete: () =>
