@@ -62,7 +62,7 @@ export default function StarRating({
                 }
               }}
               className={`p-0.5 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-1 rounded ${
-                isFilled ? 'text-amber-500' : 'text-zinc-300 dark:text-zinc-600'
+                isFilled ? 'text-amber-500' : 'text-zinc-400 dark:text-zinc-500'
               }`}
               aria-label={`${starValue} star${starValue > 1 ? 's' : ''}`}
             >
@@ -80,7 +80,7 @@ export default function StarRating({
         <StarFilled key={`f-${i}`} className={`${sizeClass} text-amber-500`} />
       ))}
       {Array.from({ length: emptyStars }, (_, i) => (
-        <StarEmpty key={`e-${i}`} className={`${sizeClass} text-zinc-300 dark:text-zinc-600`} />
+        <StarEmpty key={`e-${i}`} className={`${sizeClass} text-zinc-400 dark:text-zinc-500`} />
       ))}
     </span>
   );

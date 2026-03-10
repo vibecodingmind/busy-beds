@@ -30,7 +30,7 @@ export default function HotelsMapView({ hotels }: HotelsMapViewProps) {
     return (
       <div className="flex h-[400px] flex-col items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/50">
         <p className="text-zinc-500 dark:text-zinc-400">No hotels with location data to show on map.</p>
-        <p className="mt-2 text-sm text-zinc-400">Browse the list view instead.</p>
+        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">Browse the list view instead.</p>
       </div>
     );
   }
