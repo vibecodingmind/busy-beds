@@ -36,8 +36,9 @@ router.get('/', async (req: Request, res: Response) => {
 
     // 3. Test users
     const users = [
-      { email: 'admin@busybeds.com', password: 'admin123', name: 'Admin', role: 'admin' },
-      { email: 'guest@busybeds.com', password: 'guest123', name: 'Test Guest', role: 'user' },
+      { email: 'admin@busybeds.com', password: 'Admin123!', name: 'Admin', role: 'admin' },
+      { email: 'guest@busybeds.com', password: 'Guest123!', name: 'Test Guest', role: 'user' },
+      { email: 'demo@busybeds.com', password: 'Demo123!', name: 'Demo User', role: 'user' },
     ];
     for (const u of users) {
       const hash = await bcrypt.hash(u.password, 10);
@@ -49,10 +50,33 @@ router.get('/', async (req: Request, res: Response) => {
       );
     }
 
+    // 4. Give guests an active Basic subscription so they can generate coupons
+    const planRes = await pool.query('SELECT id FROM subscription_plans WHERE name = $1', ['Basic']);
+    const planId = planRes.rows[0]?.id;
+    if (planId) {
+      const now = new Date();
+      const periodEnd = new Date(now);
+      periodEnd.setMonth(periodEnd.getMonth() + 1);
+      for (const email of ['guest@busybeds.com', 'demo@busybeds.com']) {
+        const userRes = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+        const userId = userRes.rows[0]?.id;
+        if (userId) {
+          await pool.query(
+            `INSERT INTO subscriptions (user_id, plan_id, status, current_period_start, current_period_end)
+             VALUES ($1, $2, 'active', $3, $4)
+             ON CONFLICT (user_id) DO UPDATE SET plan_id = $2, status = 'active',
+               current_period_start = $3, current_period_end = $4`,
+            [userId, planId, now, periodEnd]
+          );
+        }
+      }
+    }
+
+    // 5. Hotel account
     const hotelRes = await pool.query('SELECT id FROM hotels WHERE name = $1', ['Grand Plaza Hotel']);
     const hotelId = hotelRes.rows[0]?.id;
     if (hotelId) {
-      const hash = await bcrypt.hash('hotel123', 10);
+      const hash = await bcrypt.hash('Hotel123!', 10);
       const existing = await pool.query('SELECT id FROM hotel_accounts WHERE hotel_id = $1', [hotelId]);
       if (existing.rows.length > 0) {
         await pool.query(

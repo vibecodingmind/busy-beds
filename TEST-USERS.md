@@ -2,23 +2,26 @@
 
 Use these accounts for local development and staging. **Change passwords in production.**
 
-## Guest / Traveler
+**Tip:** If login fails, re-run the seed to reset passwords and subscriptions (replace existing test users).
+
+## Guest / Traveler (with Basic subscription – can generate coupons)
 
 | Email | Password | Use |
 |-------|----------|-----|
-| guest@busybeds.com | guest123 | Browse hotels, subscribe, generate coupons |
+| guest@busybeds.com | Guest123! | Full demo – browse, generate coupons |
+| demo@busybeds.com | Demo123! | Alternative guest – same as above |
 
 ## Admin
 
 | Email | Password | Use |
 |-------|----------|-----|
-| admin@busybeds.com | admin123 | Manage hotels, approve hotel owners, view coupons |
+| admin@busybeds.com | Admin123! | Manage hotels, approve hotel owners, view coupons |
 
 ## Hotel Owner
 
 | Email | Password | Hotel | Use |
 |-------|----------|-------|-----|
-| hotel@busybeds.com | hotel123 | Grand Plaza Hotel | Redeem coupons, view redemptions |
+| hotel@busybeds.com | Hotel123! | Grand Plaza Hotel | Redeem coupons, view redemptions |
 
 ---
 

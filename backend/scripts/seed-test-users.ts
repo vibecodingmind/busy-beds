@@ -8,12 +8,13 @@ import bcrypt from 'bcrypt';
 import { pool } from '../src/config/db';
 
 const TEST_USERS = [
-  { email: 'admin@busybeds.com', password: 'admin123', name: 'Admin', role: 'admin' },
-  { email: 'guest@busybeds.com', password: 'guest123', name: 'Test Guest', role: 'user' },
+  { email: 'admin@busybeds.com', password: 'Admin123!', name: 'Admin', role: 'admin' },
+  { email: 'guest@busybeds.com', password: 'Guest123!', name: 'Test Guest', role: 'user' },
+  { email: 'demo@busybeds.com', password: 'Demo123!', name: 'Demo User', role: 'user' },
 ];
 
 const HOTEL_ACCOUNTS = [
-  { email: 'hotel@busybeds.com', password: 'hotel123', name: 'Hotel Manager', hotelName: 'Grand Plaza Hotel' },
+  { email: 'hotel@busybeds.com', password: 'Hotel123!', name: 'Hotel Manager', hotelName: 'Grand Plaza Hotel' },
 ];
 
 async function main() {
@@ -26,6 +27,29 @@ async function main() {
       [u.email, hash, u.name, u.role]
     );
     console.log(`User ${u.email} (${u.role}) created/updated.`);
+  }
+
+  // Give guest and demo an active Basic subscription so they can generate coupons
+  const planRes = await pool.query('SELECT id FROM subscription_plans WHERE name = $1', ['Basic']);
+  const planId = planRes.rows[0]?.id;
+  if (planId) {
+    const now = new Date();
+    const periodEnd = new Date(now);
+    periodEnd.setMonth(periodEnd.getMonth() + 1);
+    for (const u of TEST_USERS.filter((x) => x.role === 'user')) {
+      const userRes = await pool.query('SELECT id FROM users WHERE email = $1', [u.email]);
+      const userId = userRes.rows[0]?.id;
+      if (userId) {
+        await pool.query(
+          `INSERT INTO subscriptions (user_id, plan_id, status, current_period_start, current_period_end)
+           VALUES ($1, $2, 'active', $3, $4)
+           ON CONFLICT (user_id) DO UPDATE SET plan_id = $2, status = 'active',
+             current_period_start = $3, current_period_end = $4`,
+          [userId, planId, now, periodEnd]
+        );
+        console.log(`Subscription (Basic) added for ${u.email}`);
+      }
+    }
   }
 
   for (const h of HOTEL_ACCOUNTS) {
