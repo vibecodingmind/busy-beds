@@ -3,10 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { HotelAuthProvider } from '@/contexts/HotelAuthContext';
-import { ThemeProvider } from '@/contexts/ThemeContext';
 import { I18nProvider } from '@/contexts/I18nContext';
 import { ToastProvider } from '@/contexts/ToastContext';
-import ThemeScript from '@/components/ThemeScript';
 import PWARegister from '@/components/PWARegister';
 import ConditionalLayout from '@/components/layout/ConditionalLayout';
 
@@ -28,10 +26,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#171717' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
-  ],
+  themeColor: '#0a0a0a',
 };
 
 export default function RootLayout({
@@ -40,21 +35,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased bg-[var(--background)] text-[var(--foreground)]`}>
-        <ThemeScript />
         <PWARegister />
-        <ThemeProvider>
-          <I18nProvider>
+        <I18nProvider>
           <ToastProvider>
-          <AuthProvider>
-            <HotelAuthProvider>
-              <ConditionalLayout>{children}</ConditionalLayout>
-            </HotelAuthProvider>
-          </AuthProvider>
+            <AuthProvider>
+              <HotelAuthProvider>
+                <ConditionalLayout>{children}</ConditionalLayout>
+              </HotelAuthProvider>
+            </AuthProvider>
           </ToastProvider>
-          </I18nProvider>
-        </ThemeProvider>
+        </I18nProvider>
       </body>
     </html>
   );

@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useContext, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { HotelAuthContext } from '@/contexts/HotelAuthContext';
-import ThemeToggle from '@/components/ThemeToggle';
 import { HouseIcon, UserIcon } from '@/components/icons';
 
 const menuLink = "flex items-center gap-2 px-4 py-2.5 text-sm text-black hover:bg-black/5 dark:hover:bg-zinc-700/80 dark:text-zinc-300 dark:hover:bg-zinc-700/80 transition-colors";
@@ -30,7 +29,6 @@ export default function Header() {
             <HouseIcon />
             Browse Properties
           </Link>
-          <ThemeToggle />
           {user ? (
             <>
               <div className="relative">

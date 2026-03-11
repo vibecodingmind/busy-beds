@@ -1,23 +1,8 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* Light mode - pure white bg, deep black text for max contrast */
+/* Dark mode - deep with glassy surfaces (default) */
 :root {
-  --background: #ffffff;
-  --foreground: #000000;
-  --card-bg: rgba(255, 255, 255, 0.95);
-  --card-border: rgba(0, 0, 0, 0.1);
-  --border: #000000;
-  --muted: #000000;
-  --primary: #FF385C;
-  --primary-hover: #e31c5f;
-  --primary-light: #fff1f2;
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.1);
-}
-
-/* Dark mode - deep with glassy surfaces */
-.dark {
   --background: #0f172a;
   --foreground: #f1f5f9;
   --card-bg: rgba(30, 41, 59, 0.6);
