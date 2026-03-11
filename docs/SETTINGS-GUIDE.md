@@ -106,6 +106,21 @@ Or update directly in the database if you have access.
 3. Complete platform onboarding
 4. Your `STRIPE_SECRET_KEY` is for the Connect platform – no extra config needed
 
+### 3.4 PayPal (Subscriptions)
+
+You can offer both Stripe and PayPal on subscription plans.
+
+| Variable | Where to get it |
+|----------|-----------------|
+| `PAYPAL_CLIENT_ID` | [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/) → My Apps & Credentials → your app → Client ID |
+| `PAYPAL_CLIENT_SECRET` | Same app → Secret |
+| `PAYPAL_SANDBOX` | Set to `true` for sandbox (testing); omit or `false` for live |
+
+1. Add the variables to Railway (backend).
+2. In PayPal: create a **Product** and a **Subscription plan** (billing cycle, price). Copy the **Plan ID** (e.g. `P-xxx`).
+3. In **Admin → Plans**, edit the plan and set **PayPal Plan ID** to that Plan ID.
+4. (Optional) For webhooks: [PayPal Webhooks](https://developer.paypal.com/dashboard/webhooks) → Add webhook → URL: `https://YOUR-RAILWAY-URL/api/v1/paypal/webhook` → subscribe to `BILLING.SUBSCRIPTION.*` events. Without webhooks, subscriptions are still created when the user returns from PayPal; webhooks improve reliability for cancellations and renewals.
+
 ---
 
 ## Part 4: One-Time Seed
@@ -154,7 +169,7 @@ Use your Railway Postgres URL (from Railway → PostgreSQL → Connect → Conne
 | Backend health | `https://YOUR-RAILWAY-URL/health` → `{"status":"ok"}` |
 | Frontend loads | Open Vercel URL |
 | Register | Create a test user |
-| Subscribe | Requires plans with `stripe_price_id` set |
+| Subscribe | Requires plans with `stripe_price_id` and/or `paypal_plan_id` set (Admin → Plans) |
 | Admin | Login with admin credentials from seed |
 | Hotel redemption | Create hotel account via Admin → Hotels → Edit → Create Hotel Account |
 
@@ -170,6 +185,9 @@ JWT_SECRET       → openssl rand -base64 32
 FRONTEND_URL     → https://your-app.vercel.app
 STRIPE_SECRET_KEY
 STRIPE_WEBHOOK_SECRET
+PAYPAL_CLIENT_ID          # optional, for PayPal subscriptions
+PAYPAL_CLIENT_SECRET
+# PAYPAL_SANDBOX=true      # use sandbox for testing
 ```
 
 ### Vercel (minimum)
@@ -180,6 +198,6 @@ NEXT_PUBLIC_API_URL → https://your-backend.up.railway.app/api/v1
 
 ### After seed
 
-- Set `stripe_price_id` on each plan (Admin → Plans)
+- Set `stripe_price_id` and/or `paypal_plan_id` on each plan (Admin → Plans)
 - Add hotels if not seeded
 - Create hotel accounts for redemption testing

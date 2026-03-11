@@ -1,5 +1,11 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
 
+export async function getPublicSettings(): Promise<Record<string, string>> {
+  const res = await fetch(`${API_BASE}/settings/public`);
+  if (!res.ok) throw new Error('Failed to fetch settings');
+  return res.json();
+}
+
 function getToken(type: 'user' | 'hotel' = 'user'): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem(type === 'user' ? 'token' : 'hotelToken');
@@ -209,6 +215,14 @@ export const stripe = {
     }),
 };
 
+export const paypal = {
+  createSubscription: (planId: number, successUrl?: string, cancelUrl?: string) =>
+    api<{ url: string; subscriptionId: string }>('/paypal/create-subscription', {
+      method: 'POST',
+      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
+    }),
+};
+
 // Reviews
 export const reviews = {
   recent: (limit?: number) =>
@@ -302,11 +316,20 @@ export const hotelDashboard = {
     ),
 };
 
-// Admin
+// Admin (hotels include managing_account)
+export interface ManagingAccount {
+  id: number;
+  email: string;
+  name: string;
+  approved: boolean;
+}
+
+export type AdminHotel = Hotel & { managing_account: ManagingAccount | null };
+
 export const admin = {
   hotels: {
-    list: () => api<{ hotels: Hotel[] }>('/admin/hotels'),
-    get: (id: number) => api<Hotel>(`/admin/hotels/${id}`),
+    list: () => api<{ hotels: AdminHotel[] }>('/admin/hotels'),
+    get: (id: number) => api<AdminHotel>(`/admin/hotels/${id}`),
     create: (data: Partial<Hotel>) =>
       api<Hotel>('/admin/hotels', { method: 'POST', body: JSON.stringify(data) }),
     update: (id: number, data: Partial<Hotel>) =>
@@ -337,12 +360,46 @@ export const admin = {
       total_redemptions: number;
     }>('/admin/analytics'),
   plans: {
-    list: () => api<{ plans: { id: number; name: string; monthly_coupon_limit: number; price: number; stripe_price_id: string | null }[] }>('/admin/plans'),
-    create: (data: { name: string; monthly_coupon_limit: number; price: number; stripe_price_id?: string }) =>
-      api<object>('/admin/plans', { method: 'POST', body: JSON.stringify(data) }),
-    update: (id: number, data: Partial<{ name: string; monthly_coupon_limit: number; price: number; stripe_price_id: string }>) =>
-      api<object>(`/admin/plans/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    list: () =>
+      api<{
+        plans: {
+          id: number;
+          name: string;
+          monthly_coupon_limit: number;
+          price: number;
+          stripe_price_id: string | null;
+          paypal_plan_id: string | null;
+        }[];
+      }>('/admin/plans'),
+    create: (data: {
+      name: string;
+      monthly_coupon_limit: number;
+      price: number;
+      stripe_price_id?: string;
+      paypal_plan_id?: string;
+    }) => api<object>('/admin/plans', { method: 'POST', body: JSON.stringify(data) }),
+    update: (
+      id: number,
+      data: Partial<{
+        name: string;
+        monthly_coupon_limit: number;
+        price: number;
+        stripe_price_id: string;
+        paypal_plan_id: string;
+      }>
+    ) => api<object>(`/admin/plans/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: number) => api<{ success: boolean }>(`/admin/plans/${id}`, { method: 'DELETE' }),
+  },
+  settings: {
+    list: () =>
+      api<{
+        settings: { key: string; label: string; value: string; masked: boolean; group: string }[];
+      }>('/admin/settings'),
+    update: (updates: Record<string, string>) =>
+      api<{ success: boolean }>('/admin/settings', {
+        method: 'PATCH',
+        body: JSON.stringify(updates),
+      }),
   },
 };
 
@@ -387,6 +444,8 @@ export interface SubscriptionPlan {
   name: string;
   monthly_coupon_limit: number;
   price: number;
+  stripe_price_id?: string | null;
+  paypal_plan_id?: string | null;
 }
 
 export interface User {

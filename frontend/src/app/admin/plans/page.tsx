@@ -11,10 +11,12 @@ export default function AdminPlansPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const toast = useToast();
-  const [plans, setPlans] = useState<{ id: number; name: string; monthly_coupon_limit: number; price: number; stripe_price_id: string | null }[]>([]);
-  const [form, setForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, stripe_price_id: '' });
+  const [plans, setPlans] = useState<
+    { id: number; name: string; monthly_coupon_limit: number; price: number; stripe_price_id: string | null; paypal_plan_id: string | null }[]
+  >([]);
+  const [form, setForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, stripe_price_id: '', paypal_plan_id: '' });
   const [editing, setEditing] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, stripe_price_id: '' });
+  const [editForm, setEditForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, stripe_price_id: '', paypal_plan_id: '' });
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== 'admin')) router.push('/');
@@ -33,8 +35,9 @@ export default function AdminPlansPage() {
         monthly_coupon_limit: form.monthly_coupon_limit,
         price: form.price,
         stripe_price_id: form.stripe_price_id || undefined,
+        paypal_plan_id: form.paypal_plan_id || undefined,
       });
-      setForm({ name: '', monthly_coupon_limit: 5, price: 0, stripe_price_id: '' });
+      setForm({ name: '', monthly_coupon_limit: 5, price: 0, stripe_price_id: '', paypal_plan_id: '' });
       toast('Plan created', 'success');
       admin.plans.list().then((r) => setPlans(r.plans)).catch(() => {});
     } catch {
@@ -49,6 +52,7 @@ export default function AdminPlansPage() {
         monthly_coupon_limit: editForm.monthly_coupon_limit,
         price: editForm.price,
         stripe_price_id: editForm.stripe_price_id || undefined,
+        paypal_plan_id: editForm.paypal_plan_id || undefined,
       });
       setEditing(null);
       toast('Plan updated', 'success');
@@ -108,6 +112,12 @@ export default function AdminPlansPage() {
           onChange={(e) => setForm((f) => ({ ...f, stripe_price_id: e.target.value }))}
           className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
         />
+        <input
+          placeholder="PayPal Plan ID (optional)"
+          value={form.paypal_plan_id}
+          onChange={(e) => setForm((f) => ({ ...f, paypal_plan_id: e.target.value }))}
+          className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+        />
         <button type="submit" className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700">Create</button>
       </form>
 
@@ -119,6 +129,8 @@ export default function AdminPlansPage() {
                 <input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} className="rounded border px-2 py-1 dark:bg-zinc-800 dark:text-zinc-100" />
                 <input type="number" min={1} value={editForm.monthly_coupon_limit} onChange={(e) => setEditForm((f) => ({ ...f, monthly_coupon_limit: parseInt(e.target.value) || 0 }))} className="w-20 rounded border px-2 py-1 dark:bg-zinc-800 dark:text-zinc-100" />
                 <input type="number" step="0.01" value={editForm.price} onChange={(e) => setEditForm((f) => ({ ...f, price: parseFloat(e.target.value) || 0 }))} className="w-20 rounded border px-2 py-1 dark:bg-zinc-800 dark:text-zinc-100" />
+                <input placeholder="Stripe ID" value={editForm.stripe_price_id} onChange={(e) => setEditForm((f) => ({ ...f, stripe_price_id: e.target.value }))} className="w-32 rounded border px-2 py-1 text-xs dark:bg-zinc-800 dark:text-zinc-100" />
+                <input placeholder="PayPal Plan ID" value={editForm.paypal_plan_id} onChange={(e) => setEditForm((f) => ({ ...f, paypal_plan_id: e.target.value }))} className="w-32 rounded border px-2 py-1 text-xs dark:bg-zinc-800 dark:text-zinc-100" />
                 <div className="flex gap-2">
                   <button onClick={() => handleUpdate(p.id)} className="rounded bg-emerald-600 px-2 py-1 text-sm text-white">Save</button>
                   <button onClick={() => setEditing(null)} className="rounded bg-black/10 dark:bg-zinc-600 px-2 py-1 text-sm dark:bg-zinc-600">Cancel</button>
@@ -129,7 +141,21 @@ export default function AdminPlansPage() {
                 <span className="font-medium text-black dark:text-zinc-100">{p.name}</span>
                 <span className="text-black dark:text-zinc-400">{p.monthly_coupon_limit} coupons/mo · ${p.price}</span>
                 <div className="flex gap-2">
-                  <button onClick={() => { setEditing(p.id); setEditForm({ name: p.name, monthly_coupon_limit: p.monthly_coupon_limit, price: p.price, stripe_price_id: p.stripe_price_id || '' }); }} className="rounded bg-zinc-200 px-2 py-1 text-sm dark:bg-zinc-600">Edit</button>
+                  <button
+                    onClick={() => {
+                      setEditing(p.id);
+                      setEditForm({
+                        name: p.name,
+                        monthly_coupon_limit: p.monthly_coupon_limit,
+                        price: p.price,
+                        stripe_price_id: p.stripe_price_id || '',
+                        paypal_plan_id: p.paypal_plan_id || '',
+                      });
+                    }}
+                    className="rounded bg-zinc-200 px-2 py-1 text-sm dark:bg-zinc-600"
+                  >
+                    Edit
+                  </button>
                   <button onClick={() => handleDelete(p.id)} className="rounded bg-red-100 px-2 py-1 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-400">Delete</button>
                 </div>
               </>

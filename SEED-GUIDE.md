@@ -153,6 +153,18 @@ Or open in browser: `https://your-backend.railway.app/api/v1/seed?secret=YOUR_SE
 
 Expected response: `{"success":true,"message":"Seed completed..."}`
 
+### 3. Seed reviews only (add a few reviews to all properties)
+
+If you already have hotels and only need review data:
+
+```bash
+curl "https://YOUR_BACKEND_URL/api/v1/seed/reviews?secret=YOUR_SEED_SECRET"
+```
+
+Or open in browser: `https://your-backend.railway.app/api/v1/seed/reviews?secret=YOUR_SEED_SECRET`
+
+Uses the same `SEED_SECRET` as above. Creates reviewer users and 3–4 reviews per hotel.
+
 ---
 
 ## Quick reference

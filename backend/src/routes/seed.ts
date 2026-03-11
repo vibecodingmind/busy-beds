@@ -3,6 +3,7 @@
  * Call from browser or curl while backend is running on Railway.
  *
  * Usage: GET /api/v1/seed?secret=YOUR_SEED_SECRET
+ *        GET /api/v1/seed/reviews?secret=YOUR_SEED_SECRET  (reviews only)
  * Set SEED_SECRET in Railway env vars.
  */
 import { Router, Request, Response } from 'express';
@@ -13,10 +14,32 @@ import { pool } from '../config/db';
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response) => {
+const REVIEWER_USERS = [
+  { email: 'reviewer1@example.com', password: 'Review1!', name: 'Alex' },
+  { email: 'reviewer2@example.com', password: 'Review2!', name: 'Sam' },
+  { email: 'reviewer3@example.com', password: 'Review3!', name: 'Jordan' },
+  { email: 'reviewer4@example.com', password: 'Review4!', name: 'Casey' },
+];
+
+const SAMPLE_COMMENTS = [
+  'Great stay, would come back.',
+  'Clean rooms and friendly staff.',
+  'Good value for the location.',
+  'Comfortable and quiet.',
+  'Nice amenities and breakfast.',
+  'Perfect for a weekend trip.',
+  'Staff went above and beyond.',
+  'Will recommend to friends.',
+];
+
+function checkSecret(req: Request): boolean {
   const secret = req.query.secret as string;
   const expected = process.env.SEED_SECRET;
-  if (!expected || secret !== expected) {
+  return !!expected && secret === expected;
+}
+
+router.get('/', async (req: Request, res: Response) => {
+  if (!checkSecret(req)) {
     res.status(403).json({ error: 'Invalid or missing secret' });
     return;
   }
@@ -97,6 +120,63 @@ router.get('/', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('[seed] Failed:', err);
     res.status(500).json({ error: 'Seed failed', details: err instanceof Error ? err.message : String(err) });
+  }
+});
+
+/** Seed reviews only – adds 3–4 reviews per hotel. Use when you already have hotels and just need review data. */
+router.get('/reviews', async (req: Request, res: Response) => {
+  if (!checkSecret(req)) {
+    res.status(403).json({ error: 'Invalid or missing secret' });
+    return;
+  }
+
+  try {
+    const ids: number[] = [];
+    for (const u of REVIEWER_USERS) {
+      const hash = await bcrypt.hash(u.password, 10);
+      const res = await pool.query(
+        `INSERT INTO users (email, password_hash, name, role)
+         VALUES ($1, $2, $3, 'user')
+         ON CONFLICT (email) DO UPDATE SET password_hash = $2, name = $3
+         RETURNING id`,
+        [u.email, hash, u.name]
+      );
+      ids.push(res.rows[0].id);
+    }
+
+    const hotelsRes = await pool.query('SELECT id FROM hotels ORDER BY id');
+    const hotelIds = hotelsRes.rows.map((r: { id: number }) => r.id);
+
+    if (hotelIds.length === 0) {
+      res.json({ success: true, message: 'No hotels to seed. Add hotels first.', inserted: 0 });
+      return;
+    }
+
+    let inserted = 0;
+    let commentIndex = 0;
+    for (const hotelId of hotelIds) {
+      const numReviews = Math.min(3 + (hotelId % 2), ids.length);
+      const shuffled = [...ids].sort(() => Math.random() - 0.5);
+      const reviewers = shuffled.slice(0, numReviews);
+      for (const userId of reviewers) {
+        const rating = 3 + Math.floor(Math.random() * 3);
+        const comment = SAMPLE_COMMENTS[commentIndex % SAMPLE_COMMENTS.length];
+        commentIndex++;
+        await pool.query(
+          `INSERT INTO hotel_reviews (hotel_id, user_id, rating, comment)
+           VALUES ($1, $2, $3, $4)
+           ON CONFLICT (hotel_id, user_id) DO UPDATE SET rating = $3, comment = $4, created_at = CURRENT_TIMESTAMP`,
+          [hotelId, userId, rating, comment]
+        );
+        inserted++;
+      }
+    }
+
+    console.log('[seed] Reviews:', inserted, 'across', hotelIds.length, 'hotels');
+    res.json({ success: true, message: `Seeded ${inserted} reviews across ${hotelIds.length} properties.`, inserted });
+  } catch (err) {
+    console.error('[seed] Reviews failed:', err);
+    res.status(500).json({ error: 'Seed reviews failed', details: err instanceof Error ? err.message : String(err) });
   }
 });
 

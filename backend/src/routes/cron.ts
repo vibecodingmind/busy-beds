@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { pool } from '../config/db';
 import { sendCouponExpiryReminder } from '../services/email';
+import { getSetting } from '../services/settings';
 
 const router = Router();
-const CRON_SECRET = process.env.CRON_SECRET || process.env.SEED_SECRET;
 
 router.post('/coupon-expiry-reminders', async (req, res) => {
-  if (CRON_SECRET && req.headers['x-cron-secret'] !== CRON_SECRET && req.query?.secret !== CRON_SECRET) {
+  const cronSecret = (await getSetting('cron_secret')) || process.env.CRON_SECRET || process.env.SEED_SECRET;
+  if (cronSecret && req.headers['x-cron-secret'] !== cronSecret && req.query?.secret !== cronSecret) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {

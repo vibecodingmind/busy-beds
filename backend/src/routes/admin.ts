@@ -6,17 +6,29 @@ import * as hotelModel from '../models/hotel';
 import * as hotelAccountModel from '../models/hotelAccount';
 import { sendHotelApprovalEmail } from '../services/email';
 import * as userModel from '../models/user';
+import { getAllForAdmin, updateSettings } from '../services/settings';
 import { pool } from '../config/db';
 
 const router = Router();
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
-// Hotels CRUD
+// Hotels CRUD (with managing_account for admin visibility)
 router.get('/hotels', async (_req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM hotels ORDER BY name');
-    res.json({ hotels: result.rows });
+    const result = await pool.query(
+      `SELECT h.*,
+        CASE WHEN ha.id IS NOT NULL THEN json_build_object('id', ha.id, 'email', ha.email, 'name', ha.name, 'approved', ha.approved)
+             ELSE NULL END AS managing_account
+       FROM hotels h
+       LEFT JOIN hotel_accounts ha ON h.id = ha.hotel_id
+       ORDER BY h.name`
+    );
+    const hotels = result.rows.map((row: Record<string, unknown>) => {
+      const { managing_account, ...hotel } = row;
+      return { ...hotel, managing_account: managing_account ?? null };
+    });
+    res.json({ hotels });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch hotels' });
@@ -63,7 +75,11 @@ router.get('/hotels/:id', async (req, res) => {
   try {
     const hotel = await hotelModel.findHotelById(parseInt(req.params?.id ?? '0'));
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
-    res.json(hotel);
+    const account = await hotelAccountModel.findHotelAccountByHotelId(hotel.id);
+    const managing_account = account
+      ? { id: account.id, email: account.email, name: account.name, approved: account.approved }
+      : null;
+    res.json({ ...hotel, managing_account });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch hotel' });
@@ -224,15 +240,16 @@ router.post(
   body('monthly_coupon_limit').isInt({ min: 1 }),
   body('price').isFloat({ min: 0 }),
   body('stripe_price_id').optional().trim(),
+  body('paypal_plan_id').optional().trim(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-      const { name, monthly_coupon_limit, price, stripe_price_id } = req.body;
+      const { name, monthly_coupon_limit, price, stripe_price_id, paypal_plan_id } = req.body;
       const result = await pool.query(
-        `INSERT INTO subscription_plans (name, monthly_coupon_limit, price, stripe_price_id)
-         VALUES ($1, $2, $3, $4) RETURNING *`,
-        [name, monthly_coupon_limit, price, stripe_price_id || null]
+        `INSERT INTO subscription_plans (name, monthly_coupon_limit, price, stripe_price_id, paypal_plan_id)
+         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [name, monthly_coupon_limit, price, stripe_price_id || null, paypal_plan_id || null]
       );
       res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -245,7 +262,7 @@ router.post(
 router.put('/plans/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id || '0');
-    const { name, monthly_coupon_limit, price, stripe_price_id } = req.body;
+    const { name, monthly_coupon_limit, price, stripe_price_id, paypal_plan_id } = req.body;
     const updates: string[] = [];
     const values: unknown[] = [];
     let i = 2;
@@ -253,6 +270,7 @@ router.put('/plans/:id', async (req, res) => {
     if (monthly_coupon_limit !== undefined) { updates.push(`monthly_coupon_limit = $${i++}`); values.push(monthly_coupon_limit); }
     if (price !== undefined) { updates.push(`price = $${i++}`); values.push(price); }
     if (stripe_price_id !== undefined) { updates.push(`stripe_price_id = $${i++}`); values.push(stripe_price_id || null); }
+    if (paypal_plan_id !== undefined) { updates.push(`paypal_plan_id = $${i++}`); values.push(paypal_plan_id || null); }
     if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
     values.unshift(id);
     const result = await pool.query(
@@ -277,6 +295,31 @@ router.delete('/plans/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to delete plan' });
+  }
+});
+
+// Settings (API keys, secrets - admin only)
+router.get('/settings', async (_req, res) => {
+  try {
+    const settings = await getAllForAdmin();
+    res.json({ settings });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch settings' });
+  }
+});
+
+router.patch('/settings', async (req, res) => {
+  try {
+    const updates = req.body as Record<string, string>;
+    if (!updates || typeof updates !== 'object') {
+      return res.status(400).json({ error: 'Body must be an object of key-value pairs' });
+    }
+    await updateSettings(updates);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update settings' });
   }
 });
 

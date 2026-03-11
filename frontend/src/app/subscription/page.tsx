@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { subscriptions, stripe } from '@/lib/api';
+import { subscriptions, stripe, paypal } from '@/lib/api';
 import type { SubscriptionPlan } from '@/lib/api';
 
 function SubscriptionContent() {
@@ -38,8 +38,8 @@ function SubscriptionContent() {
     }
   }, [searchParams, user, router]);
 
-  const handleSubscribe = async (planId: number) => {
-    setLoading(String(planId));
+  const handleStripeSubscribe = async (planId: number) => {
+    setLoading(`stripe-${planId}`);
     try {
       const session = await stripe.createCheckoutSession(planId);
       if (session?.url) {
@@ -47,8 +47,27 @@ function SubscriptionContent() {
         return;
       }
     } catch {
-      // Stripe not configured, fall through to direct subscribe
+      // ignore
     }
+    setLoading(null);
+  };
+
+  const handlePayPalSubscribe = async (planId: number) => {
+    setLoading(`paypal-${planId}`);
+    try {
+      const res = await paypal.createSubscription(planId);
+      if (res?.url) {
+        window.location.href = res.url;
+        return;
+      }
+    } catch {
+      // ignore
+    }
+    setLoading(null);
+  };
+
+  const handleDirectSubscribe = async (planId: number) => {
+    setLoading(`direct-${planId}`);
     try {
       await subscriptions.subscribe(planId);
       const r = await subscriptions.me();
@@ -95,32 +114,66 @@ function SubscriptionContent() {
         )}
       </div>
       <div className="grid gap-6 sm:grid-cols-3">
-        {plans.map((plan) => (
-          <div
-            key={plan.id}
-            className={`rounded-xl border p-6 transition-colors ${
-              currentSub?.plan.id === plan.id
-                ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950/30'
-                : 'border-black/10 dark:border-zinc-700 bg-white dark:border-zinc-700 dark:bg-zinc-900'
-            }`}
-          >
-            <h3 className="font-semibold text-black dark:text-zinc-100">{plan.name}</h3>
-            <p className="mt-2 text-2xl font-bold text-black dark:text-zinc-100">${plan.price}</p>
-            <p className="text-sm text-black dark:text-zinc-400">/ month</p>
-            <p className="mt-2 text-black dark:text-zinc-400">{plan.monthly_coupon_limit} coupons per month</p>
-            <button
-              onClick={() => handleSubscribe(plan.id)}
-              disabled={loading !== null || currentSub?.plan.id === plan.id}
-              className="mt-4 w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-emerald-600 dark:hover:bg-emerald-500"
+        {plans.map((plan) => {
+          const hasStripe = !!plan.stripe_price_id;
+          const hasPayPal = !!plan.paypal_plan_id;
+          const hasPayment = hasStripe || hasPayPal;
+          const isCurrent = currentSub?.plan.id === plan.id;
+          const isLoading = loading !== null;
+
+          return (
+            <div
+              key={plan.id}
+              className={`rounded-xl border p-6 transition-colors ${
+                isCurrent
+                  ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950/30'
+                  : 'border-black/10 dark:border-zinc-700 bg-white dark:border-zinc-700 dark:bg-zinc-900'
+              }`}
             >
-              {currentSub?.plan.id === plan.id
-                ? 'Current Plan'
-                : loading === String(plan.id)
-                  ? 'Subscribing...'
-                  : 'Subscribe'}
-            </button>
-          </div>
-        ))}
+              <h3 className="font-semibold text-black dark:text-zinc-100">{plan.name}</h3>
+              <p className="mt-2 text-2xl font-bold text-black dark:text-zinc-100">${plan.price}</p>
+              <p className="text-sm text-black dark:text-zinc-400">/ month</p>
+              <p className="mt-2 text-black dark:text-zinc-400">{plan.monthly_coupon_limit} coupons per month</p>
+              <div className="mt-4 flex flex-col gap-2">
+                {isCurrent ? (
+                  <div className="rounded-lg bg-emerald-200/50 py-2.5 text-center font-medium text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200">
+                    Current Plan
+                  </div>
+                ) : (
+                  <>
+                    {hasStripe && (
+                      <button
+                        onClick={() => handleStripeSubscribe(plan.id)}
+                        disabled={isLoading}
+                        className="w-full rounded-lg bg-zinc-900 py-2.5 font-medium text-white hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                      >
+                        {loading === `stripe-${plan.id}` ? 'Redirecting…' : 'Pay with Card (Stripe)'}
+                      </button>
+                    )}
+                    {hasPayPal && (
+                      <button
+                        onClick={() => handlePayPalSubscribe(plan.id)}
+                        disabled={isLoading}
+                        className="w-full rounded-lg bg-[#0070ba] py-2.5 font-medium text-white hover:bg-[#005ea6] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {loading === `paypal-${plan.id}` ? 'Redirecting…' : 'Pay with PayPal'}
+                      </button>
+                    )}
+                    {!hasPayment && (
+                      <button
+                        onClick={() => handleDirectSubscribe(plan.id)}
+                        disabled={isLoading}
+                        className="w-full rounded-lg bg-emerald-600 py-2.5 font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                      >
+                        {loading === `direct-${plan.id}` ? 'Subscribing...' : 'Subscribe'}
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

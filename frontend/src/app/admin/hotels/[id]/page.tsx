@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { admin } from '@/lib/api';
+import type { ManagingAccount } from '@/lib/api';
 import PhotosInput from '@/components/admin/PhotosInput';
 
 export default function EditHotelPage() {
@@ -29,6 +30,7 @@ export default function EditHotelPage() {
     limit_period: 'daily',
   });
   const [accountForm, setAccountForm] = useState({ email: '', password: '', name: '' });
+  const [managingAccount, setManagingAccount] = useState<ManagingAccount | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -52,6 +54,7 @@ export default function EditHotelPage() {
         coupon_limit: h.coupon_limit,
         limit_period: h.limit_period,
       });
+      setManagingAccount(h.managing_account ?? null);
       setLoaded(true);
     }).catch(() => router.push('/admin/hotels'));
   }, [id, user, router]);
@@ -85,6 +88,8 @@ export default function EditHotelPage() {
     try {
       await admin.hotels.createAccount(id, accountForm.email, accountForm.password, accountForm.name);
       setAccountForm({ email: '', password: '', name: '' });
+      const h = await admin.hotels.get(id);
+      setManagingAccount(h.managing_account ?? null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create account');
     } finally {
@@ -246,49 +251,69 @@ export default function EditHotelPage() {
         </button>
       </form>
 
-      <h2 className="mt-12 text-lg font-semibold text-black">Create Hotel Account</h2>
-      <p className="mt-1 text-sm text-black">
-        Create an account so the hotel can log in and redeem coupons.
-      </p>
-      <form onSubmit={handleCreateAccount} className="mt-4 max-w-lg space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-black">Name</label>
-          <input
-            value={accountForm.name}
-            onChange={(e) => setAccountForm((f) => ({ ...f, name: e.target.value }))}
-            required
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
+      <h2 className="mt-12 text-lg font-semibold text-black dark:text-zinc-100">Hotel account</h2>
+      {managingAccount ? (
+        <div className="mt-4 rounded-xl border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4 max-w-lg">
+          <p className="text-sm font-medium text-black dark:text-zinc-300">Managing account</p>
+          <p className="mt-1 text-black dark:text-zinc-400">{managingAccount.name}</p>
+          <p className="text-sm text-black dark:text-zinc-400">{managingAccount.email}</p>
+          <p className="mt-2">
+            <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${managingAccount.approved ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'}`}>
+              {managingAccount.approved ? 'Approved' : 'Pending approval'}
+            </span>
+          </p>
+          {!managingAccount.approved && (
+            <Link href="/admin/hotel-accounts" className="mt-2 inline-block text-sm text-emerald-600 hover:underline dark:text-emerald-400">
+              Approve in Pending Hotel Approvals →
+            </Link>
+          )}
         </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Email</label>
-          <input
-            type="email"
-            value={accountForm.email}
-            onChange={(e) => setAccountForm((f) => ({ ...f, email: e.target.value }))}
-            required
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Password</label>
-          <input
-            type="password"
-            value={accountForm.password}
-            onChange={(e) => setAccountForm((f) => ({ ...f, password: e.target.value }))}
-            required
-            minLength={6}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-lg bg-zinc-900 px-6 py-2 font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
-        >
-          Create Account
-        </button>
-      </form>
+      ) : (
+        <>
+          <p className="mt-1 text-sm text-black dark:text-zinc-400">
+            Create an account so the hotel can log in and redeem coupons.
+          </p>
+          <form onSubmit={handleCreateAccount} className="mt-4 max-w-lg space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-black dark:text-zinc-300">Name</label>
+              <input
+                value={accountForm.name}
+                onChange={(e) => setAccountForm((f) => ({ ...f, name: e.target.value }))}
+                required
+                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-800 dark:text-zinc-100"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-black dark:text-zinc-300">Email</label>
+              <input
+                type="email"
+                value={accountForm.email}
+                onChange={(e) => setAccountForm((f) => ({ ...f, email: e.target.value }))}
+                required
+                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-800 dark:text-zinc-100"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-black dark:text-zinc-300">Password</label>
+              <input
+                type="password"
+                value={accountForm.password}
+                onChange={(e) => setAccountForm((f) => ({ ...f, password: e.target.value }))}
+                required
+                minLength={6}
+                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-800 dark:text-zinc-100"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-lg bg-zinc-900 px-6 py-2 font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            >
+              Create Account
+            </button>
+          </form>
+        </>
+      )}
     </div>
   );
 }

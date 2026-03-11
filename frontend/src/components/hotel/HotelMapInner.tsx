@@ -1,13 +1,10 @@
 'use client';
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
+import { useMemo } from 'react';
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { useGoogleMapsApiKey } from '@/hooks/usePublicSettings';
 
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+const mapContainerStyle = { width: '100%', height: '100%' };
 
 interface HotelMapInnerProps {
   latitude: number;
@@ -16,24 +13,53 @@ interface HotelMapInnerProps {
   location?: string | null;
 }
 
-export default function HotelMapInner({ latitude, longitude, hotelName, location }: HotelMapInnerProps) {
+function HotelMapInnerLoaded({
+  apiKey,
+  latitude,
+  longitude,
+  hotelName,
+  location,
+}: HotelMapInnerProps & { apiKey: string }) {
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: apiKey,
+  });
+  const center = useMemo(() => ({ lat: latitude, lng: longitude }), [latitude, longitude]);
+
+  if (!isLoaded) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-500 text-sm">
+        Loading map…
+      </div>
+    );
+  }
+
   return (
-    <MapContainer
-      center={[latitude, longitude]}
+    <GoogleMap
+      mapContainerStyle={mapContainerStyle}
+      center={center}
       zoom={14}
-      className="h-full w-full"
-      scrollWheelZoom={false}
+      options={{ scrollwheel: false, fullscreenControl: true, zoomControl: true }}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Marker position={[latitude, longitude]}>
-        <Popup>
-          <strong>{hotelName}</strong>
+      <Marker position={center} />
+      <InfoWindow position={center}>
+        <div className="p-1 min-w-[160px]">
+          <strong className="font-semibold">{hotelName}</strong>
           {location && <p className="mt-1 text-sm text-zinc-600">{location}</p>}
-        </Popup>
-      </Marker>
-    </MapContainer>
+        </div>
+      </InfoWindow>
+    </GoogleMap>
   );
+}
+
+export default function HotelMapInner(props: HotelMapInnerProps) {
+  const apiKey = useGoogleMapsApiKey();
+  if (!apiKey) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-500 text-sm">
+        Loading map…
+      </div>
+    );
+  }
+  return <HotelMapInnerLoaded apiKey={apiKey} {...props} />;
 }

@@ -23,6 +23,7 @@ CREATE TABLE subscription_plans (
     monthly_coupon_limit INTEGER NOT NULL,
     price DECIMAL(10, 2) DEFAULT 0,
     stripe_price_id VARCHAR(255),
+    paypal_plan_id VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -35,6 +36,7 @@ CREATE TABLE subscriptions (
     current_period_start TIMESTAMP WITH TIME ZONE NOT NULL,
     current_period_end TIMESTAMP WITH TIME ZONE NOT NULL,
     stripe_subscription_id VARCHAR(255),
+    paypal_subscription_id VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id)
 );
@@ -94,3 +96,10 @@ CREATE INDEX idx_coupons_status ON coupons(status);
 CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX idx_redemptions_hotel_account_id ON redemptions(hotel_account_id);
 CREATE INDEX idx_redemptions_redeemed_at ON redemptions(redeemed_at);
+
+-- Admin-configurable settings (keys, API keys, secrets) - env vars used as fallback
+CREATE TABLE settings (
+    key VARCHAR(255) PRIMARY KEY,
+    value TEXT,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

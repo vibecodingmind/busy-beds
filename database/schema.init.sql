@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS subscription_plans (
     monthly_coupon_limit INTEGER NOT NULL,
     price DECIMAL(10, 2) DEFAULT 0,
     stripe_price_id VARCHAR(255),
+    paypal_plan_id VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -27,8 +28,16 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     current_period_start TIMESTAMP WITH TIME ZONE NOT NULL,
     current_period_end TIMESTAMP WITH TIME ZONE NOT NULL,
     stripe_subscription_id VARCHAR(255),
+    paypal_subscription_id VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS paypal_subscription_pending (
+    subscription_id VARCHAR(255) PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    plan_id INTEGER NOT NULL REFERENCES subscription_plans(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS hotels (
@@ -81,3 +90,9 @@ CREATE INDEX IF NOT EXISTS idx_coupons_status ON coupons(status);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_redemptions_hotel_account_id ON redemptions(hotel_account_id);
 CREATE INDEX IF NOT EXISTS idx_redemptions_redeemed_at ON redemptions(redeemed_at);
+
+CREATE TABLE IF NOT EXISTS settings (
+    key VARCHAR(255) PRIMARY KEY,
+    value TEXT,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

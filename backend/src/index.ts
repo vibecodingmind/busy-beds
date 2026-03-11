@@ -10,6 +10,7 @@ import { refreshTokenService } from './middleware/refreshToken';
 
 import authRoutes from './routes/auth';
 import stripeRoutes, { webhookHandler } from './routes/stripe';
+import paypalRoutes, { webhookHandler as paypalWebhookHandler } from './routes/paypal';
 import oauthRoutes from './routes/oauth';
 import authHotelRoutes from './routes/authHotel';
 import hotelsRoutes from './routes/hotels';
@@ -24,6 +25,7 @@ import cronRoutes from './routes/cron';
 import favoritesRoutes from './routes/favorites';
 import promoRoutes from './routes/promo';
 import waitlistRoutes from './routes/waitlist';
+import settingsRoutes from './routes/settings';
 
 const app = express();
 
@@ -43,6 +45,7 @@ app.use(
   })
 );
 app.post('/api/v1/stripe/webhook', express.raw({ type: 'application/json' }), webhookHandler);
+app.post('/api/v1/paypal/webhook', express.raw({ type: 'application/json' }), paypalWebhookHandler);
 app.use(express.json());
 app.use(passport.initialize());
 
@@ -64,6 +67,8 @@ app.use('/api/v1/favorites', favoritesRoutes);
 app.use('/api/v1/promo', promoRoutes);
 app.use('/api/v1/waitlist', waitlistRoutes);
 app.use('/api/v1/stripe', stripeRoutes);
+app.use('/api/v1/paypal', paypalRoutes);
+app.use('/api/v1/settings', settingsRoutes);
 app.use('/api/v1/cron', cronRoutes);
 
 // Health check

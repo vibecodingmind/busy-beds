@@ -5,22 +5,24 @@ import { authMiddleware } from '../middleware/auth';
 import type { JwtPayload } from '../middleware/auth';
 import * as subscriptionModel from '../models/subscription';
 import { processReferralReward } from '../services/referralReward';
+import { getSetting } from '../services/settings';
 import { pool } from '../config/db';
+import { config } from '../config';
 
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 const router = Router();
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-export function webhookHandler(req: Request, res: Response) {
-  if (!stripe || !webhookSecret) {
+export async function webhookHandler(req: Request, res: Response) {
+  const secret = await getSetting('stripe_webhook_secret');
+  const key = await getSetting('stripe_secret_key');
+  const stripe = key ? new Stripe(key) : null;
+  if (!stripe || !secret) {
     res.status(503).send('Stripe webhook not configured');
     return;
   }
   const sig = req.headers['stripe-signature'] as string;
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    event = stripe.webhooks.constructEvent(req.body, sig, secret);
   } catch (err) {
     res.status(400).send(`Webhook Error: ${err instanceof Error ? err.message : 'Unknown'}`);
     return;
@@ -48,6 +50,9 @@ export function webhookHandler(req: Request, res: Response) {
 }
 
 router.post('/connect/onboard', authMiddleware, async (req, res) => {
+  const key = await getSetting('stripe_secret_key');
+  const stripe = key ? new Stripe(key) : null;
+  const frontendUrl = config.frontendUrl;
   if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
   try {
     const userId = (req.user as JwtPayload).userId;
@@ -82,6 +87,8 @@ router.post('/connect/onboard', authMiddleware, async (req, res) => {
 });
 
 router.post('/connect/complete', authMiddleware, async (req, res) => {
+  const key = await getSetting('stripe_secret_key');
+  const stripe = key ? new Stripe(key) : null;
   if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
   try {
     const userId = (req.user as JwtPayload).userId;
@@ -110,6 +117,9 @@ router.post('/connect/complete', authMiddleware, async (req, res) => {
 });
 
 router.post('/create-checkout-session', authMiddleware, async (req, res) => {
+  const key = await getSetting('stripe_secret_key');
+  const stripe = key ? new Stripe(key) : null;
+  const frontendUrl = config.frontendUrl;
   if (!stripe) {
     return res.status(503).json({ error: 'Stripe not configured. Use direct subscription.' });
   }

@@ -1,9 +1,6 @@
 import Stripe from 'stripe';
 import { pool } from '../config/db';
-
-const stripe = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY)
-  : null;
+import { getSetting } from './settings';
 
 const MIN_TRANSFER_CENTS = 50; // Stripe minimum $0.50
 
@@ -40,7 +37,10 @@ export async function processReferralReward(
   );
   if (existingResult.rows.length > 0) return null;
 
-  const amount = Math.round(planPrice * 0.25 * 100) / 100;
+  const percentStr = await getSetting('referral_percent');
+  const percent = percentStr ? Math.min(100, Math.max(0, parseInt(percentStr, 10) || 25)) : 25;
+  const multiplier = percent / 100;
+  const amount = Math.round(planPrice * multiplier * 100) / 100;
   const amountCents = Math.round(amount * 100);
 
   if (amountCents < MIN_TRANSFER_CENTS) return null;
@@ -60,6 +60,8 @@ export async function processReferralReward(
     [referrerId]
   );
   const stripeAccountId = accountResult.rows[0]?.stripe_connect_account_id;
+  const stripeKey = await getSetting('stripe_secret_key');
+  const stripe = stripeKey ? new Stripe(stripeKey) : null;
 
   if (stripeAccountId && stripe) {
     try {

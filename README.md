@@ -28,7 +28,9 @@ Connect the repo to **Vercel** and **Railway** for automatic deploys on every `g
    ```bash
    cd backend && railway run psql $DATABASE_URL -f ../database/seed.sql
    railway run npx tsx scripts/seed-admin.ts
+   railway run npm run seed:reviews
    ```
+   (`seed:reviews` adds a few reviews to all properties.)
 
 4. **Vercel (frontend)**
    - Import repo, set **Root Directory** to `frontend`
@@ -64,6 +66,12 @@ Create admin user (optional):
 
 ```bash
 ADMIN_EMAIL=admin@busybeds.com ADMIN_PASSWORD=admin123 npx tsx scripts/seed-admin.ts
+```
+
+Add a few reviews to all properties (optional):
+
+```bash
+npm run seed:reviews
 ```
 
 ### 3. Frontend
