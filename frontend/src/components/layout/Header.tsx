@@ -17,7 +17,7 @@ export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white dark:border-zinc-800/80 dark:bg-zinc-900/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-black/20 bg-white dark:border-zinc-800/80 dark:bg-zinc-900/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="text-xl font-bold text-black dark:text-zinc-100">
           <span className="text-[#FF385C]">Busy</span> Beds
@@ -43,9 +43,9 @@ export default function Header() {
                 {showMenu && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-                    <div className="absolute right-0 top-full z-20 mt-2 w-56 rounded-xl border border-zinc-200 bg-white py-1 shadow-xl dark:border-zinc-700 dark:bg-zinc-800">
+                    <div className="absolute right-0 top-full z-20 mt-2 w-56 rounded-xl border border-black/20 bg-white py-1 shadow-xl dark:border-zinc-700 dark:bg-zinc-800">
                       <p className="px-4 py-2 text-xs text-black dark:text-zinc-400 truncate">{user.email}</p>
-                      <div className="border-t border-zinc-100 dark:border-zinc-700" />
+                      <div className="border-t border-black/10 dark:border-zinc-700" />
                       <Link href="/dashboard" onClick={() => setShowMenu(false)} className={menuLink}>Dashboard</Link>
                       <Link href="/favorites" onClick={() => setShowMenu(false)} className={menuLink}>Favourites</Link>
                       <Link href="/my-coupons" onClick={() => setShowMenu(false)} className={menuLink}>My Coupons</Link>
@@ -56,7 +56,7 @@ export default function Header() {
                           Admin
                         </Link>
                       )}
-                      <div className="border-t border-zinc-100 dark:border-zinc-700" />
+                      <div className="border-t border-black/10 dark:border-zinc-700" />
                       <Link href="/profile" onClick={() => setShowMenu(false)} className={menuLink}>Account</Link>
                       <button
                         onClick={() => { logout(); setShowMenu(false); }}

@@ -25,7 +25,7 @@ export default function WaitlistForm() {
   };
 
   return (
-    <section className="mt-12 rounded-2xl border border-zinc-200 bg-white px-8 py-10 dark:border-zinc-700 dark:bg-zinc-900/50">
+    <section className="mt-12 rounded-2xl border border-black/20 bg-white px-8 py-10 dark:border-zinc-700 dark:bg-zinc-900/50">
       <h2 className="text-xl font-semibold text-black dark:text-zinc-100">New hotels coming soon</h2>
       <p className="mt-2 text-black dark:text-zinc-400">Get notified when we add new partner hotels.</p>
       <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -36,7 +36,7 @@ export default function WaitlistForm() {
           placeholder="your@email.com"
           required
           disabled={status === 'loading'}
-          className="flex-1 rounded-lg border border-zinc-300 px-4 py-2.5 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
+          className="flex-1 rounded-lg border border-black/30 px-4 py-2.5 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
         />
         <button
           type="submit"
