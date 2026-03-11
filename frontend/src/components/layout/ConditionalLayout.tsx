@@ -5,7 +5,7 @@ import Header from './Header';
 import Footer from './Footer';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
-const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/auth/callback', '/hotel/login', '/hotel/register'];
+const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/auth/callback', '/hotel/login', '/hotel/register', '/bootstrap-admin'];
 
 export default function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

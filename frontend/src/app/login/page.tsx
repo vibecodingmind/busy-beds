@@ -41,7 +41,8 @@ function LoginForm() {
       await hotelLogin(email, password);
       router.push(redirectTo || '/hotel/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      const msg = err instanceof Error ? err.message : 'Login failed';
+      setError(msg === 'Failed to fetch' ? 'Cannot reach the server. If this is the live site, ensure NEXT_PUBLIC_API_URL is set to https://api.busybeds.com/api/v1 and redeploy.' : msg);
     } finally {
       setLoading(false);
     }

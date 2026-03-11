@@ -1,6 +1,19 @@
 # Create admin user (no local DB)
 
-Use this when you can’t run `seed-admin.ts` from your Mac (e.g. DB connection times out). The backend runs on Railway and can reach the DB; you just call an API once.
+Use this when you can’t run `seed-admin.ts` from your Mac. The backend on Railway creates the admin.
+
+## Easiest: use the bootstrap page (browser)
+
+1. **Vercel** must point to your API: set `NEXT_PUBLIC_API_URL` to your **Railway backend URL** + `/api/v1` (e.g. `https://xxxx.up.railway.app/api/v1`) and redeploy. See [USE-RAILWAY-URL-NOW.md](USE-RAILWAY-URL-NOW.md) if the custom domain doesn’t work.
+2. **Railway** → backend **Variables** → set `SEED_SECRET` (e.g. `busybeds-seed-2024`).
+3. Open in the browser (use your real site URL and secret):
+   **https://busybeds.com/bootstrap-admin?secret=busybeds-seed-2024**
+4. Enter admin email and password, click **Create admin**.
+5. Log in at **https://busybeds.com/login**, then go to **https://busybeds.com/admin**.
+
+---
+
+## Alternative: curl or fetch
 
 ## 1. Set SEED_SECRET in Railway
 
