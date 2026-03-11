@@ -1,6 +1,7 @@
 import { pool } from '../config/db';
 
 const ENV_MAP: Record<string, string> = {
+  stripe_publishable_key: 'STRIPE_PUBLISHABLE_KEY',
   stripe_secret_key: 'STRIPE_SECRET_KEY',
   stripe_webhook_secret: 'STRIPE_WEBHOOK_SECRET',
   paypal_client_id: 'PAYPAL_CLIENT_ID',
@@ -28,6 +29,7 @@ export const SETTINGS_META: Record<
   string,
   { label: string; isSecret: boolean; isPublic: boolean; group: string }
 > = {
+  stripe_publishable_key: { label: 'Stripe Publishable Key', isSecret: false, isPublic: false, group: 'Stripe' },
   stripe_secret_key: { label: 'Stripe Secret Key', isSecret: true, isPublic: false, group: 'Stripe' },
   stripe_webhook_secret: { label: 'Stripe Webhook Secret', isSecret: true, isPublic: false, group: 'Stripe' },
   paypal_client_id: { label: 'PayPal Client ID', isSecret: false, isPublic: false, group: 'PayPal' },

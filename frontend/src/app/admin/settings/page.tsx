@@ -12,7 +12,7 @@ type SettingRow = { key: string; label: string; value: string; masked: boolean; 
 const GROUP_ORDER = ['Site', 'Stripe', 'PayPal', 'Maps', 'OAuth', 'Business', 'Security'];
 
 export default function AdminSettingsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   const router = useRouter();
   const toast = useToast();
   const [settings, setSettings] = useState<SettingRow[]>([]);
@@ -36,9 +36,18 @@ export default function AdminSettingsPage() {
         });
         setDraft(initial);
       })
-      .catch(() => toast('Failed to load settings', 'error'))
+      .catch((err) => {
+        const msg = err instanceof Error ? err.message : '';
+        if (msg.includes('expired') || msg.includes('Invalid or expired token')) {
+          logout();
+          toast('Session expired. Please log in again.', 'error');
+          router.push('/login');
+          return;
+        }
+        toast('Failed to load settings', 'error');
+      })
       .finally(() => setLoading(false));
-  }, [user, toast]);
+  }, [user, toast, logout, router]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -60,6 +69,12 @@ export default function AdminSettingsPage() {
       setDraft(nextDraft);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to save settings';
+      if (msg.includes('expired') || msg.includes('Invalid or expired token')) {
+        logout();
+        toast('Session expired. Please log in again.', 'error');
+        router.push('/login');
+        return;
+      }
       toast(msg, 'error');
     } finally {
       setSaving(false);

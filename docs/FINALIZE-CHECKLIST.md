@@ -13,7 +13,7 @@ Use this list to confirm everything is production-ready after domain and core fe
 ## 1. Environment & domain
 
 - [ ] **Vercel**: `NEXT_PUBLIC_API_URL` = `https://api.busybeds.com/api/v1`, `NEXT_PUBLIC_SITE_URL` = `https://busybeds.com` (optional, for sitemap).
-- [ ] **Railway**: `FRONTEND_URL` = `https://busybeds.com`, `API_URL` = `https://api.busybeds.com`, `DATABASE_URL`, `JWT_SECRET`.
+- [ ] **Railway**: `FRONTEND_URL` = `https://busybeds.com`, `API_URL` = `https://api.busybeds.com`, `DATABASE_URL`, `JWT_SECRET`. Optional: `JWT_EXPIRES_IN` = `7d` so admin sessions last longer (default is 15m).
 - [ ] **ResellerClub DNS**: A + CNAME for Vercel, CNAME for Railway (`api`), MX/TXT for Resend (if using custom domain for email).
 
 ---
