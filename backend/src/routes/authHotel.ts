@@ -92,7 +92,7 @@ router.post(
       const token = jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as jwt.SignOptions);
 
       res.json({
-        hotelAccount: { id: account.id, hotelId: account.hotel_id, email: account.email, name: account.name },
+        hotelAccount: { id: account.id, hotel_id: account.hotel_id, email: account.email, name: account.name },
         hotel: hotel ? { id: hotel.id, name: hotel.name } : null,
         token,
       });
@@ -120,7 +120,7 @@ router.get('/me', hotelAuthMiddleware, async (req, res) => {
   if (!account) return res.status(404).json({ error: 'Hotel account not found' });
   const hotel = await hotelModel.findHotelById(account.hotel_id);
   res.json({
-    hotelAccount: { id: account.id, hotelId: account.hotel_id, email: account.email, name: account.name },
+    hotelAccount: { id: account.id, hotel_id: account.hotel_id, email: account.email, name: account.name },
     hotel: hotel ? { id: hotel.id, name: hotel.name } : null,
   });
 });
