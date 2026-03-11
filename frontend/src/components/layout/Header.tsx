@@ -5,7 +5,6 @@ import { useContext, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { HotelAuthContext } from '@/contexts/HotelAuthContext';
 import { HouseIcon, UserIcon } from '@/components/icons';
-import { usePublicSettings } from '@/hooks/usePublicSettings';
 
 const menuLink = "flex items-center gap-2 px-4 py-2.5 text-sm text-black hover:bg-black/5 dark:hover:bg-zinc-700/80 dark:text-zinc-300 dark:hover:bg-zinc-700/80 transition-colors";
 
@@ -15,21 +14,15 @@ export default function Header() {
   const hotel = hotelAuth?.hotel ?? null;
   const hotelLogout = hotelAuth?.logout;
   const [showMenu, setShowMenu] = useState(false);
-  const publicSettings = usePublicSettings();
-  const siteName = publicSettings?.site_name || 'Busy Beds';
-  const [firstWord, ...rest] = siteName.split(/\s+/);
-  const displayTitle = rest.length > 0 ? (
-    <><span className="text-[#FF385C]">{firstWord}</span> {rest.join(' ')}</>
-  ) : (
-    <span className="text-[#FF385C]">{siteName}</span>
-  );
-
   return (
     <header className="sticky top-0 z-50 border-b border-black/20 bg-white dark:border-zinc-800/80 dark:bg-zinc-900/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-black dark:text-zinc-100">
-          <img src="/logo.png" alt="" className="h-8 w-8 flex-shrink-0 object-contain" />
-          {displayTitle}
+        <Link href="/" className="flex items-center shrink-0" aria-label="Busy Beds home">
+          <img
+            src="/logo.png"
+            alt="Busy Beds"
+            className="h-9 w-auto max-h-10 object-contain object-left"
+          />
         </Link>
         <nav className="flex items-center gap-3">
           <Link
