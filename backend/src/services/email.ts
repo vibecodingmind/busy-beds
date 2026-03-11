@@ -45,6 +45,15 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
   );
 }
 
+export async function sendVerificationEmail(to: string, verifyUrl: string): Promise<boolean> {
+  const siteName = (await getSetting('site_name')) || 'Busy Beds';
+  return sendEmail(
+    to,
+    `Verify your email for ${siteName}`,
+    `<h1>Verify your email</h1><p>Click the link below to verify your email address. It expires in 24 hours.</p><p><a href="${verifyUrl}">Verify email</a></p><p>If you didn't create an account, you can ignore this email.</p><p>— ${siteName}</p>`
+  );
+}
+
 export async function sendCouponExpiryReminder(to: string, userName: string, hotelName: string, code: string, expiresAt: string): Promise<boolean> {
   const siteName = (await getSetting('site_name')) || 'Busy Beds';
   return sendEmail(

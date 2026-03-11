@@ -54,8 +54,18 @@ export default function HotelDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-black dark:text-zinc-100">{hotel.name} Dashboard</h1>
-      <p className="mt-2 text-black dark:text-zinc-400">Redemption statistics</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-black dark:text-zinc-100">{hotel.name} Dashboard</h1>
+          <p className="mt-2 text-black dark:text-zinc-400">Redemption statistics</p>
+        </div>
+        <Link
+          href="/hotel/redeem"
+          className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 font-medium text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+        >
+          Scan / Redeem coupon
+        </Link>
+      </div>
 
       {chartData.length > 0 && (
         <div className="mt-8">

@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { body, validationResult } from 'express-validator';
 import * as userModel from '../models/user';
 import * as referralModel from '../models/referral';
-import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/email';
+import { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail } from '../services/email';
 import { authMiddleware, type JwtPayload } from '../middleware/auth';
 import { config } from '../config';
 import { Pool } from 'pg';
@@ -235,6 +235,7 @@ router.post(
         [user.id, token, expiresAt]
       );
       const verifyUrl = `${config.frontendUrl}/verify-email?token=${token}`;
+      sendVerificationEmail(user.email, verifyUrl).catch((err) => console.error('Verification email send error:', err));
       if (process.env.NODE_ENV === 'development' && !process.env.RESEND_API_KEY) {
         return res.json({ message: 'Verification link (dev only)', verifyUrl });
       }
