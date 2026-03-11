@@ -34,9 +34,17 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setShowMenu(!showMenu)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FF385C] text-sm font-semibold text-white ring-2 ring-white dark:ring-zinc-900 hover:bg-[#e31c5f] transition-colors"
+                  className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#FF385C] text-sm font-semibold text-white ring-2 ring-white dark:ring-zinc-900 hover:bg-[#e31c5f] transition-colors"
                 >
-                  {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                  {user.avatar_url ? (
+                    <img
+                      src={user.avatar_url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    user.name?.charAt(0)?.toUpperCase() || 'U'
+                  )}
                 </button>
                 {showMenu && (
                   <>

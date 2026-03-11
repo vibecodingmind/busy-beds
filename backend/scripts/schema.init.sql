@@ -122,6 +122,17 @@ BEGIN
   END IF;
 END $$;
 
+-- Add avatar_url and phone to users for account settings
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='avatar_url') THEN
+    ALTER TABLE users ADD COLUMN avatar_url VARCHAR(512);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='phone') THEN
+    ALTER TABLE users ADD COLUMN phone VARCHAR(50);
+  END IF;
+END $$;
+
 -- Add latitude/longitude to hotels for map and distance
 DO $$
 BEGIN

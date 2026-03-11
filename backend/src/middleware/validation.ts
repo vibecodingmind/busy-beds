@@ -64,11 +64,13 @@ export const validationSchemas = {
   updateProfile: [
     body('name').optional().trim().isLength({ min: 1, max: 255 }).withMessage('Name must be 1-255 characters'),
     commonValidations.email.optional(),
+    body('phone').optional().trim().isLength({ max: 50 }).withMessage('Phone must be at most 50 characters'),
+    body('avatar_url').optional().trim().isLength({ max: 512 }).withMessage('Avatar URL must be at most 512 characters'),
   ],
   
   changePassword: [
     body('current_password').notEmpty().withMessage('Current password is required'),
-    commonValidations.password.withMessage('New password must be at least 6 characters'),
+    body('new_password').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
   ],
   
   forgotPassword: [

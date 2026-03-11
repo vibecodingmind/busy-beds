@@ -8,6 +8,9 @@ interface User {
   email: string;
   name: string;
   role: string;
+  avatar_url?: string | null;
+  phone?: string | null;
+  email_verified?: boolean;
 }
 
 interface AuthContextType {

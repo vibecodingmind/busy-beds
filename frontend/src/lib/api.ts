@@ -41,9 +41,26 @@ export const auth = {
       '/auth/login',
       { method: 'POST', body: JSON.stringify({ email, password }) }
     ),
-  me: () => api<{ id: number; email: string; name: string; role: string }>('/auth/me'),
-  updateProfile: (data: { name?: string; email?: string }) =>
-    api<{ id: number; email: string; name: string; role: string }>('/auth/profile', {
+  me: () =>
+    api<{
+      id: number;
+      email: string;
+      name: string;
+      role: string;
+      avatar_url?: string | null;
+      phone?: string | null;
+      email_verified?: boolean;
+    }>('/auth/me'),
+  updateProfile: (data: { name?: string; email?: string; phone?: string | null; avatar_url?: string | null }) =>
+    api<{
+      id: number;
+      email: string;
+      name: string;
+      role: string;
+      avatar_url?: string | null;
+      phone?: string | null;
+      email_verified?: boolean;
+    }>('/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
     }),

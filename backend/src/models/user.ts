@@ -7,6 +7,9 @@ export interface User {
   name: string;
   role: string;
   created_at: Date;
+  avatar_url?: string | null;
+  phone?: string | null;
+  email_verified?: boolean | null;
 }
 
 export async function createUser(
@@ -39,7 +42,7 @@ export async function findUserById(id: number): Promise<User | null> {
 
 export async function updateUser(
   id: number,
-  data: { name?: string; email?: string; password_hash?: string }
+  data: { name?: string; email?: string; password_hash?: string; avatar_url?: string | null; phone?: string | null }
 ): Promise<User | null> {
   const updates: string[] = [];
   const values: unknown[] = [];
@@ -55,6 +58,14 @@ export async function updateUser(
   if (data.password_hash !== undefined) {
     updates.push(`password_hash = $${i++}`);
     values.push(data.password_hash);
+  }
+  if (data.avatar_url !== undefined) {
+    updates.push(`avatar_url = $${i++}`);
+    values.push(data.avatar_url);
+  }
+  if (data.phone !== undefined) {
+    updates.push(`phone = $${i++}`);
+    values.push(data.phone);
   }
   if (updates.length === 0) return findUserById(id);
   values.push(id);

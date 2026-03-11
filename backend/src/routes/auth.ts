@@ -47,8 +47,17 @@ router.post(
       // Generate token pair
       const tokenPair = refreshTokenService.generateTokenPair(user);
 
+      const fullUser = await userModel.findUserById(user.id);
       res.status(201).json({
-        user: { id: user.id, email: user.email, name: user.name, role: user.role },
+        user: {
+          id: fullUser!.id,
+          email: fullUser!.email,
+          name: fullUser!.name,
+          role: fullUser!.role,
+          avatar_url: fullUser!.avatar_url ?? null,
+          phone: fullUser!.phone ?? null,
+          email_verified: fullUser!.email_verified ?? false,
+        },
         token: tokenPair.accessToken,
       });
     })
@@ -76,7 +85,15 @@ router.post(
       const tokenPair = refreshTokenService.generateTokenPair(user);
 
       res.json({
-        user: { id: user.id, email: user.email, name: user.name, role: user.role },
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          avatar_url: user.avatar_url ?? null,
+          phone: user.phone ?? null,
+          email_verified: user.email_verified ?? false,
+        },
         token: tokenPair.accessToken,
       });
     })
@@ -86,7 +103,15 @@ router.get('/me', authMiddleware, asyncHandler(async (req: Request, res: Respons
   if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
   const user = await userModel.findUserById((req.user as JwtPayload).userId);
   if (!user) return res.status(404).json({ error: 'User not found' });
-  res.json({ id: user.id, email: user.email, name: user.name, role: user.role });
+  res.json({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    avatar_url: user.avatar_url ?? null,
+    phone: user.phone ?? null,
+    email_verified: user.email_verified ?? false,
+  });
 }));
 
 router.put(
@@ -96,16 +121,29 @@ router.put(
   validate(validationSchemas.updateProfile),
   asyncHandler(async (req: Request, res: Response) => {
       if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
-      const { name, email } = req.body;
+      const { name, email, phone, avatar_url } = req.body;
       if (email) {
         const existing = await userModel.findUserByEmail(email);
         if (existing && existing.id !== (req.user as JwtPayload).userId) {
           return res.status(400).json({ error: 'Email already in use' });
         }
       }
-      const user = await userModel.updateUser((req.user as JwtPayload).userId, { name, email });
+      const user = await userModel.updateUser((req.user as JwtPayload).userId, {
+        name,
+        email,
+        phone: phone !== undefined ? phone : undefined,
+        avatar_url: avatar_url !== undefined ? avatar_url : undefined,
+      });
       if (!user) return res.status(404).json({ error: 'User not found' });
-      res.json({ id: user.id, email: user.email, name: user.name, role: user.role });
+      res.json({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        avatar_url: user.avatar_url ?? null,
+        phone: user.phone ?? null,
+        email_verified: user.email_verified ?? false,
+      });
     })
   );
 
