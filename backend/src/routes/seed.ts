@@ -33,7 +33,7 @@ const SAMPLE_COMMENTS = [
 ];
 
 function checkSecret(req: Request): boolean {
-  const secret = req.query.secret as string;
+  const secret = (req.query.secret as string) || (req.headers['x-seed-secret'] as string);
   const expected = process.env.SEED_SECRET;
   return !!expected && secret === expected;
 }
@@ -177,6 +177,46 @@ router.get('/reviews', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('[seed] Reviews failed:', err);
     res.status(500).json({ error: 'Seed reviews failed', details: err instanceof Error ? err.message : String(err) });
+  }
+});
+
+/**
+ * Create or update admin user from the server (e.g. on Railway). No local DB connection needed.
+ * POST /api/v1/seed/admin?secret=SEED_SECRET
+ * Body: { "email": "admin@example.com", "password": "YourPassword" }
+ */
+router.post('/admin', async (req: Request, res: Response) => {
+  if (!checkSecret(req)) {
+    res.status(403).json({ error: 'Invalid or missing secret. Use ?secret=YOUR_SEED_SECRET or header x-seed-secret.' });
+    return;
+  }
+
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
+  const password = typeof req.body?.password === 'string' ? req.body.password : '';
+
+  if (!email || !password) {
+    res.status(400).json({ error: 'Body must include email and password.' });
+    return;
+  }
+
+  if (password.length < 6) {
+    res.status(400).json({ error: 'Password must be at least 6 characters.' });
+    return;
+  }
+
+  try {
+    const hash = await bcrypt.hash(password, 10);
+    await pool.query(
+      `INSERT INTO users (email, password_hash, name, role)
+       VALUES ($1, $2, 'Admin', 'admin')
+       ON CONFLICT (email) DO UPDATE SET password_hash = $2, name = 'Admin', role = 'admin'`,
+      [email, hash]
+    );
+    console.log('[seed] Admin user', email, 'created/updated');
+    res.json({ success: true, message: `Admin user ${email} created/updated. You can log in now.` });
+  } catch (err) {
+    console.error('[seed] Admin create failed:', err);
+    res.status(500).json({ error: 'Failed to create admin', details: err instanceof Error ? err.message : String(err) });
   }
 });
 

@@ -35,10 +35,17 @@ Use this list to confirm everything is production-ready after domain and core fe
 
 ## 4. Admin & content
 
-- [ ] **Admin user**: At least one admin exists (e.g. via seed or `seed-admin.ts`).
+- [ ] **Admin user**: At least one admin exists. **Easiest:** set `SEED_SECRET` in Railway, then run once (see **Create admin via API** below).
 - [ ] **Plans**: Subscription plans created and priced; Stripe/PayPal IDs set.
 - [ ] **Hotels**: Real hotels added; hotel accounts created and approved where needed.
 - [ ] **Admin → Settings**: Site name, support email, Google Maps key, Stripe/PayPal, etc. filled as needed.
+
+
+- **Create admin via API** (no local DB needed): In Railway, set `SEED_SECRET` to any random string (e.g. `openssl rand -hex 16`). After deploy, run once (replace `YOUR_SEED_SECRET` and your API URL):
+  ```bash
+  curl -X POST "https://api.busybeds.com/api/v1/seed/admin?secret=YOUR_SEED_SECRET" -H "Content-Type: application/json" -d '{"email":"vibecodingmind@gmail.com","password":"G@t@ng@T@E511713"}'
+  ```
+  Then log in at https://busybeds.com/login and open https://busybeds.com/admin.
 
 ---
 
