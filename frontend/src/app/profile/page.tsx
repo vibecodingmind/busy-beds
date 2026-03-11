@@ -15,6 +15,8 @@ export default function ProfilePage() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [showChangeAvatar, setShowChangeAvatar] = useState(false);
+  const [newAvatarUrl, setNewAvatarUrl] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -51,6 +53,46 @@ export default function ProfilePage() {
       setMessage('Profile updated successfully');
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Failed to update');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangeAvatar = () => {
+    setNewAvatarUrl(avatarUrl);
+    setShowChangeAvatar(true);
+  };
+
+  const handleSaveNewAvatar = async () => {
+    setLoading(true);
+    setMessage('');
+    try {
+      const url = newAvatarUrl.trim() || null;
+      const u = await auth.updateProfile({ avatar_url: url ?? undefined });
+      setUser?.({ ...user!, ...u });
+      setAvatarUrl(url ?? '');
+      setShowChangeAvatar(false);
+      setNewAvatarUrl('');
+      setMessage('Photo updated');
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Failed to update photo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    setLoading(true);
+    setMessage('');
+    try {
+      const u = await auth.updateProfile({ avatar_url: null });
+      setUser?.({ ...user!, ...u });
+      setAvatarUrl('');
+      setShowChangeAvatar(false);
+      setNewAvatarUrl('');
+      setMessage('Photo removed');
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Failed to remove photo');
     } finally {
       setLoading(false);
     }
@@ -143,7 +185,87 @@ export default function ProfilePage() {
         )}
 
         {tab === 'profile' && (
-          <form onSubmit={handleProfileSubmit} className="space-y-4">
+          <form onSubmit={handleProfileSubmit} className="space-y-6">
+            {/* Profile picture */}
+            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+              <div className="relative flex-shrink-0">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt="Profile"
+                    className="h-24 w-24 rounded-full object-cover ring-2 ring-zinc-600"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                ) : null}
+                <div
+                  className={`h-24 w-24 rounded-full bg-zinc-700 flex items-center justify-center text-2xl font-semibold text-zinc-300 ring-2 ring-zinc-600 ${avatarUrl ? 'hidden' : ''}`}
+                  aria-hidden={!!avatarUrl}
+                >
+                  {user?.name?.charAt(0)?.toUpperCase() || '?'}
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleChangeAvatar}
+                  className="rounded-lg bg-zinc-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-600"
+                >
+                  {avatarUrl ? 'Change photo' : 'Add photo'}
+                </button>
+                {avatarUrl && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveAvatar}
+                    disabled={loading}
+                    className="rounded-lg border border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 disabled:opacity-50"
+                  >
+                    Remove photo
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {showChangeAvatar && (
+              <div className="rounded-lg border border-zinc-600 bg-zinc-800/50 p-4 space-y-3">
+                <label className="block text-sm font-medium text-zinc-300">Image URL</label>
+                <input
+                  type="url"
+                  value={newAvatarUrl}
+                  onChange={(e) => setNewAvatarUrl(e.target.value)}
+                  placeholder="https://example.com/your-photo.jpg"
+                  className="w-full rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-white placeholder-zinc-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+                {newAvatarUrl && (
+                  <img
+                    src={newAvatarUrl}
+                    alt="Preview"
+                    className="h-16 w-16 rounded-full object-cover"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                )}
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSaveNewAvatar}
+                    disabled={loading}
+                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                  >
+                    {loading ? 'Saving...' : 'Save photo'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setShowChangeAvatar(false); setNewAvatarUrl(''); }}
+                    className="rounded-lg border border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-700"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-zinc-300">Name</label>
               <input
@@ -173,27 +295,6 @@ export default function ProfilePage() {
                 placeholder="+1 234 567 8900"
                 className="mt-1 w-full rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-white placeholder-zinc-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-zinc-300">Avatar URL (optional)</label>
-              <input
-                type="url"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                placeholder="https://..."
-                className="mt-1 w-full rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-white placeholder-zinc-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              />
-              {avatarUrl && (
-                <div className="mt-2 flex items-center gap-2">
-                  <img
-                    src={avatarUrl}
-                    alt="Avatar preview"
-                    className="h-12 w-12 rounded-full object-cover"
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                  />
-                  <span className="text-xs text-zinc-500">Preview</span>
-                </div>
-              )}
             </div>
             <button
               type="submit"

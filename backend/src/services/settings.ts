@@ -23,6 +23,7 @@ const ENV_MAP: Record<string, string> = {
   cron_secret: 'CRON_SECRET',
 };
 
+// Only keys listed here are shown and editable in Admin → Settings (ENV_MAP above still used for getSetting)
 export const SETTINGS_META: Record<
   string,
   { label: string; isSecret: boolean; isPublic: boolean; group: string }
@@ -31,20 +32,11 @@ export const SETTINGS_META: Record<
   stripe_webhook_secret: { label: 'Stripe Webhook Secret', isSecret: true, isPublic: false, group: 'Stripe' },
   paypal_client_id: { label: 'PayPal Client ID', isSecret: false, isPublic: false, group: 'PayPal' },
   paypal_client_secret: { label: 'PayPal Client Secret', isSecret: true, isPublic: false, group: 'PayPal' },
-  paypal_sandbox: { label: 'PayPal Sandbox (true/false)', isSecret: false, isPublic: false, group: 'PayPal' },
   google_maps_api_key: { label: 'Google Maps API Key', isSecret: false, isPublic: true, group: 'Maps' },
   google_client_id: { label: 'Google OAuth Client ID', isSecret: false, isPublic: false, group: 'OAuth' },
   google_client_secret: { label: 'Google OAuth Client Secret', isSecret: true, isPublic: false, group: 'OAuth' },
-  facebook_app_id: { label: 'Facebook App ID', isSecret: false, isPublic: false, group: 'OAuth' },
-  facebook_app_secret: { label: 'Facebook App Secret', isSecret: true, isPublic: false, group: 'OAuth' },
-  resend_api_key: { label: 'Resend API Key (email)', isSecret: true, isPublic: false, group: 'Email' },
-  email_from: { label: 'Email From address', isSecret: false, isPublic: false, group: 'Email' },
   site_name: { label: 'Site name', isSecret: false, isPublic: true, group: 'Site' },
   support_email: { label: 'Support / contact email', isSecret: false, isPublic: true, group: 'Site' },
-  terms_url: { label: 'Terms of service URL', isSecret: false, isPublic: true, group: 'Site' },
-  privacy_url: { label: 'Privacy policy URL', isSecret: false, isPublic: true, group: 'Site' },
-  frontend_url: { label: 'Frontend URL (redirects, emails)', isSecret: false, isPublic: false, group: 'URLs' },
-  api_url: { label: 'API URL (OAuth callbacks)', isSecret: false, isPublic: false, group: 'URLs' },
   referral_percent: { label: 'Referral reward percent (e.g. 25)', isSecret: false, isPublic: false, group: 'Business' },
   cron_secret: { label: 'Cron / seed secret', isSecret: true, isPublic: false, group: 'Security' },
 };
@@ -112,14 +104,15 @@ export async function getPublicSettings(): Promise<Record<string, string>> {
   return out;
 }
 
-export async function updateSettings(updates: Record<string, string>): Promise<void> {
+export async function updateSettings(updates: Record<string, unknown>): Promise<void> {
   for (const [key, value] of Object.entries(updates)) {
     if (!SETTINGS_META[key]) continue;
-    if (value === '' || value == null) {
+    const strVal = value == null ? '' : String(value).trim();
+    if (strVal === '') {
       await pool.query('DELETE FROM settings WHERE key = $1', [key]);
       cache[key] = null;
     } else {
-      await setSetting(key, value);
+      await setSetting(key, strVal);
     }
   }
   invalidateCache();

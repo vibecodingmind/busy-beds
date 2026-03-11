@@ -9,7 +9,7 @@ import { useToast } from '@/contexts/ToastContext';
 
 type SettingRow = { key: string; label: string; value: string; masked: boolean; group: string };
 
-const GROUP_ORDER = ['Site', 'URLs', 'Stripe', 'PayPal', 'Maps', 'OAuth', 'Email', 'Business', 'Security'];
+const GROUP_ORDER = ['Site', 'Stripe', 'PayPal', 'Maps', 'OAuth', 'Business', 'Security'];
 
 export default function AdminSettingsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -58,8 +58,9 @@ export default function AdminSettingsPage() {
         nextDraft[s.key] = s.masked ? '' : s.value;
       });
       setDraft(nextDraft);
-    } catch {
-      toast('Failed to save settings', 'error');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to save settings';
+      toast(msg, 'error');
     } finally {
       setSaving(false);
     }

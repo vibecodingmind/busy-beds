@@ -6,8 +6,6 @@ import { getPublicSettings } from '@/lib/api';
 export interface PublicSettings {
   site_name?: string;
   support_email?: string;
-  terms_url?: string;
-  privacy_url?: string;
   google_maps_api_key?: string;
 }
 
