@@ -61,7 +61,7 @@ export default function AdminHotelAccountsPage() {
         </div>
       ) : (
         <div className="mt-8 overflow-x-auto rounded-lg border border-black/10 dark:border-zinc-700">
-          <table className="min-w-full divide-y divide-zinc-200">
+          <table className="min-w-full divide-y divide-black/10 dark:divide-zinc-700">
             <thead className="bg-white dark:bg-zinc-800">
               <tr>
                 <th className="px-4 py-2 text-left text-sm font-medium text-black">Hotel</th>
@@ -71,7 +71,7 @@ export default function AdminHotelAccountsPage() {
                 <th className="px-4 py-2 text-right text-sm font-medium text-black">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-200 bg-white">
+            <tbody className="divide-y divide-black/10 dark:divide-zinc-700 bg-white">
               {accounts.map((a) => (
                 <tr key={a.id}>
                   <td className="px-4 py-2 font-medium">{a.hotel_name}</td>
