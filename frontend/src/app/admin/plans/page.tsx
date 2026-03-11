@@ -76,14 +76,14 @@ export default function AdminPlansPage() {
       <Link href="/admin" className="text-sm text-emerald-600 hover:underline">← Admin</Link>
       <h1 className="mt-6 text-2xl font-bold text-black dark:text-zinc-100">Subscription Plans</h1>
 
-      <form onSubmit={handleCreate} className="mt-8 max-w-md space-y-4 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+      <form onSubmit={handleCreate} className="mt-8 max-w-md space-y-4 rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
         <h2 className="font-semibold text-black dark:text-zinc-100">Add Plan</h2>
         <input
           placeholder="Name"
           value={form.name}
           onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
           required
-          className="w-full rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
         />
         <input
           type="number"
@@ -91,7 +91,7 @@ export default function AdminPlansPage() {
           placeholder="Coupons/month"
           value={form.monthly_coupon_limit}
           onChange={(e) => setForm((f) => ({ ...f, monthly_coupon_limit: parseInt(e.target.value) || 0 }))}
-          className="w-full rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
         />
         <input
           type="number"
@@ -100,20 +100,20 @@ export default function AdminPlansPage() {
           placeholder="Price"
           value={form.price}
           onChange={(e) => setForm((f) => ({ ...f, price: parseFloat(e.target.value) || 0 }))}
-          className="w-full rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
         />
         <input
           placeholder="Stripe Price ID (optional)"
           value={form.stripe_price_id}
           onChange={(e) => setForm((f) => ({ ...f, stripe_price_id: e.target.value }))}
-          className="w-full rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
         />
         <button type="submit" className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700">Create</button>
       </form>
 
       <div className="mt-8 space-y-4">
         {plans.map((p) => (
-          <div key={p.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+          <div key={p.id} className="flex items-center justify-between rounded-lg border border-black/10 dark:border-zinc-700 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
             {editing === p.id ? (
               <>
                 <input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} className="rounded border px-2 py-1 dark:bg-zinc-800 dark:text-zinc-100" />
@@ -121,7 +121,7 @@ export default function AdminPlansPage() {
                 <input type="number" step="0.01" value={editForm.price} onChange={(e) => setEditForm((f) => ({ ...f, price: parseFloat(e.target.value) || 0 }))} className="w-20 rounded border px-2 py-1 dark:bg-zinc-800 dark:text-zinc-100" />
                 <div className="flex gap-2">
                   <button onClick={() => handleUpdate(p.id)} className="rounded bg-emerald-600 px-2 py-1 text-sm text-white">Save</button>
-                  <button onClick={() => setEditing(null)} className="rounded bg-zinc-300 px-2 py-1 text-sm dark:bg-zinc-600">Cancel</button>
+                  <button onClick={() => setEditing(null)} className="rounded bg-black/10 dark:bg-zinc-600 px-2 py-1 text-sm dark:bg-zinc-600">Cancel</button>
                 </div>
               </>
             ) : (

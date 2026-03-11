@@ -7,7 +7,7 @@ import { HotelAuthContext } from '@/contexts/HotelAuthContext';
 import ThemeToggle from '@/components/ThemeToggle';
 import { HouseIcon, UserIcon } from '@/components/icons';
 
-const menuLink = "flex items-center gap-2 px-4 py-2.5 text-sm text-black hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700/80 transition-colors";
+const menuLink = "flex items-center gap-2 px-4 py-2.5 text-sm text-black hover:bg-black/5 dark:hover:bg-zinc-700/80 dark:text-zinc-300 dark:hover:bg-zinc-700/80 transition-colors";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -25,7 +25,7 @@ export default function Header() {
         <nav className="flex items-center gap-3">
           <Link
             href="/hotels"
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-black hover:bg-zinc-100 hover:text-black dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-100 transition-colors"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-black hover:bg-black/5 dark:hover:bg-zinc-700/80 hover:text-black dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-100 transition-colors"
           >
             <HouseIcon />
             Browse Properties
@@ -60,7 +60,7 @@ export default function Header() {
                       <Link href="/profile" onClick={() => setShowMenu(false)} className={menuLink}>Account</Link>
                       <button
                         onClick={() => { logout(); setShowMenu(false); }}
-                        className="w-full px-4 py-2.5 text-left text-sm text-black hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                        className="w-full px-4 py-2.5 text-left text-sm text-black hover:bg-black/5 dark:hover:bg-zinc-700/80 dark:text-zinc-300 dark:hover:bg-zinc-700"
                       >
                         Log out
                       </button>
@@ -72,14 +72,14 @@ export default function Header() {
           ) : hotel && hotelLogout ? (
             <>
               <Link href="/hotel/dashboard" className="rounded-lg px-3 py-2 text-sm font-medium text-[#FF385C] hover:bg-[#fff1f2] dark:text-[#ff6b81] dark:hover:bg-white/10">Property Dashboard</Link>
-              <button onClick={hotelLogout} className="rounded-lg bg-zinc-200 px-3 py-2 text-sm hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:text-zinc-200">
+              <button onClick={hotelLogout} className="rounded-lg bg-black/5 dark:bg-zinc-700 px-3 py-2 text-sm hover:bg-black/10 dark:hover:bg-zinc-600 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:text-zinc-200">
                 Log out
               </button>
             </>
           ) : (
             <Link
               href="/login"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-black hover:bg-zinc-300 hover:text-black dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-black/5 dark:bg-zinc-700 text-black hover:bg-black/10 dark:hover:bg-zinc-600 hover:text-black dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
               title="Login / Register"
             >
               <UserIcon />

@@ -101,7 +101,7 @@ function SubscriptionContent() {
             className={`rounded-xl border p-6 transition-colors ${
               currentSub?.plan.id === plan.id
                 ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950/30'
-                : 'border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900'
+                : 'border-black/10 dark:border-zinc-700 bg-white dark:border-zinc-700 dark:bg-zinc-900'
             }`}
           >
             <h3 className="font-semibold text-black dark:text-zinc-100">{plan.name}</h3>

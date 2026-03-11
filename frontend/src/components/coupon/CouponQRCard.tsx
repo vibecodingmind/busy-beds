@@ -27,9 +27,9 @@ export default function CouponQRCard({
       : `https://example.com/redeem/${code}`;
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 p-6 shadow-sm">
+    <div className="rounded-lg border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 shadow-sm">
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-        <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800 p-3">
+        <div className="rounded-lg border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-3">
           <QRCodeSVG value={redeemUrl} size={160} level="M" />
         </div>
         <div className="flex-1 text-center sm:text-left">

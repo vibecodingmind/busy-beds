@@ -53,7 +53,7 @@ export default async function HotelDetailPage({
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         {/* Left column - main content */}
         <div className="flex-1 min-w-0">
-          <div className="rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-xl p-6 shadow-sm md:p-8">
+          <div className="rounded-2xl border border-black/10 dark:border-zinc-700/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-xl p-6 shadow-sm md:p-8">
             {/* Title row with Share and Save */}
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -149,7 +149,7 @@ export default async function HotelDetailPage({
 
         {/* Right sidebar - sticky booking widget with Get Coupon */}
         <aside className="w-full shrink-0 lg:sticky lg:top-24 lg:w-96">
-          <div className="rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-xl p-6 shadow-sm">
+          <div className="rounded-2xl border border-black/10 dark:border-zinc-700/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-xl p-6 shadow-sm">
             {/* Rating */}
             {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) && (
               <div className="mb-4 flex items-center gap-2">

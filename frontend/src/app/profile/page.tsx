@@ -67,7 +67,7 @@ export default function ProfilePage() {
         <p className="mt-1 text-black dark:text-zinc-400">Manage your profile and security.</p>
       </div>
 
-      <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-700">
+      <div className="flex gap-2 border-b border-black/10 dark:border-zinc-700">
         <button
           type="button"
           onClick={() => setTab('profile')}
@@ -112,7 +112,7 @@ export default function ProfilePage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
               />
             </div>
             <div>
@@ -122,7 +122,7 @@ export default function ProfilePage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
               />
             </div>
             <button
@@ -144,7 +144,7 @@ export default function ProfilePage() {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 required
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
               />
             </div>
             <div>
@@ -155,7 +155,7 @@ export default function ProfilePage() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
                 minLength={6}
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
               />
             </div>
             <button

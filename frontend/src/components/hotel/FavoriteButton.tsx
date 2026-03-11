@@ -58,7 +58,7 @@ export default function FavoriteButton({ hotelId, className = '', size = 'md', o
             : 'text-white hover:bg-white/20 hover:text-white'
           : favorited
             ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30'
-            : 'text-black hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-300'
+            : 'text-black hover:bg-black/5 dark:hover:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-300'
       } ${sz} ${className}`}
       aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
     >

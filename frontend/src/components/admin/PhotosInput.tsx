@@ -34,7 +34,7 @@ export default function PhotosInput({ value, onChange, placeholder = 'https://ex
               value={url}
               onChange={(e) => updatePhoto(i, e.target.value)}
               placeholder={placeholder}
-              className="flex-1 rounded-lg border border-zinc-300 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="flex-1 rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
             />
             <button
               type="button"
@@ -50,7 +50,7 @@ export default function PhotosInput({ value, onChange, placeholder = 'https://ex
           <button
             type="button"
             onClick={addPhoto}
-            className="rounded-lg border border-dashed border-zinc-300 px-4 py-2 text-sm text-black hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="rounded-lg border border-dashed border-black/20 dark:border-zinc-600 px-4 py-2 text-sm text-black hover:border-zinc-400 hover:bg-black/5 dark:hover:bg-zinc-800 dark:border-zinc-600 dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
             + Add photo
           </button>
@@ -60,7 +60,7 @@ export default function PhotosInput({ value, onChange, placeholder = 'https://ex
         <button
           type="button"
           onClick={addPhoto}
-          className="mt-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm text-black hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          className="mt-2 rounded-lg border border-black/20 dark:border-zinc-600 bg-white px-4 py-2 text-sm text-black hover:bg-black/5 dark:hover:bg-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
         >
           Add first photo
         </button>

@@ -84,7 +84,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as typeof sort)}
-          className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
+          className="rounded border border-black/20 dark:border-zinc-600 px-2 py-1 text-sm dark:bg-zinc-900 dark:text-zinc-100"
         >
           <option value="recent">Most recent</option>
           <option value="rating_high">Highest rated</option>
@@ -99,7 +99,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
         </p>
       )}
       {user && (
-        <form onSubmit={handleSubmit} className="mt-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+        <form onSubmit={handleSubmit} className="mt-4 rounded-lg border border-black/10 dark:border-zinc-700 bg-white p-4 dark:bg-zinc-800">
           <div className="flex items-center gap-1">
             <StarRating interactive value={rating} onChange={setRating} size="lg" />
           </div>
@@ -108,7 +108,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
             onChange={(e) => setComment(e.target.value)}
             placeholder="Write a review..."
             rows={3}
-            className="mt-2 w-full rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100"
+            className="mt-2 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-3 py-2 dark:bg-zinc-900 dark:text-zinc-100"
           />
           <button
             type="submit"
@@ -121,7 +121,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
       )}
       <ul className="mt-6 space-y-4">
         {data.reviews.map((r) => (
-          <li key={r.id} className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+          <li key={r.id} className="rounded-lg border border-black/10 dark:border-zinc-700 bg-white p-4 dark:bg-zinc-900">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span className="font-medium text-black dark:text-zinc-100">{r.user_name}</span>
@@ -211,7 +211,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
                       onChange={(e) => setResponseText(e.target.value)}
                       placeholder="Write a response..."
                       rows={2}
-                      className="w-full rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-900"
+                      className="w-full rounded border border-black/20 dark:border-zinc-600 px-3 py-2 text-sm dark:bg-zinc-900"
                     />
                     <div className="flex gap-2">
                       <button
@@ -240,7 +240,7 @@ export default function HotelReviews({ hotelId, hotelName }: Props) {
                           setResponseForReview(null);
                           setResponseText('');
                         }}
-                        className="rounded border border-zinc-300 px-3 py-1 text-sm dark:border-zinc-600"
+                        className="rounded border border-black/20 dark:border-zinc-600 px-3 py-1 text-sm"
                       >
                         Cancel
                       </button>

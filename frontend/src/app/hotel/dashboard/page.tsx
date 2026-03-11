@@ -77,15 +77,15 @@ export default function HotelDashboardPage() {
       )}
       {stats && (
         <div className="mt-8 grid gap-6 sm:grid-cols-3">
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+          <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 shadow-sm dark:bg-zinc-900">
             <h3 className="text-sm font-medium text-black dark:text-zinc-400">Today</h3>
             <p className="mt-2 text-3xl font-bold text-black dark:text-zinc-100">{stats.today}</p>
           </div>
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+          <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 shadow-sm dark:bg-zinc-900">
             <h3 className="text-sm font-medium text-black dark:text-zinc-400">This Week</h3>
             <p className="mt-2 text-3xl font-bold text-black dark:text-zinc-100">{stats.this_week}</p>
           </div>
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+          <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 shadow-sm dark:bg-zinc-900">
             <h3 className="text-sm font-medium text-black dark:text-zinc-400">This Month</h3>
             <p className="mt-2 text-3xl font-bold text-black dark:text-zinc-100">{stats.this_month}</p>
           </div>
@@ -99,13 +99,13 @@ export default function HotelDashboardPage() {
             type="date"
             value={start}
             onChange={(e) => setStart(e.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            className="rounded-lg border border-black/20 dark:border-zinc-600 px-3 py-2 dark:bg-zinc-800 dark:text-zinc-100"
           />
           <input
             type="date"
             value={end}
             onChange={(e) => setEnd(e.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            className="rounded-lg border border-black/20 dark:border-zinc-600 px-3 py-2 dark:bg-zinc-800 dark:text-zinc-100"
           />
           <button
             onClick={exportCSV}
@@ -115,8 +115,8 @@ export default function HotelDashboardPage() {
             Export CSV
           </button>
         </div>
-        <div className="mt-4 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-          <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+        <div className="mt-4 overflow-x-auto rounded-lg border border-black/10 dark:border-zinc-700">
+          <table className="min-w-full divide-y divide-black/10 dark:divide-zinc-700">
             <thead className="bg-white dark:bg-zinc-800">
               <tr>
                 <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Code</th>
@@ -125,7 +125,7 @@ export default function HotelDashboardPage() {
                 <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
+            <tbody className="divide-y divide-black/10 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
               {redemptions.map((r) => (
                 <tr key={r.code + r.redeemed_at}>
                   <td className="px-4 py-2 font-mono text-sm text-black dark:text-zinc-100">{r.code}</td>

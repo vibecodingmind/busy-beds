@@ -71,7 +71,7 @@ export default function MyCouponsPage() {
         <p className="mt-1 text-black dark:text-zinc-400">Select a coupon to view details and QR code.</p>
       </div>
 
-      <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-700">
+      <div className="flex gap-2 border-b border-black/10 dark:border-zinc-700">
         {(['active', 'used', 'expired'] as const).map((t) => (
           <button
             key={t}
@@ -99,14 +99,14 @@ export default function MyCouponsPage() {
               className={`flex cursor-pointer items-center gap-4 rounded-xl border-2 bg-white p-4 transition dark:bg-zinc-900 ${
                 selected?.id === c.id
                   ? 'border-emerald-500 shadow-md dark:border-emerald-600'
-                  : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-700 dark:hover:border-zinc-600'
+                  : 'border-black/10 dark:border-zinc-700 hover:border-black/20 dark:hover:border-zinc-600 dark:border-zinc-700 dark:hover:border-zinc-600'
               }`}
               onClick={() => setSelected(c)}
             >
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-zinc-200 text-xl font-bold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-black/5 dark:bg-zinc-700 text-xl font-bold text-black dark:text-zinc-300 dark:bg-zinc-700 dark:text-zinc-300">
                 {c.hotel_name?.charAt(0) || 'H'}
               </div>
-              <div className="min-w-0 flex-1 border-l-2 border-dashed border-zinc-200 pl-4 dark:border-zinc-600">
+              <div className="min-w-0 flex-1 border-l-2 border-dashed border-black/10 dark:border-zinc-700 pl-4 dark:border-zinc-600">
                 <p className="font-semibold text-black dark:text-zinc-100">{c.hotel_name}</p>
                 <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{c.discount_value}</p>
                 <p className={`text-xs ${c.status === 'active' ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-black dark:text-zinc-400'}`}>
@@ -123,7 +123,7 @@ export default function MyCouponsPage() {
             </div>
           ))}
           {filteredCoupons.length === 0 && (
-            <p className="rounded-xl border-2 border-dashed border-zinc-200 bg-white p-8 text-center text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+            <p className="rounded-xl border-2 border-dashed border-black/10 dark:border-zinc-700 bg-white p-8 text-center text-black dark:text-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
               {tab === 'active' && 'No active coupons. Get one from a hotel!'}
               {tab === 'used' && 'No used coupons yet.'}
               {tab === 'expired' && 'No expired coupons.'}
@@ -134,10 +134,10 @@ export default function MyCouponsPage() {
         {/* Right: Selected coupon detail */}
         <div className="lg:min-w-[360px]">
           {selected ? (
-            <div className="rounded-xl border-2 border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+            <div className="rounded-xl border-2 border-black/10 dark:border-zinc-700 bg-white p-6 dark:bg-zinc-900">
               {/* Header */}
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-zinc-200 text-2xl font-bold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-black/5 dark:bg-zinc-700 text-2xl font-bold text-black dark:text-zinc-300 dark:bg-zinc-700 dark:text-zinc-300">
                   {selected.hotel_name?.charAt(0) || 'H'}
                 </div>
                 <div>
@@ -191,7 +191,7 @@ export default function MyCouponsPage() {
                     selected.status === 'active'
                       ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'
                       : selected.status === 'redeemed'
-                        ? 'bg-zinc-200 text-zinc-700 dark:bg-zinc-600 dark:text-zinc-300'
+                        ? 'bg-black/5 dark:bg-zinc-700 text-zinc-700 dark:bg-zinc-600 dark:text-zinc-300'
                         : selected.status === 'cancelled'
                           ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'
                           : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'
@@ -210,7 +210,7 @@ export default function MyCouponsPage() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-200 bg-white p-12 dark:border-zinc-700 dark:bg-zinc-900/50">
+            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-black/10 dark:border-zinc-700 bg-white p-12 dark:border-zinc-700 dark:bg-zinc-900/50">
               <p className="text-black dark:text-zinc-400">Select a coupon to view details</p>
             </div>
           )}

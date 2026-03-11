@@ -50,7 +50,7 @@ export default async function HomePage() {
           </Link>
           <Link
             href="/hotels"
-            className="rounded-lg border-2 border-black px-6 py-3 font-medium text-black transition-colors hover:border-black hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded-lg border-2 border-black px-6 py-3 font-medium text-black transition-colors hover:border-black hover:bg-black/5 dark:hover:bg-zinc-800 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
             Browse Properties
           </Link>

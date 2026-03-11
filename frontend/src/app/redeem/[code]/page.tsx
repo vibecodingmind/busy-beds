@@ -74,7 +74,7 @@ export default function RedeemPage() {
 
   return (
     <div className="mx-auto max-w-lg">
-      <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 p-8 shadow-sm">
+      <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-8 shadow-sm">
         <h1 className="text-xl font-bold text-black dark:text-zinc-100">Coupon Validation</h1>
         <div className="mt-6 space-y-2">
           <p>

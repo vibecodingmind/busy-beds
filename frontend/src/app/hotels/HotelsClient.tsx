@@ -58,7 +58,7 @@ export default function HotelsClient() {
 
   return (
     <div className="min-h-screen">
-      <div className="rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/50 backdrop-blur-xl p-6 mb-6">
+      <div className="rounded-2xl border border-black/10 dark:border-zinc-700/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/50 backdrop-blur-xl p-6 mb-6">
         <h1 className="text-2xl font-bold text-black dark:text-zinc-100 flex items-center gap-2">
           <HouseIcon className="h-7 w-7 text-[#FF385C]" />
           Properties
@@ -72,12 +72,12 @@ export default function HotelsClient() {
               placeholder="Search by name, location..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 rounded-xl border border-zinc-200 px-4 py-2.5 bg-white dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 focus:ring-2 focus:ring-[#FF385C]/30 focus:border-[#FF385C] transition-colors"
+              className="flex-1 rounded-xl border border-black/10 dark:border-zinc-700 px-4 py-2.5 bg-white dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 focus:ring-2 focus:ring-[#FF385C]/30 focus:border-[#FF385C] transition-colors"
             />
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="rounded-xl border border-zinc-200 px-4 py-2.5 bg-white dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100"
+              className="rounded-xl border border-black/10 dark:border-zinc-700 px-4 py-2.5 bg-white dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100"
             >
               <option value="name">Sort by Name</option>
               <option value="location">Sort by Location</option>
@@ -87,12 +87,12 @@ export default function HotelsClient() {
             <button
               type="button"
               onClick={handleNearby}
-              className="flex items-center gap-2 rounded-xl border border-zinc-200 px-4 py-2.5 text-sm hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800 transition-colors"
+              className="flex items-center gap-2 rounded-xl border border-black/10 dark:border-zinc-700 px-4 py-2.5 text-sm hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800 transition-colors"
             >
               <MapPinIcon className="h-4 w-4" />
               Nearby
             </button>
-            <div className="flex rounded-xl border border-zinc-200 dark:border-zinc-600 overflow-hidden">
+            <div className="flex rounded-xl border border-black/10 dark:border-zinc-700 dark:border-zinc-600 overflow-hidden">
               <button
                 type="button"
                 onClick={() => setViewMode('grid')}
@@ -115,7 +115,7 @@ export default function HotelsClient() {
                 type="checkbox"
                 checked={featuredOnly}
                 onChange={(e) => setFeaturedOnly(e.target.checked)}
-                className="h-4 w-4 rounded border-zinc-300"
+                className="h-4 w-4 rounded border-black/20 dark:border-zinc-600"
               />
               <span className="text-sm text-black dark:text-zinc-300">Featured only</span>
             </label>
@@ -124,7 +124,7 @@ export default function HotelsClient() {
               <select
                 value={minRating ?? ''}
                 onChange={(e) => setMinRating(e.target.value ? parseFloat(e.target.value) : undefined)}
-                className="rounded-lg border border-zinc-200 px-2 py-1 text-sm dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100"
+                className="rounded-lg border border-black/10 dark:border-zinc-700 px-2 py-1 text-sm dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100"
               >
                 <option value="">Any</option>
                 <option value="4">4+ ★</option>
@@ -154,7 +154,7 @@ export default function HotelsClient() {
           ))}
         </div>
       ) : viewMode === 'map' ? (
-        <div className="rounded-2xl overflow-hidden border border-zinc-200/80 dark:border-zinc-700/80">
+        <div className="rounded-2xl overflow-hidden border border-black/10 dark:border-zinc-700/80 dark:border-zinc-700/80">
           <HotelsMapView hotels={hotelList} />
         </div>
       ) : (

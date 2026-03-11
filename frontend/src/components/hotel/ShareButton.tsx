@@ -45,7 +45,7 @@ export default function ShareButton({ hotelName, hotelId, className = '' }: Shar
     <button
       type="button"
       onClick={handleShare}
-      className={`inline-flex items-center gap-2 rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-black dark:text-zinc-300 transition-colors hover:bg-zinc-50 hover:border-zinc-300 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:border-zinc-500 ${className}`}
+      className={`inline-flex items-center gap-2 rounded-lg border border-black/10 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-black dark:text-zinc-300 transition-colors hover:bg-black/5 dark:hover:bg-zinc-800 hover:border-black/20 dark:hover:border-zinc-500 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:border-zinc-500 ${className}`}
       aria-label="Share this property"
     >
       <ShareIcon />

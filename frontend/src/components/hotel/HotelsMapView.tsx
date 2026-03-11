@@ -23,12 +23,12 @@ export default function HotelsMapView({ hotels }: HotelsMapViewProps) {
   );
 
   if (!mounted) {
-    return <div className="h-[500px] w-full animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-700" />;
+    return <div className="h-[500px] w-full animate-pulse rounded-xl bg-black/5 dark:bg-zinc-700" />;
   }
 
   if (withCoords.length === 0) {
     return (
-      <div className="flex h-[400px] flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900/50">
+      <div className="flex h-[400px] flex-col items-center justify-center rounded-xl border border-black/10 bg-white dark:border-zinc-700 dark:bg-zinc-900/50">
         <p className="text-black dark:text-zinc-400">No hotels with location data to show on map.</p>
         <p className="mt-2 text-sm text-black dark:text-zinc-400">Browse the list view instead.</p>
       </div>
@@ -36,7 +36,7 @@ export default function HotelsMapView({ hotels }: HotelsMapViewProps) {
   }
 
   return (
-    <div className="h-[500px] w-full overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700">
+    <div className="h-[500px] w-full overflow-hidden rounded-xl border border-black/10 dark:border-zinc-700">
       <HotelsMapInner hotels={withCoords} />
     </div>
   );

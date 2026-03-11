@@ -26,9 +26,9 @@ export default function AdminCouponsPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-black">Coupons</h1>
-      <div className="mt-8 overflow-x-auto rounded-lg border border-zinc-200">
+      <div className="mt-8 overflow-x-auto rounded-lg border border-black/10 dark:border-zinc-700">
         <table className="min-w-full divide-y divide-zinc-200">
-          <thead className="bg-zinc-50">
+          <thead className="bg-white dark:bg-zinc-800">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-medium text-black">Code</th>
               <th className="px-4 py-2 text-left text-sm font-medium text-black">User</th>
@@ -49,7 +49,7 @@ export default function AdminCouponsPage() {
                       c.status === 'active'
                         ? 'bg-emerald-100 text-emerald-800'
                         : c.status === 'redeemed'
-                          ? 'bg-zinc-200 text-zinc-700'
+                          ? 'bg-black/5 text-black dark:bg-zinc-600 dark:text-zinc-300'
                           : 'bg-amber-100 text-amber-800'
                     }`}
                   >

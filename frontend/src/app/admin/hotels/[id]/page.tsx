@@ -111,7 +111,7 @@ export default function EditHotelPage() {
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             required
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -120,7 +120,7 @@ export default function EditHotelPage() {
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
             rows={3}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -128,7 +128,7 @@ export default function EditHotelPage() {
           <input
             value={form.location}
             onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -138,7 +138,7 @@ export default function EditHotelPage() {
             value={form.booking_url}
             onChange={(e) => setForm((f) => ({ ...f, booking_url: e.target.value }))}
             placeholder="https://example.com/book"
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -146,7 +146,7 @@ export default function EditHotelPage() {
           <input
             value={form.contact_phone}
             onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -155,7 +155,7 @@ export default function EditHotelPage() {
             type="email"
             value={form.contact_email}
             onChange={(e) => setForm((f) => ({ ...f, contact_email: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -164,7 +164,7 @@ export default function EditHotelPage() {
             value={form.contact_whatsapp}
             onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))}
             placeholder="e.g. +1234567890"
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -173,7 +173,7 @@ export default function EditHotelPage() {
             id="featured"
             checked={form.featured}
             onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
-            className="h-4 w-4 rounded border-zinc-300"
+            className="h-4 w-4 rounded border-black/20 dark:border-zinc-600"
           />
           <label htmlFor="featured" className="text-sm font-medium text-black">Featured hotel</label>
         </div>
@@ -191,7 +191,7 @@ export default function EditHotelPage() {
               value={form.latitude}
               onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))}
               placeholder="e.g. 37.7749"
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+              className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
             />
           </div>
           <div>
@@ -202,7 +202,7 @@ export default function EditHotelPage() {
               value={form.longitude}
               onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))}
               placeholder="e.g. -122.4194"
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+              className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
             />
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function EditHotelPage() {
             value={form.coupon_discount_value}
             onChange={(e) => setForm((f) => ({ ...f, coupon_discount_value: e.target.value }))}
             required
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -222,7 +222,7 @@ export default function EditHotelPage() {
             min={1}
             value={form.coupon_limit}
             onChange={(e) => setForm((f) => ({ ...f, coupon_limit: parseInt(e.target.value) || 0 }))}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -230,7 +230,7 @@ export default function EditHotelPage() {
           <select
             value={form.limit_period}
             onChange={(e) => setForm((f) => ({ ...f, limit_period: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           >
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
@@ -257,7 +257,7 @@ export default function EditHotelPage() {
             value={accountForm.name}
             onChange={(e) => setAccountForm((f) => ({ ...f, name: e.target.value }))}
             required
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -267,7 +267,7 @@ export default function EditHotelPage() {
             value={accountForm.email}
             onChange={(e) => setAccountForm((f) => ({ ...f, email: e.target.value }))}
             required
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <div>
@@ -278,7 +278,7 @@ export default function EditHotelPage() {
             onChange={(e) => setAccountForm((f) => ({ ...f, password: e.target.value }))}
             required
             minLength={6}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
         <button

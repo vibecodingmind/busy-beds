@@ -88,7 +88,7 @@ function ReferralContent() {
             </div>
           )}
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+          <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
             <h2 className="font-semibold text-black dark:text-zinc-100">Earnings</h2>
             <div className="mt-4 flex gap-6">
               <div>
@@ -102,7 +102,7 @@ function ReferralContent() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+          <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
             <h2 className="font-semibold text-black dark:text-zinc-100">Your referral code</h2>
             <p className="mt-2 font-mono text-2xl font-bold text-emerald-600">{data.code}</p>
             <p className="mt-2 text-sm text-black dark:text-zinc-400">Share this link:</p>
@@ -110,7 +110,7 @@ function ReferralContent() {
               <input
                 readOnly
                 value={shareUrl}
-                className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+                className="flex-1 rounded-lg border border-black/20 dark:border-zinc-600 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
               />
               <button
                 onClick={() => { navigator.clipboard.writeText(shareUrl); toast('Link copied!', 'success'); }}
@@ -121,7 +121,7 @@ function ReferralContent() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+          <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
             <h2 className="font-semibold text-black dark:text-zinc-100">People you referred ({data.referred.length})</h2>
             {data.referred.length > 0 ? (
               <ul className="mt-4 space-y-2">
@@ -138,7 +138,7 @@ function ReferralContent() {
                                 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400'
                                 : reward.status === 'pending'
                                   ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400'
-                                  : 'bg-zinc-200 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400'
+                                  : 'bg-black/5 dark:bg-zinc-700 text-black dark:text-zinc-400 dark:bg-zinc-700 dark:text-zinc-400'
                             }`}
                           >
                             {reward.status === 'paid' ? `Earned $${reward.amount.toFixed(2)}` : reward.status === 'pending' ? `Pending $${reward.amount.toFixed(2)}` : 'Failed'}
