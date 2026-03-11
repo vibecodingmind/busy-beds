@@ -26,6 +26,8 @@ import favoritesRoutes from './routes/favorites';
 import promoRoutes from './routes/promo';
 import waitlistRoutes from './routes/waitlist';
 import settingsRoutes from './routes/settings';
+import pagesRoutes from './routes/pages';
+import contactRoutes from './routes/contact';
 
 const app = express();
 
@@ -69,6 +71,8 @@ app.use('/api/v1/waitlist', waitlistRoutes);
 app.use('/api/v1/stripe', stripeRoutes);
 app.use('/api/v1/paypal', paypalRoutes);
 app.use('/api/v1/settings', settingsRoutes);
+app.use('/api/v1/pages', pagesRoutes);
+app.use('/api/v1/contact', contactRoutes);
 app.use('/api/v1/cron', cronRoutes);
 
 // Health check

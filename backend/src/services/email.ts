@@ -62,3 +62,22 @@ export async function sendCouponExpiryReminder(to: string, userName: string, hot
     `<h1>Coupon expiring</h1><p>Hi ${userName},</p><p>Your discount coupon (${code}) for ${hotelName} expires on ${expiresAt}. Use it before it's too late!</p><p>— ${siteName}</p>`
   );
 }
+
+export async function sendContactFormEmail(
+  to: string,
+  fromName: string,
+  fromEmail: string,
+  message: string
+): Promise<boolean> {
+  const siteName = (await getSetting('site_name')) || 'Busy Beds';
+  const subject = `Contact form: ${siteName} — from ${fromName}`;
+  const html = `
+    <h2>New contact form submission</h2>
+    <p><strong>From:</strong> ${fromName} &lt;${fromEmail}&gt;</p>
+    <p><strong>Message:</strong></p>
+    <p>${message.replace(/\n/g, '<br>')}</p>
+    <hr>
+    <p><em>— ${siteName} contact form</em></p>
+  `;
+  return sendEmail(to, subject, html);
+}

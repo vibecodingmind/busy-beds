@@ -6,7 +6,7 @@ import * as hotelModel from '../models/hotel';
 import * as hotelAccountModel from '../models/hotelAccount';
 import { sendHotelApprovalEmail } from '../services/email';
 import * as userModel from '../models/user';
-import { getAllForAdmin, updateSettings } from '../services/settings';
+import { getAllForAdmin, updateSettings, getAllPagesForAdmin, updatePageContent } from '../services/settings';
 import { pool } from '../config/db';
 
 const router = Router();
@@ -320,6 +320,31 @@ router.patch('/settings', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update settings' });
+  }
+});
+
+// Pages (privacy, terms, about, contact details) — admin editable
+router.get('/pages', async (_req, res) => {
+  try {
+    const pages = await getAllPagesForAdmin();
+    res.json(pages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch pages' });
+  }
+});
+
+router.patch('/pages', async (req, res) => {
+  try {
+    const body = req.body as Record<string, unknown>;
+    if (!body || typeof body !== 'object') {
+      return res.status(400).json({ error: 'Body must be an object' });
+    }
+    await updatePageContent(body);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update pages' });
   }
 });
 

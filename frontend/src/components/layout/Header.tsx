@@ -27,7 +27,8 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-black/20 bg-white dark:border-zinc-800/80 dark:bg-zinc-900/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="text-xl font-bold text-black dark:text-zinc-100">
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold text-black dark:text-zinc-100">
+          <img src="/logo.png" alt="" className="h-8 w-8 flex-shrink-0 object-contain" />
           {displayTitle}
         </Link>
         <nav className="flex items-center gap-3">

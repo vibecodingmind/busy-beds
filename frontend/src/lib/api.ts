@@ -267,6 +267,35 @@ export const reviews = {
     }),
 };
 
+// Public pages (privacy, terms, about, contact details)
+export const pages = {
+  getContent: (slug: 'privacy' | 'terms' | 'about') =>
+    fetch(`${API_BASE}/pages/${slug}`).then(async (res) => {
+      if (!res.ok) throw new Error('Failed to fetch page');
+      const data = await res.json();
+      return data.content as string;
+    }),
+  getContactDetails: () =>
+    fetch(`${API_BASE}/pages/contact`).then(async (res) => {
+      if (!res.ok) throw new Error('Failed to fetch contact details');
+      return res.json() as Promise<{ contactEmail: string | null; contactPhone: string | null; contactAddress: string | null }>;
+    }),
+};
+
+// Contact form (no auth)
+export const contact = {
+  submit: (data: { name: string; email: string; message: string }) =>
+    fetch(`${API_BASE}/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to send message');
+      return data as { success: boolean; message: string };
+    }),
+};
+
 // Waitlist
 export const waitlist = {
   join: (email: string) =>
@@ -397,6 +426,27 @@ export const admin = {
       }>('/admin/settings'),
     update: (updates: Record<string, string>) =>
       api<{ success: boolean }>('/admin/settings', {
+        method: 'PATCH',
+        body: JSON.stringify(updates),
+      }),
+  },
+  pages: {
+    get: () =>
+      api<{
+        page_privacy: string;
+        page_terms: string;
+        page_about: string;
+        contact_phone: string;
+        contact_address: string;
+      }>('/admin/pages'),
+    update: (updates: {
+      page_privacy?: string;
+      page_terms?: string;
+      page_about?: string;
+      contact_phone?: string;
+      contact_address?: string;
+    }) =>
+      api<{ success: boolean }>('/admin/pages', {
         method: 'PATCH',
         body: JSON.stringify(updates),
       }),

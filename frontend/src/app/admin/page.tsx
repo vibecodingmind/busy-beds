@@ -108,6 +108,12 @@ export default function AdminDashboardPage() {
             <p className="mt-2 text-3xl font-bold text-amber-700">{counts?.pending ?? '-'}</p>
           </div>
         </Link>
+        <Link href="/admin/pages">
+          <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 shadow-sm hover:shadow-md dark:bg-zinc-900">
+            <h3 className="font-semibold text-black dark:text-zinc-100">Pages</h3>
+            <p className="mt-2 text-sm text-black dark:text-zinc-400">Privacy, Terms, About, Contact</p>
+          </div>
+        </Link>
         <Link href="/admin/settings">
           <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 shadow-sm hover:shadow-md dark:bg-zinc-900">
             <h3 className="font-semibold text-black dark:text-zinc-100">Settings</h3>

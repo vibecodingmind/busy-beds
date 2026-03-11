@@ -51,3 +51,14 @@ export const couponGenerationLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+export const contactFormLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: {
+    error: 'Too many contact form submissions. Please try again later.',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

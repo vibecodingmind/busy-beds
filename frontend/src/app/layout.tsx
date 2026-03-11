@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   description: 'Subscribe to access hotel discount coupons',
   manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'default', title: 'Busy Beds' },
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export const viewport: Viewport = {

@@ -119,3 +119,64 @@ export async function updateSettings(updates: Record<string, unknown>): Promise<
   }
   invalidateCache();
 }
+
+// Page content keys (privacy, terms, about, contact details) — editable in Admin → Pages
+const PAGE_KEYS = ['page_privacy', 'page_terms', 'page_about', 'contact_phone', 'contact_address'] as const;
+
+export async function getPageContent(slug: string): Promise<string | null> {
+  const map: Record<string, string> = {
+    privacy: 'page_privacy',
+    terms: 'page_terms',
+    about: 'page_about',
+  };
+  const key = map[slug];
+  if (!key) return null;
+  return getSetting(key);
+}
+
+export async function getContactDetails(): Promise<{
+  contactEmail: string | null;
+  contactPhone: string | null;
+  contactAddress: string | null;
+}> {
+  const [contactEmail, contactPhone, contactAddress] = await Promise.all([
+    getSetting('support_email'),
+    getSetting('contact_phone'),
+    getSetting('contact_address'),
+  ]);
+  return { contactEmail, contactPhone, contactAddress };
+}
+
+export async function getAllPagesForAdmin(): Promise<{
+  page_privacy: string;
+  page_terms: string;
+  page_about: string;
+  contact_phone: string;
+  contact_address: string;
+}> {
+  const [page_privacy, page_terms, page_about, contact_phone, contact_address] = await Promise.all(
+    PAGE_KEYS.map((k) => getSetting(k))
+  );
+  return {
+    page_privacy: page_privacy ?? '',
+    page_terms: page_terms ?? '',
+    page_about: page_about ?? '',
+    contact_phone: contact_phone ?? '',
+    contact_address: contact_address ?? '',
+  };
+}
+
+export async function updatePageContent(updates: Record<string, unknown>): Promise<void> {
+  for (const key of PAGE_KEYS) {
+    const value = updates[key];
+    if (value === undefined) continue;
+    const strVal = value == null ? '' : String(value).trim();
+    if (strVal === '') {
+      await pool.query('DELETE FROM settings WHERE key = $1', [key]);
+      cache[key] = null;
+    } else {
+      await setSetting(key, strVal);
+    }
+  }
+  invalidateCache();
+}
