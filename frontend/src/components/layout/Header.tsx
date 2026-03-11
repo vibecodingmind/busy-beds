@@ -54,6 +54,7 @@ export default function Header() {
                       <div className="border-t border-black/10 dark:border-zinc-700" />
                       <Link href="/dashboard" onClick={() => setShowMenu(false)} className={menuLink}>Dashboard</Link>
                       <Link href="/favorites" onClick={() => setShowMenu(false)} className={menuLink}>Favourites</Link>
+                      <Link href="/viewed" onClick={() => setShowMenu(false)} className={menuLink}>Viewed</Link>
                       <Link href="/my-coupons" onClick={() => setShowMenu(false)} className={menuLink}>My Coupons</Link>
                       <Link href="/subscription" onClick={() => setShowMenu(false)} className={menuLink}>Subscription</Link>
                       <Link href="/referral" onClick={() => setShowMenu(false)} className={menuLink}>Refer & Earn</Link>

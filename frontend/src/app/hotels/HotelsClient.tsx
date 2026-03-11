@@ -7,11 +7,9 @@ import type { Hotel } from '@/lib/api';
 import HotelCard from '@/components/hotel/HotelCard';
 import { CardSkeleton } from '@/components/LoadingSkeleton';
 import HotelsMapView from '@/components/hotel/HotelsMapView';
-import { useRecentlyViewedHotels } from '@/hooks/useRecentlyViewedHotels';
 import { HouseIcon, MapPinIcon } from '@/components/icons';
 
 export default function HotelsClient() {
-  const recentlyViewed = useRecentlyViewedHotels();
   const [hotelList, setHotelList] = useState<Hotel[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
   const [search, setSearch] = useState('');
@@ -136,17 +134,6 @@ export default function HotelsClient() {
         </div>
       </div>
 
-      {recentlyViewed.length > 0 && (
-        <div className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-800 dark:text-zinc-200">Recently Viewed</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {recentlyViewed.map((hotel) => (
-              <HotelCard key={hotel.id} hotel={hotel} />
-            ))}
-          </div>
-        </div>
-      )}
-
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -169,7 +156,7 @@ export default function HotelsClient() {
               </div>
             </div>
           )}
-          <div className={hotelList.some((h) => h.featured) && !featuredOnly ? 'mt-10' : recentlyViewed.length > 0 ? 'mt-10' : ''}>
+          <div className={hotelList.some((h) => h.featured) && !featuredOnly ? 'mt-10' : ''}>
             <h2 className="mb-4 text-lg font-semibold text-zinc-800 dark:text-zinc-200">
               {featuredOnly ? 'Featured Properties' : hotelList.some((h) => h.featured) ? 'All Properties' : 'Properties'}
             </h2>

@@ -19,7 +19,7 @@ export default async function HomePage() {
   let totalReviews = 0;
   try {
     const [hotelsRes, recentRes, statsRes] = await Promise.all([
-      hotels.list({ limit: 8 }),
+      hotels.list({ limit: 8, featured: true }),
       reviews.recent(3).catch(() => ({ reviews: [] })),
       reviews.stats().catch(() => ({ totalReviews: 0 })),
     ]);
