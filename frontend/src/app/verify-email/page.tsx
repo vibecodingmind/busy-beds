@@ -34,7 +34,7 @@ function VerifyEmailContent() {
 
   if (status === 'loading' || status === 'idle') {
     return (
-      <AuthLayout title="Verify your email" subtitle="Verifying..." switchText="Back to login" switchLink="/login">
+      <AuthLayout title="Verify your email" subtitle="Verifying..." switchText="Back to " switchLabel="login" switchLink="/login">
         <p className="text-zinc-400">Please wait...</p>
       </AuthLayout>
     );
@@ -42,7 +42,7 @@ function VerifyEmailContent() {
 
   if (status === 'success') {
     return (
-      <AuthLayout title="Email verified" subtitle="Your email has been verified." switchText="Back to login" switchLink="/login">
+      <AuthLayout title="Email verified" subtitle="Your email has been verified." switchText="Back to " switchLabel="login" switchLink="/login">
         <p className="text-zinc-400">Redirecting you to login...</p>
         <Link href="/login" className="mt-4 block text-[#FF385C] hover:text-[#ff6b81] transition-colors">
           Go to Login
@@ -52,7 +52,7 @@ function VerifyEmailContent() {
   }
 
   return (
-    <AuthLayout title="Verification failed" subtitle={error} switchText="Back to login" switchLink="/login">
+    <AuthLayout title="Verification failed" subtitle={error} switchText="Back to " switchLabel="login" switchLink="/login">
       <Link href="/login" className="block text-[#FF385C] hover:text-[#ff6b81] transition-colors">
         Go to Login
       </Link>
@@ -66,7 +66,7 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
-      <AuthLayout title="Verify your email" subtitle="Loading..." switchText="Back to login" switchLink="/login">
+      <AuthLayout title="Verify your email" subtitle="Loading..." switchText="Back to " switchLabel="login" switchLink="/login">
         <p className="text-zinc-400">Please wait...</p>
       </AuthLayout>
     }>
