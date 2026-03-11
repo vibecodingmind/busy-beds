@@ -1,10 +1,23 @@
 'use client';
 
 import { useTheme } from '@/contexts/ThemeContext';
+import { useEffect, useState } from 'react';
 
 export default function ThemeToggle() {
   const { resolved, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const isDark = resolved === 'dark';
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <div className="rounded-lg p-2 w-9 h-9" />
+    );
+  }
 
   return (
     <button

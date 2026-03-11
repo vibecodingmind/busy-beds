@@ -9,8 +9,8 @@ import { QRCodeSVG } from 'qrcode.react';
 type Coupon = { id: number; code: string; hotel_name: string; discount_value: string; status: string; expires_at: string };
 
 function getExpiryCountdown(expiresAt: string): string {
-  const now = new Date();
   const exp = new Date(expiresAt);
+  const now = new Date();
   if (exp <= now) return 'Expired';
   const ms = exp.getTime() - now.getTime();
   const days = Math.floor(ms / (24 * 60 * 60 * 1000));
