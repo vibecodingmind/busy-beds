@@ -12,13 +12,16 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 const facebookAppId = process.env.FACEBOOK_APP_ID;
 const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
 
+// Base URL for OAuth callbacks (no trailing slash). Must match exactly what you add in Google/Facebook consoles.
+const apiBase = (process.env.API_URL || 'http://localhost:3001').replace(/\/$/, '');
+
 if (googleClientId && googleClientSecret) {
   passport.use(
     new GoogleStrategy(
       {
         clientID: googleClientId,
         clientSecret: googleClientSecret,
-        callbackURL: `${process.env.API_URL || 'http://localhost:3001'}/auth/google/callback`,
+        callbackURL: `${apiBase}/auth/google/callback`,
       },
       async (
         _accessToken: string,
@@ -50,7 +53,7 @@ if (facebookAppId && facebookAppSecret) {
       {
         clientID: facebookAppId,
         clientSecret: facebookAppSecret,
-        callbackURL: `${process.env.API_URL || 'http://localhost:3001'}/auth/facebook/callback`,
+        callbackURL: `${apiBase}/auth/facebook/callback`,
         profileFields: ['id', 'emails', 'name'],
       },
       async (
