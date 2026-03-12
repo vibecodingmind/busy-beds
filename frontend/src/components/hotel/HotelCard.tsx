@@ -25,7 +25,7 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
 
   return (
     <Link href={`/hotels/${hotel.id}`}>
-      <div className="group overflow-hidden rounded-2xl border border-black/10 dark:border-zinc-700/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/60 backdrop-blur-sm shadow-sm transition-all hover:shadow-lg hover:border-black/20 dark:hover:border-zinc-600">
+      <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:shadow-lg hover:border-black/20 dark:hover:border-zinc-600">
         <div className="relative aspect-[4/3] w-full overflow-hidden">
           <Image
             src={imageUrl}
@@ -53,30 +53,30 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
           </div>
         </div>
         <div className="p-4">
-          <h3 className="text-base font-semibold text-black dark:text-zinc-100">{hotel.name}</h3>
+          <h3 className="text-base font-semibold text-foreground">{hotel.name}</h3>
           {hotel.location && (
-            <p className="mt-2 flex items-center gap-1.5 text-sm text-black dark:text-zinc-400">
-              <MapPinIcon className="h-4 w-4 flex-shrink-0 text-black dark:text-zinc-400" />
+            <p className="mt-2 flex items-center gap-1.5 text-sm text-muted">
+              <MapPinIcon className="h-4 w-4 flex-shrink-0 text-muted" />
               <span className="line-clamp-1">{hotel.location}</span>
             </p>
           )}
           {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
             <p className="mt-2 flex items-center gap-1.5 text-sm">
               <StarRating rating={Number(hotel.avg_rating)} size="sm" />
-              <span className="text-black dark:text-zinc-400">
+              <span className="text-muted">
                 {Number(hotel.avg_rating).toFixed(1)} ({hotel.review_count})
               </span>
             </p>
           ) : (
-            <p className="mt-2 text-sm text-black dark:text-zinc-500">No reviews yet</p>
+            <p className="mt-2 text-sm text-muted">No reviews yet</p>
           )}
           {hotel.redemptions_this_month != null && hotel.redemptions_this_month > 0 && (
-            <p className="mt-2 text-xs text-black dark:text-zinc-500">
+            <p className="mt-2 text-xs text-muted">
               {hotel.redemptions_this_month} redemption{hotel.redemptions_this_month !== 1 ? 's' : ''} this month
             </p>
           )}
           {hotel.created_at && (
-            <p className="mt-1 text-xs text-black dark:text-zinc-500">
+            <p className="mt-1 text-xs text-muted">
               Member since {new Date(hotel.created_at).getFullYear()}
             </p>
           )}

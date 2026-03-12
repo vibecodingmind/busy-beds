@@ -51,9 +51,9 @@ export default function AuthLayout({
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-900 flex items-center justify-center p-4">
-      {/* Glassy dark container */}
-      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border border-zinc-700/50 bg-zinc-900/95 shadow-2xl backdrop-blur-xl">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      {/* Card container */}
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
         <div className="flex min-h-[600px] flex-col lg:flex-row">
           {/* Left panel - slider */}
           <div className="relative hidden w-full lg:block lg:w-1/2 overflow-hidden">
@@ -99,11 +99,11 @@ export default function AuthLayout({
           </div>
 
           {/* Right panel - form */}
-          <div className="flex flex-1 flex-col justify-center bg-zinc-900/98 px-8 py-12 lg:px-12 lg:py-16">
+          <div className="flex flex-1 flex-col justify-center bg-card px-8 py-12 lg:px-12 lg:py-16">
             <div className="mx-auto w-full max-w-sm">
               <Link
                 href="/"
-                className="mb-6 inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors lg:mb-8"
+                className="mb-6 inline-flex items-center gap-2 text-muted hover:text-foreground transition-colors lg:mb-8"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -114,18 +114,18 @@ export default function AuthLayout({
                 <div className="mb-6 flex justify-end lg:mb-8">
                   <Link
                     href={switchLink}
-                    className="rounded-lg border border-zinc-600 bg-zinc-800/80 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-zinc-700"
+                    className="rounded-lg border border-border bg-black/5 dark:bg-zinc-800 px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-black/10 dark:hover:bg-zinc-700"
                   >
                     {switchLabel}
                   </Link>
                 </div>
               )}
-              <h1 className="text-2xl font-bold text-white">{title}</h1>
-              <p className="mt-1 text-zinc-400">{subtitle}</p>
+              <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+              <p className="mt-1 text-muted">{subtitle}</p>
               <div className="mt-8">{children}</div>
-              <p className="mt-8 text-center text-sm text-zinc-400">
+              <p className="mt-8 text-center text-sm text-muted">
                 {switchText}{' '}
-                <Link href={switchLink} className="font-medium text-[#FF385C] hover:text-[#ff6b81] transition-colors">
+                <Link href={switchLink} className="font-medium text-primary hover:opacity-90 transition-opacity">
                   {switchLabel}
                 </Link>
               </p>

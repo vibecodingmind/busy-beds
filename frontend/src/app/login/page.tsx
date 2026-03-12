@@ -63,10 +63,10 @@ function LoginForm() {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="rounded-lg bg-red-900/30 border border-red-800/50 p-3 text-sm text-red-300">{error}</div>
+          <div className="rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800/50 p-3 text-sm text-red-700 dark:text-red-300">{error}</div>
         )}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-zinc-300">
+          <label htmlFor="email" className="block text-sm font-medium text-foreground">
             Your Email
           </label>
           <input
@@ -76,11 +76,11 @@ function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="you@example.com"
-            className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
+            className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-zinc-300">
+          <label htmlFor="password" className="block text-sm font-medium text-foreground">
             Password
           </label>
           <div className="relative mt-1">
@@ -91,12 +91,12 @@ function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Enter your password"
-              className="w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 pr-10 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
+              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 pr-10 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
             >
               {showPassword ? (
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,33 +117,33 @@ function LoginForm() {
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="rounded border-zinc-600 bg-zinc-800 text-[#FF385C] focus:ring-[#FF385C]"
+              className="rounded border-border bg-background text-primary focus:ring-primary"
             />
-            <span className="text-sm text-zinc-400">Remember Me</span>
+            <span className="text-sm text-muted">Remember Me</span>
           </label>
-          <Link href="/forgot-password" className="text-sm text-zinc-400 hover:text-[#FF385C] transition-colors">
+          <Link href="/forgot-password" className="text-sm text-muted hover:text-primary transition-colors">
             Forgot Password?
           </Link>
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-[#FF385C] py-3 font-medium text-white hover:bg-[#e31c5f] disabled:opacity-50 transition-colors"
+          className="w-full rounded-xl bg-primary py-3 font-medium text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-zinc-700" />
+            <div className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-zinc-900 px-3 text-zinc-500">Or continue with</span>
+            <span className="bg-card px-3 text-muted">Or continue with</span>
           </div>
         </div>
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-600 bg-zinc-800/50 py-2.5 font-medium text-zinc-300 hover:bg-zinc-700/50 transition-colors"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-black/5 dark:bg-zinc-800/50 py-2.5 font-medium text-foreground hover:bg-black/10 dark:hover:bg-zinc-700/50 transition-colors"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -160,7 +160,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><p className="text-zinc-600">Loading...</p></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><p className="text-muted">Loading...</p></div>}>
       <LoginForm />
     </Suspense>
   );

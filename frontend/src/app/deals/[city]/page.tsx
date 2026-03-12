@@ -28,8 +28,8 @@ export default function DealsCityPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-black dark:text-zinc-100">{title}</h1>
-        <p className="mt-1 text-black dark:text-zinc-400">
+        <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+        <p className="mt-1 text-muted">
           {city ? `Properties and coupon deals in ${city}` : 'Browse deals by location.'}
         </p>
       </div>
@@ -46,11 +46,11 @@ export default function DealsCityPage() {
           ))}
         </div>
       ) : (
-        <p className="py-12 text-center text-black dark:text-zinc-400">
+        <p className="py-12 text-center text-muted">
           {city ? `No properties found in ${city}.` : 'Enter a city in the URL, e.g. /deals/new-york'}
         </p>
       )}
-      <Link href="/hotels" className="font-medium text-[#FF385C] hover:underline">View all properties →</Link>
+      <Link href="/hotels" className="font-medium text-primary hover:underline">View all properties →</Link>
     </div>
   );
 }

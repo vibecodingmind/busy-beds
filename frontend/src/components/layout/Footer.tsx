@@ -9,10 +9,10 @@ export default function Footer() {
   const supportEmail = settings?.support_email;
 
   return (
-    <footer className="mt-auto border-t border-black/10 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50">
+    <footer className="mt-auto border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-6">
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-black dark:text-zinc-400">
-          <span className="font-medium text-black dark:text-zinc-300">{siteName}</span>
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-foreground">
+          <span className="font-medium text-foreground">{siteName}</span>
           <Link href="/about" className="hover:underline">
             About
           </Link>

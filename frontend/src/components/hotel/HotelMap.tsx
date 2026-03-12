@@ -20,7 +20,7 @@ export default function HotelMap(props: HotelMapProps) {
   }, []);
 
   if (!mounted) {
-    return <div className="aspect-video w-full animate-pulse rounded-xl bg-zinc-200" />;
+    return <div className="aspect-video w-full animate-pulse rounded-xl bg-black/10 dark:bg-zinc-700" />;
   }
 
   return (

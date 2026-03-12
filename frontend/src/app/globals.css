@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
-/* Light mode (default when no .dark class) */
+/* Light mode: text on white bg (very light, no grey) */
 :root {
   --background: #ffffff;
   --foreground: #000000;
-  --card-bg: rgba(255, 255, 255, 0.9);
+  --card-bg: #ffffff;
   --card-border: rgba(0, 0, 0, 0.08);
-  --border: #e2e8f0;
-  --muted: #000000;
+  --border: rgba(0, 0, 0, 0.1);
+  --muted: rgba(0, 0, 0, 0.65);
   --primary: #FF385C;
   --primary-hover: #e31c5f;
   --primary-light: rgba(255, 56, 92, 0.12);
-  --glass-bg: rgba(248, 250, 252, 0.85);
+  --glass-bg: rgba(255, 255, 255, 0.92);
   --glass-border: rgba(0, 0, 0, 0.06);
 }
 
@@ -33,7 +33,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
   --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-card: var(--card-bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
