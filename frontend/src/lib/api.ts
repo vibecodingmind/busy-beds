@@ -422,6 +422,7 @@ export const admin = {
           name: string;
           monthly_coupon_limit: number;
           price: number;
+          currency?: string;
           stripe_price_id: string | null;
           paypal_plan_id: string | null;
         }[];
@@ -430,6 +431,7 @@ export const admin = {
       name: string;
       monthly_coupon_limit: number;
       price: number;
+      currency?: string;
       stripe_price_id?: string;
       paypal_plan_id?: string;
     }) => api<object>('/admin/plans', { method: 'POST', body: JSON.stringify(data) }),
@@ -439,6 +441,7 @@ export const admin = {
         name: string;
         monthly_coupon_limit: number;
         price: number;
+        currency: string;
         stripe_price_id: string;
         paypal_plan_id: string;
       }>
@@ -550,6 +553,7 @@ export interface SubscriptionPlan {
   name: string;
   monthly_coupon_limit: number;
   price: number;
+  currency?: string;
   stripe_price_id?: string | null;
   paypal_plan_id?: string | null;
 }

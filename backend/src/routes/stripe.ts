@@ -142,11 +142,14 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
     if (promo_code && typeof promo_code === 'string') {
       const promo = await import('../models/promo').then((m) => m.findPromoByCode(promo_code.trim()));
       if (promo?.valid) {
+        const planCurrency = (plan.currency || 'USD').toLowerCase();
         let couponParams: Stripe.CouponCreateParams;
         if (promo.discount_type === 'percent') {
           couponParams = { percent_off: Math.min(100, Math.max(0, Number(promo.discount_value))) };
+        } else if (promo.discount_type === 'fixed' && ['usd', 'eur', 'gbp'].includes(planCurrency)) {
+          couponParams = { amount_off: Math.round(Number(promo.discount_value) * 100), currency: planCurrency };
         } else if (promo.discount_type === 'fixed') {
-          couponParams = { amount_off: Math.round(Number(promo.discount_value) * 100), currency: 'usd' };
+          couponParams = { percent_off: 0 };
         } else if (promo.discount_type === 'free_month') {
           couponParams = { percent_off: 100 };
         } else {

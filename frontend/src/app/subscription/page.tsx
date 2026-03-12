@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { subscriptions, stripe, paypal, promo } from '@/lib/api';
 import type { SubscriptionPlan } from '@/lib/api';
+import { formatPlanPrice } from '@/lib/formatPlanPrice';
 
 function SubscriptionContent() {
   const { user, loading: authLoading } = useAuth();
@@ -187,7 +188,7 @@ function SubscriptionContent() {
               }`}
             >
               <h3 className="font-semibold text-black dark:text-zinc-100">{plan.name}</h3>
-              <p className="mt-2 text-2xl font-bold text-black dark:text-zinc-100">${plan.price}</p>
+              <p className="mt-2 text-2xl font-bold text-black dark:text-zinc-100">{formatPlanPrice(plan.price, plan.currency)}</p>
               <p className="text-sm text-black dark:text-zinc-400">/ month</p>
               <p className="mt-2 text-black dark:text-zinc-400">{plan.monthly_coupon_limit} coupons per month</p>
               <div className="mt-4 flex flex-col gap-2">

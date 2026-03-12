@@ -5,6 +5,7 @@ export interface SubscriptionPlan {
   name: string;
   monthly_coupon_limit: number;
   price: number;
+  currency?: string;
   stripe_price_id?: string | null;
   paypal_plan_id?: string | null;
 }
@@ -20,7 +21,7 @@ export interface Subscription {
 
 export async function findAllPlans(): Promise<SubscriptionPlan[]> {
   const result = await pool.query(
-    'SELECT id, name, monthly_coupon_limit, price, stripe_price_id, paypal_plan_id FROM subscription_plans ORDER BY monthly_coupon_limit'
+    'SELECT id, name, monthly_coupon_limit, price, COALESCE(currency, \'USD\') as currency, stripe_price_id, paypal_plan_id FROM subscription_plans ORDER BY monthly_coupon_limit'
   );
   return result.rows;
 }
@@ -72,7 +73,7 @@ export async function createPayPalSubscription(userId: number, planId: number, p
 
 export async function findSubscriptionByUserId(userId: number): Promise<(Subscription & { plan: SubscriptionPlan }) | null> {
   const result = await pool.query(
-    `SELECT s.*, p.name as plan_name, p.monthly_coupon_limit, p.price
+    `SELECT s.*, p.name as plan_name, p.monthly_coupon_limit, p.price, COALESCE(p.currency, 'USD') as plan_currency
      FROM subscriptions s
      JOIN subscription_plans p ON s.plan_id = p.id
      WHERE s.user_id = $1`,
@@ -87,6 +88,7 @@ export async function findSubscriptionByUserId(userId: number): Promise<(Subscri
       name: row.plan_name,
       monthly_coupon_limit: row.monthly_coupon_limit,
       price: row.price,
+      currency: row.plan_currency,
     },
   };
 }

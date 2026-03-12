@@ -335,6 +335,14 @@ BEGIN
   END IF;
 END $$;
 
+-- Currency for subscription plans (USD, EUR, GBP, TZS)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='subscription_plans' AND column_name='currency') THEN
+    ALTER TABLE subscription_plans ADD COLUMN currency VARCHAR(3) NOT NULL DEFAULT 'USD' CHECK (currency IN ('USD','EUR','GBP','TZS'));
+  END IF;
+END $$;
+
 -- Pending PayPal subscriptions (subscription_id -> user_id, plan_id) until webhook ACTIVATED
 CREATE TABLE IF NOT EXISTS paypal_subscription_pending (
     subscription_id VARCHAR(255) PRIMARY KEY,

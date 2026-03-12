@@ -6,17 +6,20 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { admin } from '@/lib/api';
 import { useToast } from '@/contexts/ToastContext';
+import { formatPlanPrice } from '@/lib/formatPlanPrice';
+
+const CURRENCIES = ['USD', 'EUR', 'GBP', 'TZS'] as const;
 
 export default function AdminPlansPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const toast = useToast();
   const [plans, setPlans] = useState<
-    { id: number; name: string; monthly_coupon_limit: number; price: number; stripe_price_id: string | null; paypal_plan_id: string | null }[]
+    { id: number; name: string; monthly_coupon_limit: number; price: number; currency?: string; stripe_price_id: string | null; paypal_plan_id: string | null }[]
   >([]);
-  const [form, setForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, stripe_price_id: '', paypal_plan_id: '' });
+  const [form, setForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, currency: 'USD' as string, stripe_price_id: '', paypal_plan_id: '' });
   const [editing, setEditing] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, stripe_price_id: '', paypal_plan_id: '' });
+  const [editForm, setEditForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, currency: 'USD' as string, stripe_price_id: '', paypal_plan_id: '' });
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== 'admin')) router.push('/');
@@ -34,10 +37,11 @@ export default function AdminPlansPage() {
         name: form.name,
         monthly_coupon_limit: form.monthly_coupon_limit,
         price: form.price,
+        currency: form.currency || 'USD',
         stripe_price_id: form.stripe_price_id || undefined,
         paypal_plan_id: form.paypal_plan_id || undefined,
       });
-      setForm({ name: '', monthly_coupon_limit: 5, price: 0, stripe_price_id: '', paypal_plan_id: '' });
+      setForm({ name: '', monthly_coupon_limit: 5, price: 0, currency: 'USD', stripe_price_id: '', paypal_plan_id: '' });
       toast('Plan created', 'success');
       admin.plans.list().then((r) => setPlans(r.plans)).catch(() => {});
     } catch {
@@ -51,6 +55,7 @@ export default function AdminPlansPage() {
         name: editForm.name,
         monthly_coupon_limit: editForm.monthly_coupon_limit,
         price: editForm.price,
+        currency: editForm.currency || 'USD',
         stripe_price_id: editForm.stripe_price_id || undefined,
         paypal_plan_id: editForm.paypal_plan_id || undefined,
       });
@@ -106,6 +111,18 @@ export default function AdminPlansPage() {
           onChange={(e) => setForm((f) => ({ ...f, price: parseFloat(e.target.value) || 0 }))}
           className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
         />
+        <div>
+          <label className="mb-1 block text-sm font-medium text-black dark:text-zinc-300">Currency</label>
+          <select
+            value={form.currency}
+            onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
+            className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c} value={c}>{c === 'USD' ? '$ USD' : c === 'EUR' ? '€ EUR' : c === 'GBP' ? '£ GBP' : 'TZS'}</option>
+            ))}
+          </select>
+        </div>
         <input
           placeholder="Stripe Price ID (optional)"
           value={form.stripe_price_id}
@@ -129,6 +146,11 @@ export default function AdminPlansPage() {
                 <input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} className="rounded border px-2 py-1 dark:bg-zinc-800 dark:text-zinc-100" />
                 <input type="number" min={1} value={editForm.monthly_coupon_limit} onChange={(e) => setEditForm((f) => ({ ...f, monthly_coupon_limit: parseInt(e.target.value) || 0 }))} className="w-20 rounded border px-2 py-1 dark:bg-zinc-800 dark:text-zinc-100" />
                 <input type="number" step="0.01" value={editForm.price} onChange={(e) => setEditForm((f) => ({ ...f, price: parseFloat(e.target.value) || 0 }))} className="w-20 rounded border px-2 py-1 dark:bg-zinc-800 dark:text-zinc-100" />
+                <select value={editForm.currency} onChange={(e) => setEditForm((f) => ({ ...f, currency: e.target.value }))} className="rounded border px-2 py-1 text-sm dark:bg-zinc-800 dark:text-zinc-100">
+                  {CURRENCIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
                 <input placeholder="Stripe ID" value={editForm.stripe_price_id} onChange={(e) => setEditForm((f) => ({ ...f, stripe_price_id: e.target.value }))} className="w-32 rounded border px-2 py-1 text-xs dark:bg-zinc-800 dark:text-zinc-100" />
                 <input placeholder="PayPal Plan ID" value={editForm.paypal_plan_id} onChange={(e) => setEditForm((f) => ({ ...f, paypal_plan_id: e.target.value }))} className="w-32 rounded border px-2 py-1 text-xs dark:bg-zinc-800 dark:text-zinc-100" />
                 <div className="flex gap-2">
@@ -139,7 +161,7 @@ export default function AdminPlansPage() {
             ) : (
               <>
                 <span className="font-medium text-black dark:text-zinc-100">{p.name}</span>
-                <span className="text-black dark:text-zinc-400">{p.monthly_coupon_limit} coupons/mo · ${p.price}</span>
+                <span className="text-black dark:text-zinc-400">{p.monthly_coupon_limit} coupons/mo · {formatPlanPrice(p.price, p.currency)}</span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => {
@@ -148,6 +170,7 @@ export default function AdminPlansPage() {
                         name: p.name,
                         monthly_coupon_limit: p.monthly_coupon_limit,
                         price: p.price,
+                        currency: p.currency || 'USD',
                         stripe_price_id: p.stripe_price_id || '',
                         paypal_plan_id: p.paypal_plan_id || '',
                       });

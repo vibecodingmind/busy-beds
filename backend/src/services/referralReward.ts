@@ -1,8 +1,10 @@
 import Stripe from 'stripe';
 import { pool } from '../config/db';
 import { getSetting } from './settings';
+import * as subscriptionModel from '../models/subscription';
 
 const MIN_TRANSFER_CENTS = 50; // Stripe minimum $0.50
+const STRIPE_CONNECT_CURRENCIES = ['usd', 'eur', 'gbp'];
 
 export interface ReferralReward {
   id: number;
@@ -55,19 +57,21 @@ export async function processReferralReward(
   const reward = insertResult.rows[0];
   if (!reward) return null;
 
-  const accountResult = await pool.query(
+  const plan = await subscriptionModel.findPlanById(planId);
+  const planCurrency = (plan?.currency || 'USD').toLowerCase();
+  const stripeAccountIdResult = await pool.query(
     'SELECT stripe_connect_account_id FROM users WHERE id = $1',
     [referrerId]
   );
-  const stripeAccountId = accountResult.rows[0]?.stripe_connect_account_id;
+  const stripeAccountId = stripeAccountIdResult.rows[0]?.stripe_connect_account_id;
   const stripeKey = await getSetting('stripe_secret_key');
   const stripe = stripeKey ? new Stripe(stripeKey) : null;
 
-  if (stripeAccountId && stripe) {
+  if (stripeAccountId && stripe && STRIPE_CONNECT_CURRENCIES.includes(planCurrency)) {
     try {
       const transfer = await stripe.transfers.create({
         amount: amountCents,
-        currency: 'usd',
+        currency: planCurrency,
         destination: stripeAccountId,
       });
       await pool.query(

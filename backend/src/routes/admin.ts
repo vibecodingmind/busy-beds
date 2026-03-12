@@ -266,17 +266,19 @@ router.post(
   body('name').trim().notEmpty(),
   body('monthly_coupon_limit').isInt({ min: 1 }),
   body('price').isFloat({ min: 0 }),
+  body('currency').optional().isIn(['USD', 'EUR', 'GBP', 'TZS']),
   body('stripe_price_id').optional().trim(),
   body('paypal_plan_id').optional().trim(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-      const { name, monthly_coupon_limit, price, stripe_price_id, paypal_plan_id } = req.body;
+      const { name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id } = req.body;
+      const planCurrency = currency || 'USD';
       const result = await pool.query(
-        `INSERT INTO subscription_plans (name, monthly_coupon_limit, price, stripe_price_id, paypal_plan_id)
-         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        [name, monthly_coupon_limit, price, stripe_price_id || null, paypal_plan_id || null]
+        `INSERT INTO subscription_plans (name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        [name, monthly_coupon_limit, price, planCurrency, stripe_price_id || null, paypal_plan_id || null]
       );
       res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -289,13 +291,14 @@ router.post(
 router.put('/plans/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id || '0');
-    const { name, monthly_coupon_limit, price, stripe_price_id, paypal_plan_id } = req.body;
+    const { name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id } = req.body;
     const updates: string[] = [];
     const values: unknown[] = [];
     let i = 2;
     if (name !== undefined) { updates.push(`name = $${i++}`); values.push(name); }
     if (monthly_coupon_limit !== undefined) { updates.push(`monthly_coupon_limit = $${i++}`); values.push(monthly_coupon_limit); }
     if (price !== undefined) { updates.push(`price = $${i++}`); values.push(price); }
+    if (currency !== undefined && ['USD', 'EUR', 'GBP', 'TZS'].includes(currency)) { updates.push(`currency = $${i++}`); values.push(currency); }
     if (stripe_price_id !== undefined) { updates.push(`stripe_price_id = $${i++}`); values.push(stripe_price_id || null); }
     if (paypal_plan_id !== undefined) { updates.push(`paypal_plan_id = $${i++}`); values.push(paypal_plan_id || null); }
     if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
