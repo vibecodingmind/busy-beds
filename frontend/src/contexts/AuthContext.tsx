@@ -11,6 +11,7 @@ interface User {
   avatar_url?: string | null;
   phone?: string | null;
   email_verified?: boolean;
+  whatsapp_opt_in?: boolean;
 }
 
 interface AuthContextType {

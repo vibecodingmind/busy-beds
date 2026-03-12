@@ -59,14 +59,20 @@ Use this list to confirm everything is production-ready after domain and core fe
 
 ---
 
-## 6. OAuth (optional)
+## 6. WhatsApp (optional)
+
+- [ ] **Meta Cloud API**: To send coupon reminders via WhatsApp, follow [docs/WHATSAPP-SETUP.md](WHATSAPP-SETUP.md). In Admin → Settings set **WhatsApp Access Token**, **WhatsApp Phone Number ID**, **WhatsApp template name**, and **Enable WhatsApp reminders** = `true`. Users add phone on profile and check “Receive coupon reminders on WhatsApp”. Schema adds `users.whatsapp_opt_in` automatically on deploy.
+
+---
+
+## 7. OAuth (optional)
 
 - [ ] **Google**: In Google Cloud Console, redirect URI includes `https://api.busybeds.com/auth/google/callback`. `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Railway.
 - [ ] **Facebook**: Same idea for `https://api.busybeds.com/auth/facebook/callback` and Facebook App credentials.
 
 ---
 
-## 7. Quick smoke tests
+## 8. Quick smoke tests
 
 - [ ] **Site**: https://busybeds.com loads; login/register work.
 - [ ] **API**: https://api.busybeds.com/health returns `{"status":"ok"}`.

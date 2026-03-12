@@ -66,6 +66,7 @@ export const validationSchemas = {
     commonValidations.email.optional(),
     body('phone').optional().trim().isLength({ max: 50 }).withMessage('Phone must be at most 50 characters'),
     body('avatar_url').optional().trim().isLength({ max: 512 }).withMessage('Avatar URL must be at most 512 characters'),
+    body('whatsapp_opt_in').optional().isBoolean().withMessage('whatsapp_opt_in must be boolean'),
   ],
   
   changePassword: [

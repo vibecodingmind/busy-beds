@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { pool } from '../config/db';
 import { sendCouponExpiryReminder, sendAdminWeeklyReport } from '../services/email';
 import { getSetting } from '../services/settings';
+import { sendCouponExpiryWhatsApp } from '../services/whatsapp';
 
 const router = Router();
 
@@ -23,7 +24,7 @@ router.post('/coupon-expiry-reminders', async (req, res) => {
   if (!ok) return res.status(401).json({ error: 'Unauthorized' });
   try {
     const result = await pool.query(
-      `SELECT c.id, c.code, c.expires_at, u.email, u.name as user_name, h.name as hotel_name
+      `SELECT c.id, c.code, c.expires_at, u.email, u.name as user_name, h.name as hotel_name, u.phone, u.whatsapp_opt_in
        FROM coupons c
        JOIN users u ON c.user_id = u.id
        JOIN hotels h ON c.hotel_id = h.id
@@ -36,15 +37,20 @@ router.post('/coupon-expiry-reminders', async (req, res) => {
        LIMIT 50`
     );
     const rows = result.rows;
+    const enableWhatsApp = (await getSetting('enable_whatsapp_reminders')) === 'true';
     let sent = 0;
     for (const row of rows) {
+      const expiresStr = new Date(row.expires_at).toLocaleDateString();
       const ok = await sendCouponExpiryReminder(
         row.email,
         row.user_name,
         row.hotel_name,
         row.code,
-        new Date(row.expires_at).toLocaleDateString()
+        expiresStr
       );
+      if (enableWhatsApp && row.phone && row.whatsapp_opt_in) {
+        await sendCouponExpiryWhatsApp(row.phone, row.user_name, row.hotel_name, row.code, expiresStr).catch(() => {});
+      }
       if (ok) {
         await pool.query('INSERT INTO coupon_reminder_sent (coupon_id) VALUES ($1) ON CONFLICT (coupon_id) DO NOTHING', [row.id]);
         sent++;
@@ -63,7 +69,7 @@ router.post('/coupon-expiry-reminders-1d', async (req, res) => {
   if (!ok) return res.status(401).json({ error: 'Unauthorized' });
   try {
     const result = await pool.query(
-      `SELECT c.id, c.code, c.expires_at, u.email, u.name as user_name, h.name as hotel_name
+      `SELECT c.id, c.code, c.expires_at, u.email, u.name as user_name, h.name as hotel_name, u.phone, u.whatsapp_opt_in
        FROM coupons c
        JOIN users u ON c.user_id = u.id
        JOIN hotels h ON c.hotel_id = h.id
@@ -77,15 +83,20 @@ router.post('/coupon-expiry-reminders-1d', async (req, res) => {
        LIMIT 50`
     );
     const rows = result.rows;
+    const enableWhatsApp = (await getSetting('enable_whatsapp_reminders')) === 'true';
     let sent = 0;
     for (const row of rows) {
+      const expiresStr = new Date(row.expires_at).toLocaleDateString();
       const ok = await sendCouponExpiryReminder(
         row.email,
         row.user_name,
         row.hotel_name,
         row.code,
-        new Date(row.expires_at).toLocaleDateString()
+        expiresStr
       );
+      if (enableWhatsApp && row.phone && row.whatsapp_opt_in) {
+        await sendCouponExpiryWhatsApp(row.phone, row.user_name, row.hotel_name, row.code, expiresStr).catch(() => {});
+      }
       if (ok) {
         await pool.query('INSERT INTO coupon_reminder_1d_sent (coupon_id) VALUES ($1) ON CONFLICT (coupon_id) DO NOTHING', [row.id]);
         sent++;

@@ -24,6 +24,10 @@ const ENV_MAP: Record<string, string> = {
   cron_secret: 'CRON_SECRET',
   feature_gift_subscriptions: 'FEATURE_GIFT_SUBSCRIPTIONS',
   maintenance_mode: 'MAINTENANCE_MODE',
+  whatsapp_access_token: 'WHATSAPP_ACCESS_TOKEN',
+  whatsapp_phone_number_id: 'WHATSAPP_PHONE_NUMBER_ID',
+  whatsapp_template_name: 'WHATSAPP_TEMPLATE_NAME',
+  enable_whatsapp_reminders: 'ENABLE_WHATSAPP_REMINDERS',
 };
 
 // Only keys listed here are shown and editable in Admin → Settings (ENV_MAP above still used for getSetting)
@@ -45,6 +49,10 @@ export const SETTINGS_META: Record<
   cron_secret: { label: 'Cron / seed secret', isSecret: true, isPublic: false, group: 'Security' },
   feature_gift_subscriptions: { label: 'Enable gift subscriptions (true/false)', isSecret: false, isPublic: false, group: 'Features' },
   maintenance_mode: { label: 'Maintenance mode (true = show "We\'ll be back soon" to non-admins)', isSecret: false, isPublic: true, group: 'Operations' },
+  whatsapp_access_token: { label: 'WhatsApp Access Token (Meta)', isSecret: true, isPublic: false, group: 'WhatsApp' },
+  whatsapp_phone_number_id: { label: 'WhatsApp Phone Number ID (Meta)', isSecret: false, isPublic: false, group: 'WhatsApp' },
+  whatsapp_template_name: { label: 'WhatsApp template name (e.g. coupon_expiry_reminder)', isSecret: false, isPublic: false, group: 'WhatsApp' },
+  enable_whatsapp_reminders: { label: 'Enable WhatsApp coupon reminders (true/false)', isSecret: false, isPublic: false, group: 'WhatsApp' },
 };
 
 const PUBLIC_KEYS = Object.entries(SETTINGS_META)

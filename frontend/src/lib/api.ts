@@ -60,10 +60,11 @@ export const auth = {
       avatar_url?: string | null;
       phone?: string | null;
       email_verified?: boolean;
+      whatsapp_opt_in?: boolean;
     }>('/auth/me'),
   meStats: () =>
     api<{ redemptions_this_month: number }>('/auth/me/stats'),
-  updateProfile: (data: { name?: string; email?: string; phone?: string | null; avatar_url?: string | null }) =>
+  updateProfile: (data: { name?: string; email?: string; phone?: string | null; avatar_url?: string | null; whatsapp_opt_in?: boolean }) =>
     api<{
       id: number;
       email: string;
@@ -72,6 +73,7 @@ export const auth = {
       avatar_url?: string | null;
       phone?: string | null;
       email_verified?: boolean;
+      whatsapp_opt_in?: boolean;
     }>('/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(data),

@@ -15,6 +15,7 @@ export default function ProfilePage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [whatsappOptIn, setWhatsappOptIn] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState('');
   const [showChangeAvatar, setShowChangeAvatar] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState('');
@@ -35,6 +36,7 @@ export default function ProfilePage() {
       setName(user.name);
       setEmail(user.email);
       setPhone(user.phone ?? '');
+      setWhatsappOptIn(!!user.whatsapp_opt_in);
       setAvatarUrl(user.avatar_url ?? '');
     }
   }, [user]);
@@ -54,6 +56,7 @@ export default function ProfilePage() {
         email,
         phone: phone.trim() || undefined,
         avatar_url: avatarUrl.trim() || undefined,
+        whatsapp_opt_in: whatsappOptIn,
       });
       setUser?.({ ...user!, ...u });
       setMessage('Profile updated successfully');
@@ -308,6 +311,18 @@ export default function ProfilePage() {
                 placeholder="+1 234 567 8900"
                 className="mt-1 w-full rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-white placeholder-zinc-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               />
+            </div>
+            <div className="flex items-center gap-3 rounded-lg border border-zinc-600 bg-zinc-800/50 p-3">
+              <input
+                type="checkbox"
+                id="whatsapp-opt-in"
+                checked={whatsappOptIn}
+                onChange={(e) => setWhatsappOptIn(e.target.checked)}
+                className="h-4 w-4 rounded border-zinc-600 bg-zinc-800 text-emerald-500 focus:ring-emerald-500"
+              />
+              <label htmlFor="whatsapp-opt-in" className="text-sm text-zinc-300">
+                Receive coupon reminders on WhatsApp (requires phone number above)
+              </label>
             </div>
             <button
               type="submit"

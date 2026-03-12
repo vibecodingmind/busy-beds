@@ -57,6 +57,7 @@ router.post(
           avatar_url: fullUser!.avatar_url ?? null,
           phone: fullUser!.phone ?? null,
           email_verified: fullUser!.email_verified ?? false,
+          whatsapp_opt_in: (fullUser as { whatsapp_opt_in?: boolean }).whatsapp_opt_in ?? false,
         },
         token: tokenPair.accessToken,
       });
@@ -93,6 +94,7 @@ router.post(
           avatar_url: user.avatar_url ?? null,
           phone: user.phone ?? null,
           email_verified: user.email_verified ?? false,
+          whatsapp_opt_in: (user as { whatsapp_opt_in?: boolean }).whatsapp_opt_in ?? false,
         },
         token: tokenPair.accessToken,
       });
@@ -111,6 +113,7 @@ router.get('/me', authMiddleware, asyncHandler(async (req: Request, res: Respons
     avatar_url: user.avatar_url ?? null,
     phone: user.phone ?? null,
     email_verified: user.email_verified ?? false,
+    whatsapp_opt_in: (user as { whatsapp_opt_in?: boolean }).whatsapp_opt_in ?? false,
   });
 }));
 
@@ -137,7 +140,7 @@ router.put(
   validate(validationSchemas.updateProfile),
   asyncHandler(async (req: Request, res: Response) => {
       if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
-      const { name, email, phone, avatar_url } = req.body;
+      const { name, email, phone, avatar_url, whatsapp_opt_in } = req.body;
       if (email) {
         const existing = await userModel.findUserByEmail(email);
         if (existing && existing.id !== (req.user as JwtPayload).userId) {
@@ -149,6 +152,7 @@ router.put(
         email,
         phone: phone !== undefined ? phone : undefined,
         avatar_url: avatar_url !== undefined ? avatar_url : undefined,
+        whatsapp_opt_in: whatsapp_opt_in !== undefined ? !!whatsapp_opt_in : undefined,
       });
       if (!user) return res.status(404).json({ error: 'User not found' });
       res.json({
@@ -159,6 +163,7 @@ router.put(
         avatar_url: user.avatar_url ?? null,
         phone: user.phone ?? null,
         email_verified: user.email_verified ?? false,
+        whatsapp_opt_in: (user as { whatsapp_opt_in?: boolean }).whatsapp_opt_in ?? false,
       });
     })
   );
