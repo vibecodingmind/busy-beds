@@ -6,7 +6,6 @@ import { usePublicSettings } from '@/hooks/usePublicSettings';
 export default function Footer() {
   const settings = usePublicSettings();
   const siteName = settings?.site_name || 'Busy Beds';
-  const supportEmail = settings?.support_email;
 
   return (
     <footer className="mt-auto border-t border-border bg-background">
@@ -28,11 +27,6 @@ export default function Footer() {
           <Link href="/status" className="hover:underline">
             Status
           </Link>
-          {supportEmail && (
-            <a href={`mailto:${supportEmail}`} className="hover:underline">
-              {supportEmail}
-            </a>
-          )}
         </div>
       </div>
     </footer>
