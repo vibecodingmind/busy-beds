@@ -40,7 +40,7 @@ export default function Header() {
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-black/5 dark:hover:bg-zinc-700/80 dark:hover:bg-white/10 transition-colors"
           >
             <HouseIcon />
-            Browse Properties
+            Properties
           </Link>
           {user ? (
             <>
