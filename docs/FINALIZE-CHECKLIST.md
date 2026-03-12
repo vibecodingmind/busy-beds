@@ -67,10 +67,10 @@ Use this list to confirm everything is production-ready after domain and core fe
 
 ## 7. OAuth (optional)
 
-- [ ] **API_URL**: In Railway, set `API_URL` = `https://api.busybeds.com` (no trailing slash). The backend uses this to build Google/Facebook callback URLs.
-- [ ] **Google**: In Google Cloud Console → Credentials → your OAuth client → **Authorized redirect URIs**, add exactly: `https://api.busybeds.com/auth/google/callback`. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Railway (or Admin → Settings → OAuth).
-- [ ] **Facebook**: In Meta for Developers → Facebook Login → Settings → **Valid OAuth Redirect URIs**, add exactly: `https://api.busybeds.com/auth/facebook/callback`. Under **App Domains** add `busybeds.com` and `api.busybeds.com`. Turn on **Client OAuth Login** and **Web OAuth Login**. Set `FACEBOOK_APP_ID` and `FACEBOOK_APP_SECRET` in Railway (or Admin → Settings → OAuth).
-- [ ] **If you see “redirect_uri_mismatch” (Google) or “URL Blocked” (Facebook)**: See [docs/OAUTH-REDIRECT-FIX.md](OAUTH-REDIRECT-FIX.md) for step-by-step fix.
+- [ ] **FRONTEND_URL**: In Railway, set `FRONTEND_URL` = `https://busybeds.com` (no trailing slash). Callbacks use the frontend domain.
+- [ ] **Google**: In Google Cloud Console → Credentials → your OAuth client → **Authorized redirect URIs**, add exactly: `https://busybeds.com/auth/google/callback`. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Railway (or Admin → Settings → OAuth).
+- [ ] **Facebook**: In Meta for Developers → Facebook Login → Settings → **Valid OAuth Redirect URIs**, add exactly: `https://busybeds.com/auth/facebook/callback`. Under **App Domains** add `busybeds.com` (and `api.busybeds.com` if needed). Turn on **Client OAuth Login** and **Web OAuth Login**. Set `FACEBOOK_APP_ID` and `FACEBOOK_APP_SECRET` in Railway (or Admin → Settings → OAuth).
+- [ ] **If you see “redirect_uri_mismatch” (Google) or “URL Blocked” (Facebook)**: See [docs/OAUTH-REDIRECT-FIX.md](OAUTH-REDIRECT-FIX.md).
 
 ---
 

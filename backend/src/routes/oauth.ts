@@ -12,8 +12,10 @@ const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 const facebookAppId = process.env.FACEBOOK_APP_ID;
 const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
 
-// Base URL for OAuth callbacks (no trailing slash). Must match exactly what you add in Google/Facebook consoles.
-const apiBase = (process.env.API_URL || 'http://localhost:3001').replace(/\/$/, '');
+// OAuth redirect_uri: frontend URL so Google/Facebook redirect to busybeds.com (no trailing slash).
+const frontendBase = (config.frontendUrl || 'http://localhost:3000').replace(/\/$/, '');
+const googleCallbackUrl = `${frontendBase}/auth/google/callback`;
+const facebookCallbackUrl = `${frontendBase}/auth/facebook/callback`;
 
 if (googleClientId && googleClientSecret) {
   passport.use(
@@ -21,7 +23,7 @@ if (googleClientId && googleClientSecret) {
       {
         clientID: googleClientId,
         clientSecret: googleClientSecret,
-        callbackURL: `${apiBase}/auth/google/callback`,
+        callbackURL: googleCallbackUrl,
       },
       async (
         _accessToken: string,
@@ -53,7 +55,7 @@ if (facebookAppId && facebookAppSecret) {
       {
         clientID: facebookAppId,
         clientSecret: facebookAppSecret,
-        callbackURL: `${apiBase}/auth/facebook/callback`,
+        callbackURL: facebookCallbackUrl,
         profileFields: ['id', 'emails', 'name'],
       },
       async (
@@ -88,6 +90,7 @@ router.get('/google', (req, res, next) => {
   passport.authenticate('google', { scope: ['profile', 'email'], state: returnTo })(req, res, next);
 });
 
+// Backend callback (used only if redirect_uri was API; when using frontend callback, frontend redirects to /google/complete)
 router.get('/google/callback', (req, res, next) => {
   passport.authenticate('google', (err: Error | null, user: { id: number; email: string; name: string; role: string } | null) => {
     if (err) return res.redirect(`${config.frontendUrl}/login?error=${encodeURIComponent(err.message)}`);
@@ -100,6 +103,57 @@ router.get('/google/callback', (req, res, next) => {
     const returnTo = (req.query.state as string) || '/dashboard';
     res.redirect(`${config.frontendUrl}/auth/callback?token=${token}&returnTo=${encodeURIComponent(returnTo)}`);
   })(req, res, next);
+});
+
+// Exchange code from frontend callback (redirect_uri is frontend URL)
+router.get('/google/complete', async (req, res) => {
+  const code = req.query.code as string;
+  const returnTo = (req.query.state as string) || '/dashboard';
+  if (!code) {
+    return res.redirect(`${config.frontendUrl}/login?error=Missing+code`);
+  }
+  if (!googleClientId || !googleClientSecret) {
+    return res.redirect(`${config.frontendUrl}/login?error=Google+login+not+configured`);
+  }
+  try {
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: googleClientId,
+        client_secret: googleClientSecret,
+        redirect_uri: googleCallbackUrl,
+        grant_type: 'authorization_code',
+      }),
+    });
+    if (!tokenRes.ok) {
+      const err = await tokenRes.text();
+      return res.redirect(`${config.frontendUrl}/login?error=${encodeURIComponent('Google token exchange failed')}`);
+    }
+    const tokens = (await tokenRes.json()) as { access_token?: string };
+    const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokens.access_token}` },
+    });
+    if (!userRes.ok) return res.redirect(`${config.frontendUrl}/login?error=Google+profile+failed`);
+    const profile = (await userRes.json()) as { email?: string; name?: string };
+    const email = profile.email;
+    const name = profile.name || 'User';
+    if (!email) return res.redirect(`${config.frontendUrl}/login?error=No+email+from+Google`);
+    let user = await userModel.findUserByEmail(email);
+    if (!user) {
+      const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
+      user = await userModel.createUser(email, hash, name);
+    }
+    const token = jwt.sign(
+      { userId: user!.id, email: user!.email, role: user!.role, type: 'user' },
+      config.jwtSecret,
+      { expiresIn: config.jwtExpiresIn } as jwt.SignOptions
+    );
+    res.redirect(`${config.frontendUrl}/auth/callback?token=${token}&returnTo=${encodeURIComponent(returnTo)}`);
+  } catch {
+    res.redirect(`${config.frontendUrl}/login?error=Auth+failed`);
+  }
 });
 
 router.get('/facebook', (req, res, next) => {
@@ -122,6 +176,45 @@ router.get('/facebook/callback', (req, res, next) => {
     const returnTo = (req.query.state as string) || '/dashboard';
     res.redirect(`${config.frontendUrl}/auth/callback?token=${token}&returnTo=${encodeURIComponent(returnTo)}`);
   })(req, res, next);
+});
+
+// Exchange code from frontend callback (redirect_uri is frontend URL)
+router.get('/facebook/complete', async (req, res) => {
+  const code = req.query.code as string;
+  const returnTo = (req.query.state as string) || '/dashboard';
+  if (!code) {
+    return res.redirect(`${config.frontendUrl}/login?error=Missing+code`);
+  }
+  if (!facebookAppId || !facebookAppSecret) {
+    return res.redirect(`${config.frontendUrl}/login?error=Facebook+login+not+configured`);
+  }
+  try {
+    const tokenUrl = `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${facebookAppId}&redirect_uri=${encodeURIComponent(facebookCallbackUrl)}&client_secret=${facebookAppSecret}&code=${encodeURIComponent(code)}`;
+    const tokenRes = await fetch(tokenUrl);
+    if (!tokenRes.ok) {
+      return res.redirect(`${config.frontendUrl}/login?error=${encodeURIComponent('Facebook token exchange failed')}`);
+    }
+    const tokens = (await tokenRes.json()) as { access_token?: string };
+    const meRes = await fetch(`https://graph.facebook.com/me?fields=id,name,email&access_token=${encodeURIComponent(tokens.access_token || '')}`);
+    if (!meRes.ok) return res.redirect(`${config.frontendUrl}/login?error=Facebook+profile+failed`);
+    const profile = (await meRes.json()) as { email?: string; name?: string };
+    const email = profile.email;
+    const name = profile.name || 'User';
+    if (!email) return res.redirect(`${config.frontendUrl}/login?error=No+email+from+Facebook`);
+    let user = await userModel.findUserByEmail(email);
+    if (!user) {
+      const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
+      user = await userModel.createUser(email, hash, name);
+    }
+    const token = jwt.sign(
+      { userId: user!.id, email: user!.email, role: user!.role, type: 'user' },
+      config.jwtSecret,
+      { expiresIn: config.jwtExpiresIn } as jwt.SignOptions
+    );
+    res.redirect(`${config.frontendUrl}/auth/callback?token=${token}&returnTo=${encodeURIComponent(returnTo)}`);
+  } catch {
+    res.redirect(`${config.frontendUrl}/login?error=Auth+failed`);
+  }
 });
 
 export default router;

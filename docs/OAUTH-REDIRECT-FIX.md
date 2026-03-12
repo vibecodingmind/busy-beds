@@ -1,70 +1,51 @@
 # OAuth Redirect URI Fix (Google & Facebook)
 
-If you see **Google**: `Error 400: redirect_uri_mismatch` or **Facebook**: "URL Blocked... redirect URI is not whitelisted", the app is sending a callback URL that doesn’t match what’s configured in the provider. Fix it as below.
+If you see **Google**: `Error 400: redirect_uri_mismatch` or **Facebook**: "URL Blocked... redirect URI is not whitelisted", the callback URL must match what’s configured in the provider. The app uses **frontend** callback URLs (busybeds.com), not the API.
 
 ---
 
-## 1. Know your exact callback URLs
+## 1. Callback URLs (frontend)
 
-The backend builds callbacks from **API_URL** (no trailing slash). For production with `API_URL=https://api.busybeds.com`:
+Add these **exactly** in Google and Facebook (no trailing slash, HTTPS in production):
 
-| Provider | Callback URL (add this exactly) |
-|----------|----------------------------------|
-| **Google**  | `https://api.busybeds.com/auth/google/callback` |
-| **Facebook**| `https://api.busybeds.com/auth/facebook/callback` |
+| Provider   | Callback URL (whitelist this)        |
+|-----------|---------------------------------------|
+| **Google**   | `https://busybeds.com/auth/google/callback`   |
+| **Facebook** | `https://busybeds.com/auth/facebook/callback` |
 
-- No trailing slash.
-- Must be **HTTPS** in production.
-- If your API is on a different host (e.g. `https://your-app.railway.app`), use that host instead of `api.busybeds.com` in the table above.
+The backend uses `FRONTEND_URL` to build these (e.g. `https://busybeds.com`). Ensure **Railway** has `FRONTEND_URL` = `https://busybeds.com` (no trailing slash).
 
 ---
 
-## 2. Set API_URL on the backend (Railway)
+## 2. Google Cloud Console
 
-In **Railway** → your backend service → **Variables**:
-
-- Add or set: `API_URL` = `https://api.busybeds.com` (or your real API base URL).
-- **Do not** add a trailing slash: use `https://api.busybeds.com`, not `https://api.busybeds.com/`.
-
-Redeploy the backend after changing variables so the OAuth routes use the correct base.
-
----
-
-## 3. Google Cloud Console
-
-1. Open [Google Cloud Console](https://console.cloud.google.com/) → your project → **APIs & Services** → **Credentials**.
+1. [Google Cloud Console](https://console.cloud.google.com/) → your project → **APIs & Services** → **Credentials**.
 2. Open your **OAuth 2.0 Client ID** (Web application).
-3. Under **Authorized redirect URIs**, add **exactly**:
+3. Under **Authorized redirect URIs** add:
    ```text
-   https://api.busybeds.com/auth/google/callback
+   https://busybeds.com/auth/google/callback
    ```
-4. If you use another API domain (e.g. Railway), add that too, e.g.:
-   ```text
-   https://your-app.railway.app/auth/google/callback
-   ```
-5. Save. Changes can take a few minutes to apply.
+4. Save.
 
 ---
 
-## 4. Facebook / Meta for Developers
+## 3. Facebook / Meta for Developers
 
-1. Open [Meta for Developers](https://developers.facebook.com/) → your app → **Facebook Login** → **Settings** (or **Use cases** → **Customize** → **Settings**).
-2. Under **Valid OAuth Redirect URIs** add **exactly**:
+1. [Meta for Developers](https://developers.facebook.com/) → your app → **Facebook Login** → **Settings** (or **Use cases** → **Customize** → **Settings**).
+2. Under **Valid OAuth Redirect URIs** add:
    ```text
-   https://api.busybeds.com/auth/facebook/callback
+   https://busybeds.com/auth/facebook/callback
    ```
-3. Under **App Domains** add your frontend and API domains, e.g.:
-   - `busybeds.com`
-   - `api.busybeds.com`
-4. Ensure **Client OAuth Login** and **Web OAuth Login** are **Yes**.
-5. Save changes.
+3. Under **App Domains** add: `busybeds.com` (and `api.busybeds.com` if you use it).
+4. Set **Client OAuth Login** and **Web OAuth Login** to **Yes**.
+5. Save.
 
 ---
 
-## 5. Quick checklist
+## 4. Quick checklist
 
-- [ ] **Railway**: `API_URL` set to your API base URL with **no trailing slash**; backend redeployed.
-- [ ] **Google**: Authorized redirect URI = `https://api.busybeds.com/auth/google/callback` (or your API host).
-- [ ] **Facebook**: Valid OAuth Redirect URI = `https://api.busybeds.com/auth/facebook/callback`; App Domains and Web/Client OAuth Login enabled.
+- [ ] **Railway**: `FRONTEND_URL` = `https://busybeds.com` (no trailing slash).
+- [ ] **Google**: Authorized redirect URI = `https://busybeds.com/auth/google/callback`.
+- [ ] **Facebook**: Valid OAuth Redirect URI = `https://busybeds.com/auth/facebook/callback`; App Domains and Web/Client OAuth Login enabled.
 
-The URL the backend sends must match the provider **character-for-character** (including `https` and no trailing slash).
+The redirect URI must match **character-for-character** (including `https`, no trailing slash).
