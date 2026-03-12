@@ -2,12 +2,12 @@
 
 /* Light mode (default when no .dark class) */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #ffffff;
+  --foreground: #000000;
   --card-bg: rgba(255, 255, 255, 0.9);
   --card-border: rgba(0, 0, 0, 0.08);
   --border: #e2e8f0;
-  --muted: #64748b;
+  --muted: #000000;
   --primary: #FF385C;
   --primary-hover: #e31c5f;
   --primary-light: rgba(255, 56, 92, 0.12);
