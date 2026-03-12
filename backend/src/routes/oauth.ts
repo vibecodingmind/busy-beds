@@ -161,7 +161,7 @@ router.get('/facebook', (req, res, next) => {
     return res.redirect(`${config.frontendUrl}/login?error=Facebook+login+not+configured`);
   }
   const returnTo = (req.query.returnTo as string) || '/dashboard';
-  passport.authenticate('facebook', { scope: ['email'], state: returnTo })(req, res, next);
+  passport.authenticate('facebook', { scope: ['public_profile', 'email'], state: returnTo })(req, res, next);
 });
 
 router.get('/facebook/callback', (req, res, next) => {

@@ -38,7 +38,8 @@ The backend uses `FRONTEND_URL` to build these (e.g. `https://busybeds.com`). En
    ```
 3. Under **App Domains** add: `busybeds.com` (and `api.busybeds.com` if you use it).
 4. Set **Client OAuth Login** and **Web OAuth Login** to **Yes**.
-5. Save.
+5. Under **Facebook Login** → **Settings**, ensure the app requests at least one permission. The app uses **public_profile** and **email**; if you see “This app needs at least one supported permission”, add **public_profile** and **email** under **App Review** → **Permissions and Features** (or in your Login product settings) and ensure they’re enabled for your app.
+6. Save.
 
 ---
 
