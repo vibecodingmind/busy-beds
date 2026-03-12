@@ -1,17 +1,18 @@
-# OAuth Redirect URI Fix (Google & Facebook)
+# OAuth Redirect URI Fix (Google, Facebook, LinkedIn)
 
-If you see **Google**: `Error 400: redirect_uri_mismatch` or **Facebook**: "URL Blocked... redirect URI is not whitelisted", the callback URL must match what’s configured in the provider. The app uses **frontend** callback URLs (busybeds.com), not the API.
+If you see **Google**: `Error 400: redirect_uri_mismatch`, **Facebook**: "URL Blocked... redirect URI is not whitelisted", or **LinkedIn** redirect errors, the callback URL must match what’s configured in the provider. The app uses **frontend** callback URLs (busybeds.com), not the API.
 
 ---
 
 ## 1. Callback URLs (frontend)
 
-Add these **exactly** in Google and Facebook (no trailing slash, HTTPS in production):
+Add these **exactly** in each provider (no trailing slash, HTTPS in production):
 
 | Provider   | Callback URL (whitelist this)        |
 |-----------|---------------------------------------|
 | **Google**   | `https://busybeds.com/auth/google/callback`   |
 | **Facebook** | `https://busybeds.com/auth/facebook/callback` |
+| **LinkedIn** | `https://busybeds.com/auth/linkedin/callback` |
 
 The backend uses `FRONTEND_URL` to build these (e.g. `https://busybeds.com`). Ensure **Railway** has `FRONTEND_URL` = `https://busybeds.com` (no trailing slash).
 
@@ -43,10 +44,23 @@ The backend uses `FRONTEND_URL` to build these (e.g. `https://busybeds.com`). En
 
 ---
 
-## 4. Quick checklist
+## 4. LinkedIn (Developer Portal)
+
+1. [LinkedIn Developer Portal](https://www.linkedin.com/developers/apps) → your app → **Auth** tab.
+2. Under **Authorized redirect URLs** add:
+   ```text
+   https://busybeds.com/auth/linkedin/callback
+   ```
+3. Under **Products**, request **Sign In with LinkedIn using OpenID Connect** (needed for email/profile).
+4. Set `LINKEDIN_CLIENT_ID` and `LINKEDIN_CLIENT_SECRET` in Railway (or Admin → Settings → OAuth).
+
+---
+
+## 5. Quick checklist
 
 - [ ] **Railway**: `FRONTEND_URL` = `https://busybeds.com` (no trailing slash).
 - [ ] **Google**: Authorized redirect URI = `https://busybeds.com/auth/google/callback`.
 - [ ] **Facebook**: Valid OAuth Redirect URI = `https://busybeds.com/auth/facebook/callback`; App Domains and Web/Client OAuth Login enabled.
+- [ ] **LinkedIn**: Authorized redirect URL = `https://busybeds.com/auth/linkedin/callback`; OpenID Connect product added.
 
 The redirect URI must match **character-for-character** (including `https`, no trailing slash).
