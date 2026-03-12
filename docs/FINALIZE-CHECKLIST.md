@@ -67,8 +67,8 @@ Use this list to confirm everything is production-ready after domain and core fe
 
 ## 7. OAuth (optional)
 
-- [ ] **Google**: In Google Cloud Console, redirect URI includes `https://api.busybeds.com/auth/google/callback`. `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Railway.
-- [ ] **Facebook**: Same idea for `https://api.busybeds.com/auth/facebook/callback` and Facebook App credentials.
+- [ ] **Google**: In Google Cloud Console, redirect URI includes `https://api.busybeds.com/auth/google/callback`. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Railway (or Admin → Settings → OAuth).
+- [ ] **Facebook**: In Meta for Developers, add Facebook Login product; set Valid OAuth Redirect URI to `https://api.busybeds.com/auth/facebook/callback`. Set `FACEBOOK_APP_ID` and `FACEBOOK_APP_SECRET` in Railway (or Admin → Settings → OAuth). Login and Register pages show “Continue with Facebook” when configured.
 
 ---
 

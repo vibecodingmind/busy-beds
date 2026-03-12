@@ -36,7 +36,7 @@ export default async function HomePage() {
       {/* Hero - glassy and inviting */}
       <section className="rounded-2xl border border-border bg-card px-6 sm:px-8 py-12 sm:py-16">
         <h1 className="text-4xl font-bold text-foreground md:text-5xl">
-          Busy Beds
+          Stay More. Spend Less.
         </h1>
         <p className="mt-4 max-w-xl text-lg text-muted">
           Subscribe to access hotel discount coupons. Generate unique coupons, show QR codes at

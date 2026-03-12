@@ -43,6 +43,8 @@ export const SETTINGS_META: Record<
   google_maps_api_key: { label: 'Google Maps API Key', isSecret: false, isPublic: true, group: 'Maps' },
   google_client_id: { label: 'Google OAuth Client ID', isSecret: false, isPublic: false, group: 'OAuth' },
   google_client_secret: { label: 'Google OAuth Client Secret', isSecret: true, isPublic: false, group: 'OAuth' },
+  facebook_app_id: { label: 'Facebook App ID', isSecret: false, isPublic: false, group: 'OAuth' },
+  facebook_app_secret: { label: 'Facebook App Secret', isSecret: true, isPublic: false, group: 'OAuth' },
   site_name: { label: 'Site name', isSecret: false, isPublic: true, group: 'Site' },
   support_email: { label: 'Support / contact email', isSecret: false, isPublic: true, group: 'Site' },
   referral_percent: { label: 'Referral reward percent (e.g. 25)', isSecret: false, isPublic: false, group: 'Business' },

@@ -20,13 +20,17 @@ Busy Beds can send coupon expiry reminders via WhatsApp in addition to email. Th
 
 You can only start a conversation or send a message after 24h inactivity with an **approved template**.
 
+Meta requires variable placeholders to use **lowercase letters, underscores, and numbers** with **double curly brackets**, e.g. `{{user_name}}`, `{{order_id}}`. Do not use `{{1}}`, `{{2}}` or single curly brackets.
+
 1. In your app: **WhatsApp** → **Message templates** → **Create template**.
 2. Create a template, for example:
    - **Name:** `coupon_expiry_reminder` (must match exactly what you set in Admin).
    - **Category:** Utility (or Marketing).
-   - **Body:**  
-     `Hi {{1}}, your coupon for {{2}} (code: {{3}}) expires on {{4}}. Use it soon! - {{5}}`
-   - **Parameters:** 1 = user name, 2 = hotel name, 3 = code, 4 = expiry date, 5 = site name.
+   - **Body** (use this exact placeholder format):
+     ```
+     Hi {{user_name}}, your coupon for {{hotel_name}} (code: {{code}}) expires on {{expiry_date}}. Use it soon! - {{site_name}}
+     ```
+   - Add 5 **body variables** in this order: `user_name`, `hotel_name`, `code`, `expiry_date`, `site_name`. The app sends values in this same order.
 3. Submit for approval. Once approved, the app can send this template.
 
 ## 3. Admin settings
