@@ -116,6 +116,31 @@ CREATE TABLE IF NOT EXISTS email_verification_tokens (
 
 CREATE INDEX IF NOT EXISTS idx_email_verification_tokens_token ON email_verification_tokens(token);
 
+-- Admin audit log (who did what)
+CREATE TABLE IF NOT EXISTS admin_audit_log (
+    id SERIAL PRIMARY KEY,
+    admin_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    action VARCHAR(100) NOT NULL,
+    entity_type VARCHAR(50),
+    entity_id VARCHAR(50),
+    details TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_log_created_at ON admin_audit_log(created_at DESC);
+
+-- Contact form submissions (inbox for admin)
+CREATE TABLE IF NOT EXISTS contact_submissions (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'read', 'replied', 'archived')),
+    admin_notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_contact_submissions_created_at ON contact_submissions(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_contact_submissions_status ON contact_submissions(status);
+
 -- Add email_verified to users if not exists (via ALTER)
 DO $$
 BEGIN
@@ -152,6 +177,9 @@ BEGIN
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='featured') THEN
     ALTER TABLE hotels ADD COLUMN featured BOOLEAN DEFAULT false;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='active') THEN
+    ALTER TABLE hotels ADD COLUMN active BOOLEAN DEFAULT true;
   END IF;
 END $$;
 
@@ -196,6 +224,19 @@ CREATE INDEX IF NOT EXISTS idx_referrals_referrer_id ON referrals(referrer_id);
 
 -- Track which coupons have had expiry reminder sent
 CREATE TABLE IF NOT EXISTS coupon_reminder_sent (
+    coupon_id INTEGER PRIMARY KEY REFERENCES coupons(id) ON DELETE CASCADE
+);
+
+-- User preference: remind me 1 day before coupon expires
+CREATE TABLE IF NOT EXISTS coupon_reminder_preferences (
+    coupon_id INTEGER PRIMARY KEY REFERENCES coupons(id) ON DELETE CASCADE,
+    remind_1_day_before BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_coupon_reminder_preferences_coupon ON coupon_reminder_preferences(coupon_id);
+
+-- Track 1-day-before reminder sent (separate from 48h)
+CREATE TABLE IF NOT EXISTS coupon_reminder_1d_sent (
     coupon_id INTEGER PRIMARY KEY REFERENCES coupons(id) ON DELETE CASCADE
 );
 

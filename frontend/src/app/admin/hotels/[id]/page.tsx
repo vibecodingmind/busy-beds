@@ -25,6 +25,7 @@ export default function EditHotelPage() {
     latitude: '' as string | number,
     longitude: '' as string | number,
     featured: false,
+    active: true,
     coupon_discount_value: '',
     coupon_limit: 10,
     limit_period: 'daily',
@@ -50,6 +51,7 @@ export default function EditHotelPage() {
         latitude: h.latitude ?? '',
         longitude: h.longitude ?? '',
         featured: h.featured ?? false,
+        active: h.active !== false,
         coupon_discount_value: h.coupon_discount_value,
         coupon_limit: h.coupon_limit,
         limit_period: h.limit_period,
@@ -69,6 +71,7 @@ export default function EditHotelPage() {
         images: form.images,
         contact_whatsapp: form.contact_whatsapp || null,
         featured: form.featured,
+        active: form.active,
         booking_url: form.booking_url || null,
         latitude: form.latitude === '' ? null : Number(form.latitude),
         longitude: form.longitude === '' ? null : Number(form.longitude),
@@ -76,6 +79,19 @@ export default function EditHotelPage() {
       router.push('/admin/hotels');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('Delete this property? This cannot be undone.')) return;
+    setLoading(true);
+    try {
+      await admin.hotels.delete(id);
+      router.push('/admin/hotels');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete');
     } finally {
       setLoading(false);
     }
@@ -172,15 +188,27 @@ export default function EditHotelPage() {
             className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="featured"
-            checked={form.featured}
-            onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
-            className="h-4 w-4 rounded border-black/20 dark:border-zinc-600"
-          />
-          <label htmlFor="featured" className="text-sm font-medium text-black">Featured hotel</label>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="featured"
+              checked={form.featured}
+              onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+              className="h-4 w-4 rounded border-black/20 dark:border-zinc-600"
+            />
+            <label htmlFor="featured" className="text-sm font-medium text-black dark:text-zinc-300">Featured hotel</label>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="active"
+              checked={form.active}
+              onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
+              className="h-4 w-4 rounded border-black/20 dark:border-zinc-600"
+            />
+            <label htmlFor="active" className="text-sm font-medium text-black dark:text-zinc-300">Active (shown on site)</label>
+          </div>
         </div>
         <PhotosInput
           value={form.images}
@@ -242,13 +270,23 @@ export default function EditHotelPage() {
             <option value="monthly">Monthly</option>
           </select>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-lg bg-emerald-600 px-6 py-2 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
-        >
-          Save Changes
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            type="submit"
+            disabled={loading}
+            className="rounded-lg bg-emerald-600 px-6 py-2 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+          >
+            Save Changes
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={loading}
+            className="rounded-lg border border-red-500 px-6 py-2 font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 disabled:opacity-50"
+          >
+            Delete property
+          </button>
+        </div>
       </form>
 
       <h2 className="mt-12 text-lg font-semibold text-black dark:text-zinc-100">Hotel account</h2>

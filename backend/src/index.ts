@@ -28,6 +28,7 @@ import waitlistRoutes from './routes/waitlist';
 import settingsRoutes from './routes/settings';
 import pagesRoutes from './routes/pages';
 import contactRoutes from './routes/contact';
+import { maintenanceMiddleware } from './middleware/maintenance';
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use(
 app.post('/api/v1/stripe/webhook', express.raw({ type: 'application/json' }), webhookHandler);
 app.post('/api/v1/paypal/webhook', express.raw({ type: 'application/json' }), paypalWebhookHandler);
 app.use(express.json());
+app.use(maintenanceMiddleware());
 app.use(passport.initialize());
 
 // OAuth routes (at /auth for redirect flow)
@@ -75,8 +77,21 @@ app.use('/api/v1/pages', pagesRoutes);
 app.use('/api/v1/contact', contactRoutes);
 app.use('/api/v1/cron', cronRoutes);
 
-// Health check
-app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+// Health / status page: API, DB (optional deep check)
+app.get('/health', async (_req, res) => {
+  let database: 'ok' | 'error' = 'ok';
+  try {
+    const { pool } = await import('./config/db');
+    await pool.query('SELECT 1');
+  } catch {
+    database = 'error';
+  }
+  res.json({
+    status: database === 'ok' ? 'ok' : 'degraded',
+    database,
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // 404 handler
 app.use(notFoundHandler);

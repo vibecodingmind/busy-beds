@@ -1,6 +1,8 @@
 import { Router } from 'express';
+import { body, validationResult } from 'express-validator';
 import { hotelAuthMiddleware } from '../middleware/auth';
 import { pool } from '../config/db';
+import * as couponService from '../services/couponService';
 
 const router = Router();
 
@@ -52,6 +54,36 @@ router.get('/chart', hotelAuthMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch chart data' });
   }
 });
+
+router.post(
+  '/redemptions/bulk',
+  hotelAuthMiddleware,
+  body('codes').isArray(),
+  body('codes.*').isString().trim().notEmpty(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).json({ error: 'codes must be an array of strings' });
+      if (!req.hotel) return res.status(401).json({ error: 'Not authenticated' });
+      const codes = (req.body.codes as string[]).map((c: string) => String(c).trim()).filter(Boolean);
+      if (codes.length === 0) return res.status(400).json({ error: 'At least one code required' });
+      if (codes.length > 50) return res.status(400).json({ error: 'Maximum 50 codes per request' });
+      const results: { code: string; success: boolean; error?: string }[] = [];
+      for (const code of codes) {
+        try {
+          await couponService.redeemCoupon(code, req.hotel!.hotelAccountId, req.hotel!.hotelId);
+          results.push({ code, success: true });
+        } catch (err) {
+          results.push({ code, success: false, error: err instanceof Error ? err.message : 'Failed' });
+        }
+      }
+      res.json({ results });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Bulk redeem failed' });
+    }
+  }
+);
 
 router.get('/stats', hotelAuthMiddleware, async (req, res) => {
   try {

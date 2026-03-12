@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { useContext, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { HotelAuthContext } from '@/contexts/HotelAuthContext';
-import { HouseIcon, UserIcon } from '@/components/icons';
+import { useTheme } from '@/contexts/ThemeContext';
+import { HouseIcon, UserIcon, SunIcon, MoonIcon } from '@/components/icons';
 
 const menuLink = "flex items-center gap-2 px-4 py-2.5 text-sm text-black hover:bg-black/5 dark:hover:bg-zinc-700/80 dark:text-zinc-300 dark:hover:bg-zinc-700/80 transition-colors";
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const hotelAuth = useContext(HotelAuthContext);
   const hotel = hotelAuth?.hotel ?? null;
   const hotelLogout = hotelAuth?.logout;
@@ -25,6 +27,14 @@ export default function Header() {
           />
         </Link>
         <nav className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
+          </button>
           <Link
             href="/hotels"
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-black hover:bg-black/5 dark:hover:bg-zinc-700/80 hover:text-black dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-100 transition-colors"

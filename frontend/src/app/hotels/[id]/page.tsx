@@ -66,6 +66,16 @@ export default async function HotelDetailPage({
                     {Number(hotel.avg_rating).toFixed(1)} ({hotel.review_count} reviews)
                   </p>
                 )}
+                {hotel.avg_response_hours != null && hotel.avg_response_hours >= 0 && (
+                  <p className="mt-1 text-sm text-black dark:text-zinc-500">
+                    Usually responds within {Math.round(hotel.avg_response_hours)} hours
+                  </p>
+                )}
+                {hotel.redemptions_this_month != null && hotel.redemptions_this_month > 0 && (
+                  <p className="mt-1 text-sm text-black dark:text-zinc-500">
+                    {hotel.redemptions_this_month} redemption{hotel.redemptions_this_month !== 1 ? 's' : ''} this month
+                  </p>
+                )}
                 {hotel.location && (
                   <p className="mt-1 flex items-center gap-2 text-sm text-black dark:text-zinc-400">
                     <MapPinIcon className="h-4 w-4 flex-shrink-0 text-black dark:text-zinc-400" />

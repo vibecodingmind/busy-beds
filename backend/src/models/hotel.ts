@@ -10,6 +10,7 @@ export interface Hotel {
   contact_whatsapp: string | null;
   images: string[];
   featured: boolean;
+  active: boolean;
   latitude: number | null;
   longitude: number | null;
   booking_url: string | null;
@@ -30,11 +31,15 @@ export async function findAllHotels(
     min_rating?: number;
     lat?: number;
     lng?: number;
+    activeOnly?: boolean;
   }
 ): Promise<(Hotel & { avg_rating?: number | null; review_count?: number })[]> {
   const conditions: string[] = [];
   const params: unknown[] = [];
   let i = 1;
+  if (opts?.activeOnly !== false) {
+    conditions.push('COALESCE(h.active, true) = true');
+  }
   if (opts?.search?.trim()) {
     conditions.push(`(h.name ILIKE $${i} OR h.location ILIKE $${i} OR h.description ILIKE $${i})`);
     params.push(`%${opts.search.trim()}%`);
@@ -67,7 +72,9 @@ export async function findAllHotels(
   const result = await pool.query(
     `SELECT h.*,
       (SELECT ROUND(AVG(r.rating)::numeric, 1) FROM hotel_reviews r WHERE r.hotel_id = h.id) as avg_rating,
-      (SELECT COUNT(*)::int FROM hotel_reviews r WHERE r.hotel_id = h.id) as review_count
+      (SELECT COUNT(*)::int FROM hotel_reviews r WHERE r.hotel_id = h.id) as review_count,
+      (SELECT COUNT(*)::int FROM redemptions rd JOIN coupons c ON c.id = rd.coupon_id WHERE c.hotel_id = h.id AND rd.redeemed_at >= date_trunc('month', CURRENT_DATE)) as redemptions_this_month,
+      (SELECT ROUND(AVG(EXTRACT(EPOCH FROM (hr.created_at - r.created_at)) / 3600)::numeric, 0) FROM hotel_reviews r JOIN hotel_review_responses hr ON hr.review_id = r.id WHERE r.hotel_id = h.id) as avg_response_hours
      FROM hotels h ${where}
      ORDER BY ${orderBy}
      LIMIT $${i} OFFSET $${i + 1}`,
@@ -77,26 +84,47 @@ export async function findAllHotels(
     ...r,
     avg_rating: r.avg_rating != null ? Number(r.avg_rating) : null,
     review_count: r.review_count != null ? Number(r.review_count) : 0,
+    redemptions_this_month: r.redemptions_this_month != null ? Number(r.redemptions_this_month) : 0,
+    avg_response_hours: r.avg_response_hours != null ? Number(r.avg_response_hours) : null,
     images: (r.images as string[]) || [],
     latitude: r.latitude != null ? Number(r.latitude) : null,
     longitude: r.longitude != null ? Number(r.longitude) : null,
     featured: Boolean(r.featured),
-  })) as (Hotel & { avg_rating?: number | null; review_count?: number })[];
+    active: r.active !== false,
+  })) as (Hotel & { avg_rating?: number | null; review_count?: number; redemptions_this_month?: number; avg_response_hours?: number | null })[];
 }
 
-export async function findHotelById(id: number): Promise<Hotel | null> {
-  const result = await pool.query('SELECT * FROM hotels WHERE id = $1', [id]);
+export async function findHotelById(id: number, includeInactive = false): Promise<(Hotel & { redemptions_this_month?: number; avg_response_hours?: number | null }) | null> {
+  const result = await pool.query(
+    `SELECT h.*,
+      (SELECT COUNT(*)::int FROM redemptions rd JOIN coupons c ON c.id = rd.coupon_id WHERE c.hotel_id = h.id AND rd.redeemed_at >= date_trunc('month', CURRENT_DATE)) as redemptions_this_month,
+      (SELECT ROUND(AVG(EXTRACT(EPOCH FROM (hr.created_at - r.created_at)) / 3600)::numeric, 0) FROM hotel_reviews r JOIN hotel_review_responses hr ON hr.review_id = r.id WHERE r.hotel_id = h.id) as avg_response_hours
+     FROM hotels h WHERE h.id = $1`,
+    [id]
+  );
   const row = result.rows[0];
   if (!row) return null;
-  return { ...row, images: row.images || [], latitude: row.latitude ? Number(row.latitude) : null, longitude: row.longitude ? Number(row.longitude) : null };
+  if (!includeInactive && row.active === false) return null;
+  return {
+    ...row,
+    images: row.images || [],
+    latitude: row.latitude ? Number(row.latitude) : null,
+    longitude: row.longitude ? Number(row.longitude) : null,
+    featured: Boolean(row.featured),
+    active: row.active !== false,
+    redemptions_this_month: row.redemptions_this_month != null ? Number(row.redemptions_this_month) : 0,
+    avg_response_hours: row.avg_response_hours != null ? Number(row.avg_response_hours) : null,
+  };
 }
 
-export async function findHotelsByIds(ids: number[]): Promise<(Hotel & { avg_rating?: number | null; review_count?: number })[]> {
+export async function findHotelsByIds(ids: number[]): Promise<(Hotel & { avg_rating?: number | null; review_count?: number; redemptions_this_month?: number; avg_response_hours?: number | null })[]> {
   if (ids.length === 0) return [];
   const result = await pool.query(
     `SELECT h.*,
       (SELECT ROUND(AVG(r.rating)::numeric, 1) FROM hotel_reviews r WHERE r.hotel_id = h.id) as avg_rating,
-      (SELECT COUNT(*)::int FROM hotel_reviews r WHERE r.hotel_id = h.id) as review_count
+      (SELECT COUNT(*)::int FROM hotel_reviews r WHERE r.hotel_id = h.id) as review_count,
+      (SELECT COUNT(*)::int FROM redemptions rd JOIN coupons c ON c.id = rd.coupon_id WHERE c.hotel_id = h.id AND rd.redeemed_at >= date_trunc('month', CURRENT_DATE)) as redemptions_this_month,
+      (SELECT ROUND(AVG(EXTRACT(EPOCH FROM (hr.created_at - r.created_at)) / 3600)::numeric, 0) FROM hotel_reviews r JOIN hotel_review_responses hr ON hr.review_id = r.id WHERE r.hotel_id = h.id) as avg_response_hours
      FROM hotels h WHERE h.id = ANY($1::int[])
      ORDER BY array_position($1::int[], h.id)`,
     [ids]
@@ -105,11 +133,14 @@ export async function findHotelsByIds(ids: number[]): Promise<(Hotel & { avg_rat
     ...r,
     avg_rating: r.avg_rating != null ? Number(r.avg_rating) : null,
     review_count: r.review_count != null ? Number(r.review_count) : 0,
+    redemptions_this_month: r.redemptions_this_month != null ? Number(r.redemptions_this_month) : 0,
+    avg_response_hours: r.avg_response_hours != null ? Number(r.avg_response_hours) : null,
     images: (r.images as string[]) || [],
     latitude: r.latitude != null ? Number(r.latitude) : null,
     longitude: r.longitude != null ? Number(r.longitude) : null,
     featured: Boolean(r.featured),
-  })) as (Hotel & { avg_rating?: number | null; review_count?: number })[];
+    active: r.active !== false,
+  })) as (Hotel & { avg_rating?: number | null; review_count?: number; redemptions_this_month?: number; avg_response_hours?: number | null })[];
 }
 
 export async function createHotel(data: {
@@ -124,13 +155,14 @@ export async function createHotel(data: {
   longitude?: number | null;
   booking_url?: string | null;
   featured?: boolean;
+  active?: boolean;
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;
 }): Promise<Hotel> {
   const result = await pool.query(
-    `INSERT INTO hotels (name, description, location, contact_phone, contact_email, contact_whatsapp, images, latitude, longitude, booking_url, featured, coupon_discount_value, coupon_limit, limit_period)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+    `INSERT INTO hotels (name, description, location, contact_phone, contact_email, contact_whatsapp, images, latitude, longitude, booking_url, featured, active, coupon_discount_value, coupon_limit, limit_period)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
      RETURNING *`,
     [
       data.name,
@@ -144,13 +176,14 @@ export async function createHotel(data: {
       data.longitude ?? null,
       data.booking_url || null,
       data.featured ?? false,
+      data.active !== false,
       data.coupon_discount_value,
       data.coupon_limit,
       data.limit_period,
     ]
   );
   const row = result.rows[0]!;
-  return { ...row, images: row.images || [], latitude: row.latitude ? Number(row.latitude) : null, longitude: row.longitude ? Number(row.longitude) : null };
+  return { ...row, images: row.images || [], latitude: row.latitude ? Number(row.latitude) : null, longitude: row.longitude ? Number(row.longitude) : null, active: row.active !== false };
 }
 
 export async function updateHotel(
@@ -167,6 +200,7 @@ export async function updateHotel(
     longitude: number | null;
     booking_url: string | null;
     featured: boolean;
+    active: boolean;
     coupon_discount_value: string;
     coupon_limit: number;
     limit_period: string;
@@ -191,5 +225,5 @@ export async function updateHotel(
   );
   const row = result.rows[0];
   if (!row) return null;
-  return { ...row, images: row.images || [], latitude: row.latitude ? Number(row.latitude) : null, longitude: row.longitude ? Number(row.longitude) : null };
+  return { ...row, images: row.images || [], latitude: row.latitude ? Number(row.latitude) : null, longitude: row.longitude ? Number(row.longitude) : null, active: row.active !== false };
 }

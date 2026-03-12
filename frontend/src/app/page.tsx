@@ -4,6 +4,7 @@ import type { Hotel } from '@/lib/api';
 import HotelCard from '@/components/hotel/HotelCard';
 import WaitlistForm from '@/components/WaitlistForm';
 import StarRating from '@/components/StarRating';
+import RecentlyViewedSection from '@/components/RecentlyViewedSection';
 
 // Avoid fetching API at build time (backend may be unreachable during Vercel build)
 export const dynamic = 'force-dynamic';
@@ -54,6 +55,12 @@ export default async function HomePage() {
           >
             Browse Properties
           </Link>
+          <Link
+            href="/hotels?nearme=1"
+            className="rounded-lg bg-zinc-800 px-6 py-3 font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+          >
+            Hotels near me
+          </Link>
         </div>
       </section>
 
@@ -92,6 +99,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <RecentlyViewedSection />
 
       {/* Explore More Destinations - grid layout */}
       {featuredHotels.length > 0 && (

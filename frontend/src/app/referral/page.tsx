@@ -90,7 +90,13 @@ function ReferralContent() {
 
           <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
             <h2 className="font-semibold text-black dark:text-zinc-100">Earnings</h2>
-            <div className="mt-4 flex gap-6">
+            <div className="mt-4 flex flex-wrap gap-6">
+              {typeof data.earnings_this_month === 'number' && (
+                <div>
+                  <span className="text-sm text-black dark:text-zinc-400">This month</span>
+                  <p className="text-xl font-bold text-emerald-600">${data.earnings_this_month.toFixed(2)}</p>
+                </div>
+              )}
               <div>
                 <span className="text-sm text-black dark:text-zinc-400">Total earned</span>
                 <p className="text-xl font-bold text-emerald-600">${data.total_earned.toFixed(2)}</p>

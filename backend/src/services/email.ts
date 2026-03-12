@@ -81,3 +81,20 @@ export async function sendContactFormEmail(
   `;
   return sendEmail(to, subject, html);
 }
+
+export async function sendAdminWeeklyReport(
+  to: string,
+  data: { newSignups: number; redemptions: number; activeSubscriptions: number; totalUsers: number }
+): Promise<boolean> {
+  const siteName = (await getSetting('site_name')) || 'Busy Beds';
+  const subject = `${siteName} – Weekly report`;
+  const html = `
+    <h2>Weekly report</h2>
+    <p><strong>New signups (last 7 days):</strong> ${data.newSignups}</p>
+    <p><strong>Redemptions (last 7 days):</strong> ${data.redemptions}</p>
+    <p><strong>Active subscriptions:</strong> ${data.activeSubscriptions}</p>
+    <p><strong>Total users:</strong> ${data.totalUsers}</p>
+    <p>— ${siteName}</p>
+  `;
+  return sendEmail(to, subject, html);
+}

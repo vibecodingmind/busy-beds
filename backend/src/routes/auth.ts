@@ -114,6 +114,22 @@ router.get('/me', authMiddleware, asyncHandler(async (req: Request, res: Respons
   });
 }));
 
+// User stats: redemptions this month (loyalty / streaks)
+router.get('/me/stats', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
+  const userId = (req.user as JwtPayload).userId;
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+  const r = await pool.query(
+    `SELECT COUNT(*)::int as count FROM redemptions rd
+     JOIN coupons c ON c.id = rd.coupon_id
+     WHERE c.user_id = $1 AND rd.redeemed_at >= $2`,
+    [userId, startOfMonth]
+  );
+  res.json({ redemptions_this_month: r.rows[0]?.count ?? 0 });
+}));
+
 router.put(
   '/profile',
   sanitizeInput,

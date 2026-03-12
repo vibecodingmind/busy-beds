@@ -7,6 +7,8 @@ import { I18nProvider } from '@/contexts/I18nContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import PWARegister from '@/components/PWARegister';
 import ConditionalLayout from '@/components/layout/ConditionalLayout';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import CookieConsent from '@/components/CookieConsent';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -39,18 +41,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('busybeds-theme');if(t==='light'){document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');}})();`,
+          }}
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased bg-[var(--background)] text-[var(--foreground)]`}>
-        <PWARegister />
-        <I18nProvider>
-          <ToastProvider>
-            <AuthProvider>
-              <HotelAuthProvider>
-                <ConditionalLayout>{children}</ConditionalLayout>
-              </HotelAuthProvider>
-            </AuthProvider>
-          </ToastProvider>
-        </I18nProvider>
+        <ThemeProvider>
+          <PWARegister />
+          <I18nProvider>
+            <ToastProvider>
+              <AuthProvider>
+                <HotelAuthProvider>
+                  <ConditionalLayout>{children}</ConditionalLayout>
+                </HotelAuthProvider>
+              </AuthProvider>
+            </ToastProvider>
+          </I18nProvider>
+          <CookieConsent />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,7 +1,22 @@
 @import "tailwindcss";
 
-/* Dark mode - deep with glassy surfaces (default) */
+/* Light mode (default when no .dark class) */
 :root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --border: #e2e8f0;
+  --muted: #64748b;
+  --primary: #FF385C;
+  --primary-hover: #e31c5f;
+  --primary-light: rgba(255, 56, 92, 0.12);
+  --glass-bg: rgba(248, 250, 252, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.06);
+}
+
+/* Dark mode */
+.dark {
   --background: #0f172a;
   --foreground: #f1f5f9;
   --card-bg: rgba(30, 41, 59, 0.6);

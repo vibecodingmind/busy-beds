@@ -22,6 +22,8 @@ const ENV_MAP: Record<string, string> = {
   api_url: 'API_URL',
   referral_percent: 'REFERRAL_PERCENT',
   cron_secret: 'CRON_SECRET',
+  feature_gift_subscriptions: 'FEATURE_GIFT_SUBSCRIPTIONS',
+  maintenance_mode: 'MAINTENANCE_MODE',
 };
 
 // Only keys listed here are shown and editable in Admin → Settings (ENV_MAP above still used for getSetting)
@@ -41,6 +43,8 @@ export const SETTINGS_META: Record<
   support_email: { label: 'Support / contact email', isSecret: false, isPublic: true, group: 'Site' },
   referral_percent: { label: 'Referral reward percent (e.g. 25)', isSecret: false, isPublic: false, group: 'Business' },
   cron_secret: { label: 'Cron / seed secret', isSecret: true, isPublic: false, group: 'Security' },
+  feature_gift_subscriptions: { label: 'Enable gift subscriptions (true/false)', isSecret: false, isPublic: false, group: 'Features' },
+  maintenance_mode: { label: 'Maintenance mode (true = show "We\'ll be back soon" to non-admins)', isSecret: false, isPublic: true, group: 'Operations' },
 };
 
 const PUBLIC_KEYS = Object.entries(SETTINGS_META)

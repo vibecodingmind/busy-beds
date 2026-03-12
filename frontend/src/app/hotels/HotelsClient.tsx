@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { hotels } from '@/lib/api';
 import type { Hotel } from '@/lib/api';
 import HotelCard from '@/components/hotel/HotelCard';
@@ -9,11 +9,13 @@ import { CardSkeleton } from '@/components/LoadingSkeleton';
 import HotelsMapView from '@/components/hotel/HotelsMapView';
 import { HouseIcon, MapPinIcon } from '@/components/icons';
 
-export default function HotelsClient() {
+function HotelsClientInner() {
+  const searchParams = useSearchParams();
+  const nearme = searchParams.get('nearme') === '1';
   const [hotelList, setHotelList] = useState<Hotel[]>([]);
-  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>(nearme ? 'map' : 'grid');
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<string>('name');
+  const [sort, setSort] = useState<string>(nearme ? 'distance' : 'name');
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [minRating, setMinRating] = useState<number | undefined>(undefined);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -38,6 +40,18 @@ export default function HotelsClient() {
   useEffect(() => {
     fetchHotels();
   }, [search, sort, featuredOnly, minRating, coords?.lat, coords?.lng]);
+
+  useEffect(() => {
+    if (nearme && navigator.geolocation && !coords) {
+      setViewMode('map');
+      setSort('distance');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => {},
+        { enableHighAccuracy: true }
+      );
+    }
+  }, [nearme, coords]);
 
   const handleNearby = () => {
     if (!navigator.geolocation) {
@@ -172,5 +186,13 @@ export default function HotelsClient() {
         <p className="py-12 text-center text-zinc-500 dark:text-zinc-400">No properties found.</p>
       )}
     </div>
+  );
+}
+
+export default function HotelsClient() {
+  return (
+    <Suspense fallback={<div className="py-12 text-zinc-500 dark:text-zinc-400">Loading...</div>}>
+      <HotelsClientInner />
+    </Suspense>
   );
 }

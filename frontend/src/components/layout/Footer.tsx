@@ -25,6 +25,9 @@ export default function Footer() {
           <Link href="/terms" className="hover:underline">
             Terms
           </Link>
+          <Link href="/status" className="hover:underline">
+            Status
+          </Link>
           {supportEmail && (
             <a href={`mailto:${supportEmail}`} className="hover:underline">
               {supportEmail}

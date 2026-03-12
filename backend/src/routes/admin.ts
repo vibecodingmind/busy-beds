@@ -7,6 +7,8 @@ import * as hotelAccountModel from '../models/hotelAccount';
 import { sendHotelApprovalEmail } from '../services/email';
 import * as userModel from '../models/user';
 import { getAllForAdmin, updateSettings, getAllPagesForAdmin, updatePageContent } from '../services/settings';
+import { logAdminAction } from '../services/auditLog';
+import type { JwtPayload } from '../middleware/auth';
 import { pool } from '../config/db';
 
 const router = Router();
@@ -59,6 +61,7 @@ router.post(
         longitude: req.body.longitude != null ? parseFloat(req.body.longitude) : undefined,
         booking_url: req.body.booking_url || null,
         featured: Boolean(req.body.featured),
+        active: req.body.active !== false,
         coupon_discount_value: req.body.coupon_discount_value,
         coupon_limit: req.body.coupon_limit,
         limit_period: req.body.limit_period,
@@ -73,7 +76,7 @@ router.post(
 
 router.get('/hotels/:id', async (req, res) => {
   try {
-    const hotel = await hotelModel.findHotelById(parseInt(req.params?.id ?? '0'));
+    const hotel = await hotelModel.findHotelById(parseInt(req.params?.id ?? '0'), true);
     if (!hotel) return res.status(404).json({ error: 'Hotel not found' });
     const account = await hotelAccountModel.findHotelAccountByHotelId(hotel.id);
     const managing_account = account
@@ -99,10 +102,11 @@ router.put('/hotels/:id', async (req, res) => {
 
 router.delete('/hotels/:id', async (req, res) => {
   try {
-    const result = await pool.query('DELETE FROM hotels WHERE id = $1 RETURNING id', [
-      req.params?.id ?? '0',
-    ]);
+    const id = req.params?.id ?? '0';
+    const result = await pool.query('DELETE FROM hotels WHERE id = $1 RETURNING id, name', [id]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Hotel not found' });
+    const userId = (req.user as JwtPayload)?.userId;
+    if (userId) logAdminAction(userId, 'hotel.delete', 'hotel', id, result.rows[0]?.name).catch(() => {});
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -195,6 +199,29 @@ router.get('/analytics', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch analytics' });
+  }
+});
+
+router.get('/analytics/chart', async (_req, res) => {
+  try {
+    const days = 14;
+    const [signupsRes, redemptionsRes] = await Promise.all([
+      pool.query(
+        `SELECT DATE(created_at) as date, COUNT(*)::int as count FROM users WHERE created_at >= CURRENT_DATE - $1::int GROUP BY DATE(created_at) ORDER BY date`,
+        [days]
+      ),
+      pool.query(
+        `SELECT DATE(redeemed_at) as date, COUNT(*)::int as count FROM redemptions WHERE redeemed_at >= CURRENT_DATE - $1::int GROUP BY DATE(redeemed_at) ORDER BY date`,
+        [days]
+      ),
+    ]);
+    res.json({
+      signups: signupsRes.rows,
+      redemptions: redemptionsRes.rows,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch chart data' });
   }
 });
 
@@ -316,6 +343,8 @@ router.patch('/settings', async (req, res) => {
       return res.status(400).json({ error: 'Body must be an object of key-value pairs' });
     }
     await updateSettings(updates);
+    const userId = (req.user as JwtPayload)?.userId;
+    if (userId) logAdminAction(userId, 'settings.update', 'settings', undefined, Object.keys(updates).join(', ')).catch(() => {});
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -348,6 +377,66 @@ router.patch('/pages', async (req, res) => {
   }
 });
 
+// Audit log
+router.get('/audit-log', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(String(req.query.limit || '100'), 10), 200);
+    const result = await pool.query(
+      `SELECT a.id, a.admin_user_id, a.action, a.entity_type, a.entity_id, a.details, a.created_at, u.email as admin_email
+       FROM admin_audit_log a
+       LEFT JOIN users u ON a.admin_user_id = u.id
+       ORDER BY a.created_at DESC LIMIT $1`,
+      [limit]
+    );
+    res.json({ entries: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch audit log' });
+  }
+});
+
+// Contact form inbox
+router.get('/contact-submissions', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, name, email, message, status, admin_notes, created_at FROM contact_submissions ORDER BY created_at DESC LIMIT 500'
+    );
+    res.json({ submissions: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch contact submissions' });
+  }
+});
+
+router.patch('/contact-submissions/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params?.id ?? '0');
+    const { status, admin_notes } = req.body as { status?: string; admin_notes?: string };
+    const updates: string[] = [];
+    const values: unknown[] = [];
+    let i = 1;
+    if (status !== undefined && ['new', 'read', 'replied', 'archived'].includes(status)) {
+      updates.push(`status = $${i++}`);
+      values.push(status);
+    }
+    if (admin_notes !== undefined) {
+      updates.push(`admin_notes = $${i++}`);
+      values.push(String(admin_notes).trim());
+    }
+    if (updates.length === 0) return res.status(400).json({ error: 'No valid fields to update' });
+    values.push(id);
+    const result = await pool.query(
+      `UPDATE contact_submissions SET ${updates.join(', ')} WHERE id = $${i} RETURNING id, name, email, message, status, admin_notes, created_at`,
+      values
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Submission not found' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update submission' });
+  }
+});
+
 // Redemptions
 router.get('/redemptions', async (_req, res) => {
   try {
@@ -364,6 +453,91 @@ router.get('/redemptions', async (_req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch redemptions' });
+  }
+});
+
+// Export CSV helpers
+function escapeCsv(val: unknown): string {
+  if (val == null) return '';
+  const s = String(val);
+  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+router.get('/export/users', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, email, name, role, created_at FROM users ORDER BY created_at DESC'
+    );
+    const headers = ['id', 'email', 'name', 'role', 'created_at'];
+    const rows = [headers.join(','), ...result.rows.map((r: Record<string, unknown>) => headers.map((h) => escapeCsv(r[h])).join(','))];
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
+    res.send('\uFEFF' + rows.join('\r\n'));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Export failed' });
+  }
+});
+
+router.get('/export/coupons', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT c.id, c.code, c.user_id, c.hotel_id, c.discount_value, c.status, c.created_at, c.expires_at, u.name as user_name, h.name as hotel_name
+       FROM coupons c
+       JOIN users u ON c.user_id = u.id
+       JOIN hotels h ON c.hotel_id = h.id
+       ORDER BY c.created_at DESC LIMIT 5000`
+    );
+    const headers = ['id', 'code', 'user_id', 'user_name', 'hotel_id', 'hotel_name', 'discount_value', 'status', 'created_at', 'expires_at'];
+    const rows = [headers.join(','), ...result.rows.map((r: Record<string, unknown>) => headers.map((h) => escapeCsv(r[h])).join(','))];
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=coupons.csv');
+    res.send('\uFEFF' + rows.join('\r\n'));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Export failed' });
+  }
+});
+
+router.get('/export/redemptions', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT r.id, r.redeemed_at, c.code, c.discount_value, h.name as hotel_name, u.name as user_name
+       FROM redemptions r
+       JOIN coupons c ON r.coupon_id = c.id
+       JOIN hotels h ON c.hotel_id = h.id
+       JOIN users u ON c.user_id = u.id
+       ORDER BY r.redeemed_at DESC LIMIT 5000`
+    );
+    const headers = ['id', 'redeemed_at', 'code', 'discount_value', 'hotel_name', 'user_name'];
+    const rows = [headers.join(','), ...result.rows.map((r: Record<string, unknown>) => headers.map((h) => escapeCsv(r[h])).join(','))];
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=redemptions.csv');
+    res.send('\uFEFF' + rows.join('\r\n'));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Export failed' });
+  }
+});
+
+router.get('/export/subscriptions', async (_req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT s.id, s.user_id, s.status, s.current_period_start, s.current_period_end, u.email, u.name, p.name as plan_name, p.monthly_coupon_limit, p.price
+       FROM subscriptions s
+       JOIN users u ON s.user_id = u.id
+       JOIN subscription_plans p ON s.plan_id = p.id
+       ORDER BY s.current_period_end DESC NULLS LAST LIMIT 5000`
+    );
+    const headers = ['id', 'user_id', 'email', 'name', 'plan_name', 'monthly_coupon_limit', 'price', 'status', 'current_period_start', 'current_period_end'];
+    const rows = [headers.join(','), ...result.rows.map((r: Record<string, unknown>) => headers.map((h) => escapeCsv(r[h])).join(','))];
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename=subscriptions.csv');
+    res.send('\uFEFF' + rows.join('\r\n'));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Export failed' });
   }
 });
 

@@ -30,6 +30,10 @@ export async function api<T>(
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
+    if (res.status === 429) {
+      const retryAfter = data.retryAfter || res.headers.get('Retry-After') || '15 minutes';
+      throw new Error(`You've tried too often. Please try again in ${retryAfter}.`);
+    }
     throw new Error(data.error || `Request failed: ${res.status}`);
   }
   return data as T;
@@ -57,6 +61,8 @@ export const auth = {
       phone?: string | null;
       email_verified?: boolean;
     }>('/auth/me'),
+  meStats: () =>
+    api<{ redemptions_this_month: number }>('/auth/me/stats'),
   updateProfile: (data: { name?: string; email?: string; phone?: string | null; avatar_url?: string | null }) =>
     api<{
       id: number;
@@ -161,6 +167,11 @@ export const coupons = {
       body: JSON.stringify({ hotel_id: hotelId }),
     }),
   list: () => api<{ coupons: CouponWithHotel[] }>('/coupons'),
+  setReminder: (couponId: number, remind1Day: boolean) =>
+    api<{ remind_1_day_before: boolean }>('/coupons/set-reminder', {
+      method: 'POST',
+      body: JSON.stringify({ coupon_id: couponId, remind_1_day_before: remind1Day }),
+    }),
   cancel: (couponId: number) =>
     api<{ success: boolean }>('/coupons/cancel', {
       method: 'POST',
@@ -200,11 +211,13 @@ export const subscriptions = {
 };
 
 export const stripe = {
-  createCheckoutSession: (planId: number, successUrl?: string, cancelUrl?: string) =>
+  createCheckoutSession: (planId: number, successUrl?: string, cancelUrl?: string, promoCode?: string) =>
     api<{ url: string; sessionId: string }>('/stripe/create-checkout-session', {
       method: 'POST',
-      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
+      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl, promo_code: promoCode }),
     }),
+  billingPortal: () =>
+    api<{ url: string }>('/stripe/billing-portal', { method: 'POST' }),
   connectOnboard: () =>
     api<{ url: string | null; message?: string }>('/stripe/connect/onboard', {
       method: 'POST',
@@ -322,6 +335,7 @@ export type ReferralMeResponse = {
   rewards: ReferralReward[];
   total_earned: number;
   total_pending: number;
+  earnings_this_month?: number;
 };
 export const referrals = {
   me: () => api<ReferralMeResponse>('/referrals/me'),
@@ -334,6 +348,12 @@ export const hotelDashboard = {
       `/hotel/redemptions${start && end ? `?start=${start}&end=${end}` : ''}`,
       { tokenType: 'hotel' }
     ),
+  bulkRedeem: (codes: string[]) =>
+    api<{ results: { code: string; success: boolean; error?: string }[] }>('/hotel/redemptions/bulk', {
+      method: 'POST',
+      body: JSON.stringify({ codes }),
+      tokenType: 'hotel',
+    }),
   stats: () =>
     api<{ today: number; this_week: number; this_month: number }>('/hotel/stats', {
       tokenType: 'hotel',
@@ -388,6 +408,12 @@ export const admin = {
       active_coupons: number;
       total_redemptions: number;
     }>('/admin/analytics'),
+  analyticsChart: () =>
+    api<{ signups: { date: string; count: number }[]; redemptions: { date: string; count: number }[] }>('/admin/analytics/chart'),
+  auditLog: (limit?: number) =>
+    api<{ entries: { id: number; admin_user_id: number; action: string; entity_type: string | null; entity_id: string | null; details: string | null; created_at: string; admin_email: string | null }[] }>(
+      `/admin/audit-log${limit != null ? `?limit=${limit}` : ''}`
+    ),
   plans: {
     list: () =>
       api<{
@@ -451,6 +477,31 @@ export const admin = {
         body: JSON.stringify(updates),
       }),
   },
+  contactSubmissions: {
+    list: () =>
+      api<{
+        submissions: { id: number; name: string; email: string; message: string; status: string; admin_notes: string | null; created_at: string }[];
+      }>('/admin/contact-submissions'),
+    update: (id: number, data: { status?: string; admin_notes?: string }) =>
+      api<{ id: number; name: string; email: string; message: string; status: string; admin_notes: string | null; created_at: string }>(
+        `/admin/contact-submissions/${id}`,
+        { method: 'PATCH', body: JSON.stringify(data) }
+      ),
+  },
+  exportCsv: async (path: string, filename: string): Promise<void> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const res = await fetch(`${API_BASE}${path}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) throw new Error('Export failed');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
 };
 
 // Types
@@ -467,8 +518,12 @@ export interface Hotel {
   longitude?: number | null;
   booking_url?: string | null;
   featured?: boolean;
+  active?: boolean;
   avg_rating?: number | null;
   review_count?: number;
+  redemptions_this_month?: number;
+  avg_response_hours?: number | null;
+  created_at?: string;
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;
@@ -487,6 +542,7 @@ export interface Coupon {
 
 export interface CouponWithHotel extends Coupon {
   hotel_name: string;
+  remind_1_day_before?: boolean;
 }
 
 export interface SubscriptionPlan {

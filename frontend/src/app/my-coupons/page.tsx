@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { coupons } from '@/lib/api';
 import { QRCodeSVG } from 'qrcode.react';
 
-type Coupon = { id: number; code: string; hotel_name: string; discount_value: string; status: string; expires_at: string };
+type Coupon = { id: number; code: string; hotel_name: string; discount_value: string; status: string; expires_at: string; remind_1_day_before?: boolean };
 
 function getExpiryCountdown(expiresAt: string): string {
   const exp = new Date(expiresAt);
@@ -34,6 +34,7 @@ export default function MyCouponsPage() {
   const [couponList, setCouponList] = useState<Coupon[]>([]);
   const [selected, setSelected] = useState<Coupon | null>(null);
   const [tab, setTab] = useState<'active' | 'used' | 'expired'>('active');
+  const [remindLoading, setRemindLoading] = useState(false);
 
   const filteredCoupons = couponList.filter((c) => {
     if (tab === 'active') return c.status === 'active';
@@ -59,6 +60,19 @@ export default function MyCouponsPage() {
       if (selected?.id === couponId) setSelected(null);
     } catch {
       // ignore
+    }
+  };
+
+  const handleRemindToggle = async (couponId: number, value: boolean) => {
+    setRemindLoading(true);
+    try {
+      await coupons.setReminder(couponId, value);
+      setCouponList((prev) => prev.map((c) => (c.id === couponId ? { ...c, remind_1_day_before: value } : c)));
+      if (selected?.id === couponId) setSelected({ ...selected, remind_1_day_before: value });
+    } catch {
+      // ignore
+    } finally {
+      setRemindLoading(false);
     }
   };
 
@@ -150,6 +164,23 @@ export default function MyCouponsPage() {
                   </p>
                 </div>
               </div>
+
+              {/* Remind me 1 day before (active coupons only) */}
+              {selected.status === 'active' && (
+                <div className="mt-6 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50/50 p-3 dark:border-amber-800 dark:bg-amber-950/20">
+                  <input
+                    type="checkbox"
+                    id="remind-1d"
+                    checked={selected.remind_1_day_before ?? false}
+                    onChange={(e) => handleRemindToggle(selected.id, e.target.checked)}
+                    disabled={remindLoading}
+                    className="h-4 w-4 rounded border-zinc-300 text-emerald-600 focus:ring-emerald-500 dark:border-zinc-600 dark:bg-zinc-800"
+                  />
+                  <label htmlFor="remind-1d" className="text-sm text-black dark:text-zinc-300">
+                    Remind me 1 day before expiry
+                  </label>
+                </div>
+              )}
 
               {/* Terms */}
               <div className="mt-6">

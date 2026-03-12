@@ -125,12 +125,12 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
   }
   try {
     const userId = (req.user as JwtPayload).userId;
-    const { plan_id, success_url, cancel_url } = req.body;
+    const { plan_id, success_url, cancel_url, promo_code } = req.body;
     const plan = await subscriptionModel.findPlanById(parseInt(plan_id));
     if (!plan || !plan.stripe_price_id) {
       return res.status(400).json({ error: 'Invalid plan or Stripe not configured for this plan' });
     }
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: plan.stripe_price_id, quantity: 1 }],
@@ -138,11 +138,56 @@ router.post('/create-checkout-session', authMiddleware, async (req, res) => {
       cancel_url: cancel_url || `${frontendUrl}/subscription`,
       client_reference_id: String(userId),
       metadata: { user_id: String(userId), plan_id: String(plan.id) },
-    });
+    };
+    if (promo_code && typeof promo_code === 'string') {
+      const promo = await import('../models/promo').then((m) => m.findPromoByCode(promo_code.trim()));
+      if (promo?.valid) {
+        let couponParams: Stripe.CouponCreateParams;
+        if (promo.discount_type === 'percent') {
+          couponParams = { percent_off: Math.min(100, Math.max(0, Number(promo.discount_value))) };
+        } else if (promo.discount_type === 'fixed') {
+          couponParams = { amount_off: Math.round(Number(promo.discount_value) * 100), currency: 'usd' };
+        } else if (promo.discount_type === 'free_month') {
+          couponParams = { percent_off: 100 };
+        } else {
+          couponParams = { percent_off: 0 };
+        }
+        if (couponParams.percent_off !== 0 || ('amount_off' in couponParams && couponParams.amount_off)) {
+          const coupon = await stripe.coupons.create(couponParams);
+          sessionParams.discounts = [{ coupon: coupon.id }];
+        }
+      }
+    }
+    const session = await stripe.checkout.sessions.create(sessionParams);
     res.json({ url: session.url, sessionId: session.id });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to create checkout session' });
+  }
+});
+
+router.post('/billing-portal', authMiddleware, async (req, res) => {
+  const key = await getSetting('stripe_secret_key');
+  const stripe = key ? new Stripe(key) : null;
+  const frontendUrl = config.frontendUrl;
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+  try {
+    const userId = (req.user as JwtPayload).userId;
+    const sub = await subscriptionModel.findSubscriptionByUserId(userId);
+    const stripeSubId = (sub as { stripe_subscription_id?: string } | null)?.stripe_subscription_id;
+    if (!stripeSubId) {
+      return res.status(400).json({ error: 'No Stripe subscription found. Subscribe via Stripe first.' });
+    }
+    const stripeSub = await stripe.subscriptions.retrieve(stripeSubId);
+    const customerId = stripeSub.customer as string;
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `${frontendUrl}/profile/billing`,
+    });
+    res.json({ url: portalSession.url });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create billing portal session' });
   }
 });
 

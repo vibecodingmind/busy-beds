@@ -18,6 +18,11 @@ router.get('/me', authMiddleware, async (req, res) => {
     const total_pending = rewards
       .filter((r) => r.status === 'pending')
       .reduce((sum, r) => sum + parseFloat(r.amount), 0);
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const earnings_this_month = rewards
+      .filter((r) => new Date(r.created_at) >= startOfMonth && (r.status === 'paid' || r.status === 'pending'))
+      .reduce((sum, r) => sum + parseFloat(r.amount), 0);
     res.json({
       code,
       referred,
@@ -31,6 +36,7 @@ router.get('/me', authMiddleware, async (req, res) => {
       })),
       total_earned,
       total_pending,
+      earnings_this_month: Math.round(earnings_this_month * 100) / 100,
     });
   } catch (err) {
     console.error(err);

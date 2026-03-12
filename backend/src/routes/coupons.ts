@@ -49,7 +49,7 @@ router.post(
   }
 );
 
-// Get user's coupons (traveler auth)
+// Get user's coupons (traveler auth) – includes remind_1_day_before preference
 router.get('/', authMiddleware, async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
@@ -60,6 +60,28 @@ router.get('/', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch coupons' });
   }
 });
+
+// Set "Remind me 1 day before" for a coupon (traveler auth). Body: { coupon_id, remind_1_day_before }
+router.post(
+  '/set-reminder',
+  authMiddleware,
+  body('coupon_id').isInt(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+      if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
+      const couponId = parseInt(String(req.body.coupon_id), 10);
+      const remind1Day = req.body.remind_1_day_before !== false;
+      const ok = await couponModel.setReminderPreference(couponId, (req.user as JwtPayload).userId, remind1Day);
+      if (!ok) return res.status(404).json({ error: 'Coupon not found' });
+      res.json({ remind_1_day_before: remind1Day });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to update reminder' });
+    }
+  }
+);
 
 // Validate coupon (public - for redemption page)
 router.get('/:code/validate', async (req, res) => {

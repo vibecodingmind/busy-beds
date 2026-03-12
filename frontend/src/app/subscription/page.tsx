@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { subscriptions, stripe, paypal } from '@/lib/api';
+import { subscriptions, stripe, paypal, promo } from '@/lib/api';
 import type { SubscriptionPlan } from '@/lib/api';
 
 function SubscriptionContent() {
@@ -16,6 +16,10 @@ function SubscriptionContent() {
     current_period_end: string;
   } | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; message: string } | null>(null);
+  const [promoError, setPromoError] = useState('');
+  const [promoChecking, setPromoChecking] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
@@ -38,10 +42,36 @@ function SubscriptionContent() {
     }
   }, [searchParams, user, router]);
 
+  const handleApplyPromo = async () => {
+    const code = promoCode.trim();
+    if (!code) return;
+    setPromoError('');
+    setPromoChecking(true);
+    try {
+      const result = await promo.validate(code);
+      if (result.valid && result.message) {
+        setAppliedPromo({ code, message: result.message });
+      } else {
+        setPromoError('Invalid or expired code');
+        setAppliedPromo(null);
+      }
+    } catch {
+      setPromoError('Could not validate code');
+      setAppliedPromo(null);
+    } finally {
+      setPromoChecking(false);
+    }
+  };
+
   const handleStripeSubscribe = async (planId: number) => {
     setLoading(`stripe-${planId}`);
     try {
-      const session = await stripe.createCheckoutSession(planId);
+      const session = await stripe.createCheckoutSession(
+        planId,
+        undefined,
+        undefined,
+        appliedPromo?.code
+      );
       if (session?.url) {
         window.location.href = session.url;
         return;
@@ -113,6 +143,32 @@ function SubscriptionContent() {
           </button>
         )}
       </div>
+
+      {!currentSub && (
+        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+          <h3 className="text-sm font-medium text-black dark:text-zinc-100">Promo code</h3>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <input
+              type="text"
+              value={promoCode}
+              onChange={(e) => { setPromoCode(e.target.value); setPromoError(''); }}
+              placeholder="Enter code"
+              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            />
+            <button
+              type="button"
+              onClick={handleApplyPromo}
+              disabled={promoChecking || !promoCode.trim()}
+              className="rounded-lg bg-zinc-200 px-4 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-300 disabled:opacity-50 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600"
+            >
+              {promoChecking ? 'Checking...' : 'Apply'}
+            </button>
+          </div>
+          {appliedPromo && <p className="mt-2 text-sm text-emerald-600 dark:text-emerald-400">{appliedPromo.message} applied</p>}
+          {promoError && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{promoError}</p>}
+        </div>
+      )}
+
       <div className="grid gap-6 sm:grid-cols-3">
         {plans.map((plan) => {
           const hasStripe = !!plan.stripe_price_id;

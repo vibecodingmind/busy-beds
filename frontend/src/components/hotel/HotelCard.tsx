@@ -70,6 +70,16 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
           ) : (
             <p className="mt-2 text-sm text-black dark:text-zinc-500">No reviews yet</p>
           )}
+          {hotel.redemptions_this_month != null && hotel.redemptions_this_month > 0 && (
+            <p className="mt-2 text-xs text-black dark:text-zinc-500">
+              {hotel.redemptions_this_month} redemption{hotel.redemptions_this_month !== 1 ? 's' : ''} this month
+            </p>
+          )}
+          {hotel.created_at && (
+            <p className="mt-1 text-xs text-black dark:text-zinc-500">
+              Member since {new Date(hotel.created_at).getFullYear()}
+            </p>
+          )}
           <p className="mt-3 font-medium text-[#FF385C] dark:text-[#ff6b81]">
             {hotel.coupon_discount_value}
           </p>

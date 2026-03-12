@@ -39,6 +39,7 @@ Use this list to confirm everything is production-ready after domain and core fe
 - [ ] **Plans**: Subscription plans created and priced; Stripe/PayPal IDs set.
 - [ ] **Hotels**: Real hotels added; hotel accounts created and approved where needed.
 - [ ] **Admin → Settings**: Site name, support email, Google Maps key, Stripe/PayPal, etc. filled as needed.
+- [ ] **Maintenance mode** (optional): In Admin → Settings, set **Maintenance mode** to `true` to show “We'll be back soon” to non-admins; set back to `false` when done.
 
 
 - **Create admin via API** (no local DB needed): In Railway, set `SEED_SECRET` to any random string (e.g. `openssl rand -hex 16`). After deploy, run once (replace `YOUR_SEED_SECRET` and your API URL):
@@ -49,10 +50,12 @@ Use this list to confirm everything is production-ready after domain and core fe
 
 ---
 
-## 5. Cron (coupon expiry reminders)
+## 5. Cron (coupon expiry reminders & weekly report)
 
 - [ ] **Cron secret**: `CRON_SECRET` (or `SEED_SECRET`) set on Railway.
-- [ ] **Scheduler**: External cron (e.g. cron-job.org, Railway cron) hits `POST https://api.busybeds.com/api/v1/cron/coupon-expiry-reminders` with header `x-cron-secret: YOUR_SECRET` (or `?secret=YOUR_SECRET`) on the schedule you want (e.g. daily).
+- [ ] **48h reminders**: `POST /api/v1/cron/coupon-expiry-reminders` with `x-cron-secret` or `?secret=` (e.g. daily).
+- [ ] **1-day reminders** (for users who opted in): `POST /api/v1/cron/coupon-expiry-reminders-1d` (e.g. daily).
+- [ ] **Weekly admin report**: `POST /api/v1/cron/weekly-report` (e.g. every Monday) – sends new signups, redemptions, active subscriptions to `support_email`. Ensure Admin → Settings has **Support / contact email** set.
 
 ---
 

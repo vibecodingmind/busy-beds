@@ -45,16 +45,47 @@ export async function findCouponByCode(code: string): Promise<CouponWithDetails 
   return result.rows[0] || null;
 }
 
-export async function findCouponsByUserId(userId: number): Promise<CouponWithDetails[]> {
+export interface CouponWithDetailsAndReminder extends CouponWithDetails {
+  remind_1_day_before?: boolean;
+}
+
+export async function findCouponsByUserId(userId: number): Promise<CouponWithDetailsAndReminder[]> {
   const result = await pool.query(
-    `SELECT c.*, h.name as hotel_name
+    `SELECT c.*, h.name as hotel_name, COALESCE(crp.remind_1_day_before, false) as remind_1_day_before
      FROM coupons c
      JOIN hotels h ON c.hotel_id = h.id
+     LEFT JOIN coupon_reminder_preferences crp ON crp.coupon_id = c.id
      WHERE c.user_id = $1
      ORDER BY c.created_at DESC`,
     [userId]
   );
-  return result.rows;
+  return result.rows.map((r: Record<string, unknown>) => ({
+    ...r,
+    remind_1_day_before: Boolean(r.remind_1_day_before),
+  })) as CouponWithDetailsAndReminder[];
+}
+
+export async function getReminderPreference(couponId: number, userId: number): Promise<boolean> {
+  const r = await pool.query(
+    'SELECT remind_1_day_before FROM coupon_reminder_preferences WHERE coupon_id = $1',
+    [couponId]
+  );
+  if (r.rows.length === 0) return false;
+  const row = await pool.query('SELECT user_id FROM coupons WHERE id = $1', [couponId]);
+  if (row.rows[0]?.user_id !== userId) return false;
+  return Boolean(r.rows[0]?.remind_1_day_before);
+}
+
+export async function setReminderPreference(couponId: number, userId: number, remind1Day: boolean): Promise<boolean> {
+  const owner = await pool.query('SELECT user_id FROM coupons WHERE id = $1', [couponId]);
+  if (owner.rows[0]?.user_id !== userId) return false;
+  await pool.query(
+    `INSERT INTO coupon_reminder_preferences (coupon_id, remind_1_day_before)
+     VALUES ($1, $2)
+     ON CONFLICT (coupon_id) DO UPDATE SET remind_1_day_before = $2`,
+    [couponId, remind1Day]
+  );
+  return true;
 }
 
 export async function countUserCouponsInPeriod(

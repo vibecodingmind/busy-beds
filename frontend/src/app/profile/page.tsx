@@ -11,6 +11,7 @@ export default function ProfilePage() {
   const { user, loading: authLoading, setUser, logout } = useAuth();
   const router = useRouter();
   const toast = useToast();
+  const [stats, setStats] = useState<{ redemptions_this_month: number } | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -36,6 +37,11 @@ export default function ProfilePage() {
       setPhone(user.phone ?? '');
       setAvatarUrl(user.avatar_url ?? '');
     }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    auth.meStats().then(setStats).catch(() => {});
   }, [user]);
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -141,9 +147,16 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-100">Account settings</h1>
-        <p className="mt-1 text-zinc-400">Manage your profile, security, and preferences.</p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-zinc-100">Account settings</h1>
+          <p className="mt-1 text-zinc-400">Manage your profile, security, and preferences.</p>
+        </div>
+        {stats != null && stats.redemptions_this_month > 0 && (
+          <div className="rounded-xl border border-emerald-600/50 bg-emerald-950/30 px-4 py-2">
+            <p className="text-sm font-medium text-emerald-400">Used {stats.redemptions_this_month} coupon{stats.redemptions_this_month !== 1 ? 's' : ''} this month</p>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-2 border-b border-zinc-700">
@@ -393,6 +406,11 @@ export default function ProfilePage() {
           <li>
             <Link href="/subscription" className="text-sm text-emerald-400 hover:underline">
               Subscription
+            </Link>
+          </li>
+          <li>
+            <Link href="/profile/billing" className="text-sm text-emerald-400 hover:underline">
+              Billing history
             </Link>
           </li>
           <li>
