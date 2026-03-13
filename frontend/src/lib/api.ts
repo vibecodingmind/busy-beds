@@ -238,14 +238,6 @@ export const flutterwave = {
     }),
 };
 
-export const flutterwave = {
-  createCharge: (planId: number, successUrl?: string, cancelUrl?: string) =>
-    api<{ url: string; tx_ref: string }>('/flutterwave/create-charge', {
-      method: 'POST',
-      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
-    }),
-};
-
 // Reviews
 export const reviews = {
   recent: (limit?: number) =>
