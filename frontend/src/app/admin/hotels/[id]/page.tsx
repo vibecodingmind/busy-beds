@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { admin } from '@/lib/api';
 import type { ManagingAccount } from '@/lib/api';
 import PhotosInput from '@/components/admin/PhotosInput';
+import HotelRoomsManager from '@/components/admin/HotelRoomsManager';
 
 export default function EditHotelPage() {
   const params = useParams();
@@ -270,13 +271,13 @@ export default function EditHotelPage() {
             <option value="monthly">Monthly</option>
           </select>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
           <button
             type="submit"
             disabled={loading}
             className="rounded-lg bg-emerald-600 px-6 py-2 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
           >
-            Save Changes
+            Save Hotel Details
           </button>
           <button
             type="button"
@@ -288,6 +289,8 @@ export default function EditHotelPage() {
           </button>
         </div>
       </form>
+
+      <HotelRoomsManager hotelId={id} />
 
       <h2 className="mt-12 text-lg font-semibold text-black dark:text-zinc-100">Hotel account</h2>
       {managingAccount ? (
