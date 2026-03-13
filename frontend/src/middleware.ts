@@ -36,22 +36,24 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check for auth token in cookies (set during login) or Authorization header
-  const token =
+  const userToken =
     request.cookies.get('access_token')?.value ||
     request.headers.get('authorization')?.replace('Bearer ', '');
+
+  const hotelToken = request.cookies.get('hotel_token')?.value;
 
   const isAdminPath = ADMIN_PROTECTED.some((p) => pathname.startsWith(p));
   const isHotelPath = HOTEL_PROTECTED.some((p) => pathname.startsWith(p));
   const isUserPath = USER_PROTECTED.some((p) => pathname.startsWith(p));
 
   // If accessing a protected path without any token, redirect to the appropriate login page
-  if ((isAdminPath || isUserPath) && !token) {
+  if ((isAdminPath || isUserPath) && !userToken) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('returnTo', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (isHotelPath && !token) {
+  if (isHotelPath && !hotelToken) {
     const loginUrl = new URL('/hotel/login', request.url);
     loginUrl.searchParams.set('returnTo', pathname);
     return NextResponse.redirect(loginUrl);

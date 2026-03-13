@@ -26,6 +26,16 @@ interface HotelAuthContextType {
 
 export const HotelAuthContext = createContext<HotelAuthContextType | null>(null);
 
+function setHotelAuthCookie(token: string) {
+  if (typeof document === 'undefined') return;
+  document.cookie = `hotel_token=${token};path=/;max-age=${60 * 60 * 24 * 7}`;
+}
+
+function clearHotelAuthCookie() {
+  if (typeof document === 'undefined') return;
+  document.cookie = 'hotel_token=;path=/;max-age=0';
+}
+
 export function HotelAuthProvider({ children }: { children: React.ReactNode }) {
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [hotelAccount, setHotelAccount] = useState<HotelAccount | null>(null);
@@ -37,6 +47,7 @@ export function HotelAuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       return;
     }
+    setHotelAuthCookie(token);
     hotelAuth
       .me()
       .then((res) => {
@@ -46,6 +57,7 @@ export function HotelAuthProvider({ children }: { children: React.ReactNode }) {
       })
       .catch(() => {
         localStorage.removeItem('hotelToken');
+        clearHotelAuthCookie();
       })
       .finally(() => setLoading(false));
   }, []);
@@ -57,6 +69,7 @@ export function HotelAuthProvider({ children }: { children: React.ReactNode }) {
       hotelAccount: { id: number; hotel_id: number; email: string; name: string };
     };
     localStorage.setItem('hotelToken', res.token);
+    setHotelAuthCookie(res.token);
     setHotel(res.hotel);
     setHotelAccount(res.hotelAccount ? { ...res.hotelAccount, hotelId: res.hotelAccount.hotel_id } : null);
   };
@@ -74,6 +87,7 @@ export function HotelAuthProvider({ children }: { children: React.ReactNode }) {
     }
     if (res.token) {
       localStorage.setItem('hotelToken', res.token);
+      setHotelAuthCookie(res.token);
       setHotel(res.hotel ?? null);
       setHotelAccount(res.hotelAccount ? { ...res.hotelAccount, hotelId: res.hotelAccount.hotel_id } : null);
     }
@@ -81,6 +95,7 @@ export function HotelAuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem('hotelToken');
+    clearHotelAuthCookie();
     setHotel(null);
     setHotelAccount(null);
   };

@@ -25,6 +25,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+function setAuthCookie(token: string) {
+  if (typeof document === 'undefined') return;
+  document.cookie = `access_token=${token};path=/;max-age=${60 * 60 * 24 * 7}`; // 7 days
+}
+
+function clearAuthCookie() {
+  if (typeof document === 'undefined') return;
+  document.cookie = 'access_token=;path=/;max-age=0';
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,11 +45,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       return;
     }
+    // Also set cookie for middleware to read
+    setAuthCookie(token);
     auth
       .me()
       .then((u) => setUser(u))
       .catch(() => {
         localStorage.removeItem('token');
+        clearAuthCookie();
       })
       .finally(() => setLoading(false));
   }, []);
@@ -47,17 +60,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     const { user: u, token } = await auth.login(email, password);
     localStorage.setItem('token', token);
+    setAuthCookie(token);
     setUser(u);
   };
 
   const register = async (email: string, password: string, name: string, referralCode?: string) => {
     const { user: u, token } = await auth.register(email, password, name, referralCode);
     localStorage.setItem('token', token);
+    setAuthCookie(token);
     setUser(u);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    clearAuthCookie();
     setUser(null);
   };
 
