@@ -76,6 +76,10 @@ router.post(
       if (!user) {
         return res.status(401).json({ error: 'Invalid email or password' });
       }
+      const isInactive = (user as { active?: boolean }).active === false;
+      if (isInactive) {
+        return res.status(403).json({ error: 'Account is inactive. Please contact support.' });
+      }
 
       const match = await bcrypt.compare(password, user.password_hash);
       if (!match) {
