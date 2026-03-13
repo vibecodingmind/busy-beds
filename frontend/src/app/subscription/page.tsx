@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { subscriptions, stripe, paypal, promo } from '@/lib/api';
 import type { SubscriptionPlan } from '@/lib/api';
 import { formatPlanPrice } from '@/lib/formatPlanPrice';
+import { useToast } from '@/contexts/ToastContext';
 
 function SubscriptionContent() {
   const { user, loading: authLoading } = useAuth();
@@ -21,6 +22,7 @@ function SubscriptionContent() {
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; message: string } | null>(null);
   const [promoError, setPromoError] = useState('');
   const [promoChecking, setPromoChecking] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
@@ -77,8 +79,12 @@ function SubscriptionContent() {
         window.location.href = session.url;
         return;
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Could not start Stripe checkout. Please check payment configuration.';
+      toast(message, 'error');
     }
     setLoading(null);
   };
@@ -91,8 +97,12 @@ function SubscriptionContent() {
         window.location.href = res.url;
         return;
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Could not start PayPal checkout. Please check payment configuration.';
+      toast(message, 'error');
     }
     setLoading(null);
   };
@@ -103,8 +113,12 @@ function SubscriptionContent() {
       await subscriptions.subscribe(planId);
       const r = await subscriptions.me();
       if (r.subscription) setCurrentSub(r.subscription as { plan: SubscriptionPlan; current_period_end: string });
-    } catch {
-      // ignore
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Could not activate subscription. Please try again or contact support.';
+      toast(message, 'error');
     } finally {
       setLoading(null);
     }
@@ -116,8 +130,10 @@ function SubscriptionContent() {
     try {
       await subscriptions.cancel();
       setCurrentSub(null);
-    } catch {
-      // ignore
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Could not cancel subscription. Please try again or contact support.';
+      toast(message, 'error');
     } finally {
       setLoading(null);
     }
