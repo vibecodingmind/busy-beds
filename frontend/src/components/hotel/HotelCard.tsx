@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import type { Hotel } from '@/lib/api';
+import { useState, useEffect } from 'react';
+import type { Hotel, HotelRoom } from '@/lib/api';
+import { hotels } from '@/lib/api';
 import FavoriteButton from './FavoriteButton';
 import { MapPinIcon, ChevronRightIcon } from '@/components/icons';
 import StarRating from '@/components/StarRating';
@@ -19,9 +21,44 @@ function getDiscountLabel(value: string | null | undefined): string | null {
   return match ? match[0] : value;
 }
 
+// Parse discount percent (e.g. "15% off" -> 15, "$50 off" -> 0)
+function getDiscountPercent(value: string | null | undefined): number {
+  if (!value) return 0;
+  const match = value.match(/(\d+)%/);
+  return match ? parseInt(match[1], 10) : 0;
+}
+
+function formatPrice(price: number, currency: string): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price);
+}
+
 export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
   const imageUrl = hotel.images?.length ? hotel.images[0] : PLACEHOLDER;
   const discountLabel = getDiscountLabel(hotel.coupon_discount_value);
+  const [lowestPrice, setLowestPrice] = useState<{ original: number; discounted: number; currency: string } | null>(null);
+
+  useEffect(() => {
+    hotels
+      .rooms(hotel.id)
+      .then((r) => {
+        if (r.rooms.length > 0) {
+          const discountPercent = getDiscountPercent(hotel.coupon_discount_value);
+          const prices = r.rooms.map((room) => ({
+            original: room.base_price,
+            discounted: room.base_price * (1 - discountPercent / 100),
+            currency: room.currency,
+          }));
+          const lowest = prices.reduce((a, b) => (a.discounted < b.discounted ? a : b));
+          setLowestPrice(lowest);
+        }
+      })
+      .catch(() => {});
+  }, [hotel.id, hotel.coupon_discount_value]);
 
   return (
     // Outer wrapper is position:relative so the FavoriteButton can be positioned absolutely
@@ -80,9 +117,26 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
                 Member since {new Date(hotel.created_at).getFullYear()}
               </p>
             )}
-            <p className="mt-3 font-medium text-primary">
-              {hotel.coupon_discount_value}
-            </p>
+            {lowestPrice ? (
+              <p className="mt-3 text-sm">
+                <span className="text-zinc-400 line-through dark:text-zinc-500">
+                  {formatPrice(lowestPrice.original, lowestPrice.currency)}
+                </span>
+                {' '}
+                <span className="font-bold text-primary">
+                  {formatPrice(lowestPrice.discounted, lowestPrice.currency)}
+                </span>
+                <span className="text-zinc-500 dark:text-zinc-400">/night</span>
+                {' '}
+                <span className="text-xs font-medium text-primary">
+                  ({hotel.coupon_discount_value})
+                </span>
+              </p>
+            ) : (
+              <p className="mt-3 font-medium text-primary">
+                {hotel.coupon_discount_value}
+              </p>
+            )}
           </div>
         </div>
       </Link>
