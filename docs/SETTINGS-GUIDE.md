@@ -54,6 +54,8 @@ Required for subscription payments and referral rewards.
 | `FACEBOOK_APP_ID` + `FACEBOOK_APP_SECRET` | Facebook OAuth login |
 | `API_URL` | Backend base URL for OAuth callbacks, e.g. `https://your-backend.up.railway.app` |
 | `CRON_SECRET` | Auth for cron endpoints (coupon expiry reminders) – or reuse `SEED_SECRET` |
+| `WITHDRAW_MIN_AMOUNT` | **Referral withdrawals**: minimum amount a user can request (e.g. `10` for $10). |
+| `WITHDRAW_MAX_AMOUNT` | **Referral withdrawals**: maximum amount per single request (e.g. `500` for $500). |
 
 ---
 

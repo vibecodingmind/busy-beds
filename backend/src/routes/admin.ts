@@ -544,4 +544,89 @@ router.get('/export/subscriptions', async (_req, res) => {
   }
 });
 
+// Withdraw requests (referral payouts)
+router.get('/withdraw-requests', async (req, res) => {
+  try {
+    const statusFilter = (req.query.status as string) || '';
+    let query = `SELECT wr.id, wr.user_id, wr.amount, wr.method, wr.method_details, wr.status, wr.admin_notes, wr.created_at, wr.processed_at, u.email, u.name
+      FROM withdraw_requests wr JOIN users u ON wr.user_id = u.id ORDER BY wr.created_at DESC`;
+    const result = statusFilter && ['pending', 'approved', 'paid', 'rejected'].includes(statusFilter)
+      ? await pool.query(
+          `SELECT wr.id, wr.user_id, wr.amount, wr.method, wr.method_details, wr.status, wr.admin_notes, wr.created_at, wr.processed_at, u.email, u.name
+           FROM withdraw_requests wr JOIN users u ON wr.user_id = u.id WHERE wr.status = $1 ORDER BY wr.created_at DESC`,
+          [statusFilter]
+        )
+      : await pool.query(
+          `SELECT wr.id, wr.user_id, wr.amount, wr.method, wr.method_details, wr.status, wr.admin_notes, wr.created_at, wr.processed_at, u.email, u.name
+           FROM withdraw_requests wr JOIN users u ON wr.user_id = u.id ORDER BY wr.created_at DESC`
+        );
+    const requests = result.rows.map((row: Record<string, unknown>) => ({
+      id: row.id,
+      user_id: row.user_id,
+      user_email: row.email,
+      user_name: row.name,
+      amount: parseFloat(String(row.amount)),
+      method: row.method,
+      method_details: row.method_details,
+      status: row.status,
+      admin_notes: row.admin_notes,
+      created_at: row.created_at,
+      processed_at: row.processed_at,
+    }));
+    const countResult = await pool.query(
+      "SELECT COUNT(*)::int AS c FROM withdraw_requests WHERE status = 'pending'"
+    );
+    res.json({ requests, pending_count: countResult.rows[0]?.c ?? 0 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch withdraw requests' });
+  }
+});
+
+router.patch('/withdraw-requests/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isInteger(id)) return res.status(400).json({ error: 'Invalid id' });
+    const { status, admin_notes } = req.body;
+    if (!['approved', 'paid', 'rejected'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+    const row = await pool.query(
+      'SELECT id, user_id, amount, status FROM withdraw_requests WHERE id = $1',
+      [id]
+    );
+    if (!row.rows[0]) return res.status(404).json({ error: 'Withdraw request not found' });
+    const reqRow = row.rows[0];
+    if (reqRow.status !== 'pending' && reqRow.status !== 'approved') {
+      return res.status(400).json({ error: 'Request already processed' });
+    }
+    if (status === 'paid') {
+      const userId = reqRow.user_id;
+      const amount = parseFloat(reqRow.amount);
+      const rewards = await pool.query(
+        `SELECT id, amount FROM referral_rewards WHERE referrer_id = $1 AND status = 'pending' ORDER BY created_at ASC`,
+        [userId]
+      );
+      let remaining = amount;
+      for (const r of rewards.rows) {
+        if (remaining <= 0) break;
+        const rewardAmount = parseFloat(r.amount);
+        await pool.query(
+          `UPDATE referral_rewards SET status = 'paid', paid_at = CURRENT_TIMESTAMP WHERE id = $1`,
+          [r.id]
+        );
+        remaining -= rewardAmount;
+      }
+    }
+    await pool.query(
+      `UPDATE withdraw_requests SET status = $1, admin_notes = COALESCE($2, admin_notes), processed_at = CURRENT_TIMESTAMP WHERE id = $3`,
+      [status, admin_notes ?? null, id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update withdraw request' });
+  }
+});
+
 export default router;

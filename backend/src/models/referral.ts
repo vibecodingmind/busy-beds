@@ -74,10 +74,3 @@ export async function findRewardsForReferrer(referrerId: number): Promise<Referr
   return r.rows;
 }
 
-export async function getStripeConnected(userId: number): Promise<boolean> {
-  const r = await pool.query(
-    'SELECT stripe_connect_account_id FROM users WHERE id = $1',
-    [userId]
-  );
-  return !!r.rows[0]?.stripe_connect_account_id;
-}

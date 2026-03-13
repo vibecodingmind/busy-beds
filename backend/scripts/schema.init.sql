@@ -354,6 +354,21 @@ CREATE TABLE IF NOT EXISTS paypal_subscription_pending (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Withdraw requests (referral earnings: user requests payout; admin marks paid)
+CREATE TABLE IF NOT EXISTS withdraw_requests (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    amount DECIMAL(10, 2) NOT NULL,
+    method VARCHAR(32) NOT NULL CHECK (method IN ('bank', 'mobile_money', 'paypal')),
+    method_details TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'paid', 'rejected')),
+    admin_notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    processed_at TIMESTAMP WITH TIME ZONE
+);
+CREATE INDEX IF NOT EXISTS idx_withdraw_requests_user_id ON withdraw_requests(user_id);
+CREATE INDEX IF NOT EXISTS idx_withdraw_requests_status ON withdraw_requests(status);
+
 -- Admin-configurable settings (API keys, secrets) - env vars used as fallback
 CREATE TABLE IF NOT EXISTS settings (
     key VARCHAR(255) PRIMARY KEY,

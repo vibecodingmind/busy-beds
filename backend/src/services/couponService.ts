@@ -58,7 +58,7 @@ export async function checkHotelLimit(hotelId: number): Promise<{ ok: boolean; u
 export async function generateCoupon(userId: number, hotelId: number): Promise<couponModel.Coupon> {
   const userLimit = await checkUserLimit(userId);
   if (!userLimit.ok) {
-    throw new Error(`Coupon limit reached. Used ${userLimit.used}/${userLimit.limit} this period.`);
+    throw new Error('Subscribe to get coupons.');
   }
 
   const hotelLimit = await checkHotelLimit(hotelId);

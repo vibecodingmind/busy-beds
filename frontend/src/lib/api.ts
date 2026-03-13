@@ -220,14 +220,6 @@ export const stripe = {
     }),
   billingPortal: () =>
     api<{ url: string }>('/stripe/billing-portal', { method: 'POST' }),
-  connectOnboard: () =>
-    api<{ url: string | null; message?: string }>('/stripe/connect/onboard', {
-      method: 'POST',
-    }),
-  connectComplete: () =>
-    api<{ success: boolean }>('/stripe/connect/complete', {
-      method: 'POST',
-    }),
 };
 
 export const paypal = {
@@ -333,14 +325,32 @@ export type ReferralReward = { referred_id: number; referred_name: string; amoun
 export type ReferralMeResponse = {
   code: string;
   referred: { id: number; name: string; email: string; created_at: string }[];
-  stripe_connected: boolean;
   rewards: ReferralReward[];
   total_earned: number;
   total_pending: number;
+  withdrawable_balance: number;
+  withdraw_min_amount: number;
+  withdraw_max_amount: number;
   earnings_this_month?: number;
+};
+export type WithdrawRequestRow = {
+  id: number;
+  amount: number;
+  method: string;
+  method_details: string;
+  status: string;
+  created_at: string;
+  processed_at: string | null;
 };
 export const referrals = {
   me: () => api<ReferralMeResponse>('/referrals/me'),
+  withdrawRequest: (amount: number, method: string, method_details: string) =>
+    api<{ success: boolean; message: string }>('/referrals/withdraw-request', {
+      method: 'POST',
+      body: JSON.stringify({ amount, method, method_details }),
+    }),
+  withdrawRequests: () =>
+    api<{ requests: WithdrawRequestRow[] }>('/referrals/withdraw-requests'),
 };
 
 // Hotel dashboard
@@ -492,6 +502,30 @@ export const admin = {
         `/admin/contact-submissions/${id}`,
         { method: 'PATCH', body: JSON.stringify(data) }
       ),
+  },
+  withdrawRequests: {
+    list: (status?: string) =>
+      api<{
+        requests: {
+          id: number;
+          user_id: number;
+          user_email: string;
+          user_name: string;
+          amount: number;
+          method: string;
+          method_details: string;
+          status: string;
+          admin_notes: string | null;
+          created_at: string;
+          processed_at: string | null;
+        }[];
+        pending_count: number;
+      }>(`/admin/withdraw-requests${status ? `?status=${encodeURIComponent(status)}` : ''}`),
+    update: (id: number, data: { status: string; admin_notes?: string }) =>
+      api<{ success: boolean }>(`/admin/withdraw-requests/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
   },
   exportCsv: async (path: string, filename: string): Promise<void> => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;

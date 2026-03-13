@@ -30,6 +30,7 @@ Use this list to confirm everything is production-ready after domain and core fe
 
 - [ ] **Stripe**: Live keys in Railway (or Admin Settings); webhook URL `https://api.busybeds.com/api/v1/stripe/webhook`; each plan has `stripe_price_id` in Admin → Plans.
 - [ ] **PayPal**: Live client ID/secret in Railway (or Admin); each plan has `paypal_plan_id` in Admin → Plans; optional webhook `https://api.busybeds.com/api/v1/paypal/webhook` for BILLING.SUBSCRIPTION.*.
+- [ ] **Referral withdrawals**: In Admin → Settings set **Withdraw min amount** / **Withdraw max amount per request**. In Admin → Referral withdrawals, review and mark payout requests as paid after you send money via bank / mobile money / PayPal.
 
 ---
 
