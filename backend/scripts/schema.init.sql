@@ -399,3 +399,18 @@ CREATE TABLE IF NOT EXISTS settings (
     value TEXT,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Hotel rooms with pricing
+CREATE TABLE IF NOT EXISTS hotel_rooms (
+    id SERIAL PRIMARY KEY,
+    hotel_id INTEGER NOT NULL REFERENCES hotels(id) ON DELETE CASCADE,
+    room_type VARCHAR(100) NOT NULL,
+    description TEXT,
+    base_price DECIMAL(10, 2) NOT NULL,
+    currency VARCHAR(3) DEFAULT 'USD',
+    amenities JSONB DEFAULT '[]',
+    max_occupancy INTEGER DEFAULT 2,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_hotel_rooms_hotel_id ON hotel_rooms(hotel_id);

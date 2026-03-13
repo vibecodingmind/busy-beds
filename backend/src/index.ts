@@ -29,6 +29,7 @@ import waitlistRoutes from './routes/waitlist';
 import settingsRoutes from './routes/settings';
 import pagesRoutes from './routes/pages';
 import contactRoutes from './routes/contact';
+import roomsRoutes from './routes/rooms';
 import { maintenanceMiddleware } from './middleware/maintenance';
 
 const app = express();
@@ -79,6 +80,7 @@ app.use('/api/v1/settings', settingsRoutes);
 app.use('/api/v1/pages', pagesRoutes);
 app.use('/api/v1/contact', contactRoutes);
 app.use('/api/v1/cron', cronRoutes);
+app.use('/api/v1', roomsRoutes);
 
 // Health / status page: API, DB (optional deep check)
 app.get('/health', async (_req, res) => {

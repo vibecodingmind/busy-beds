@@ -148,6 +148,7 @@ export const hotels = {
     return api<{ hotels: Hotel[] }>(`/hotels?${params}`);
   },
   get: (id: number) => api<Hotel>(`/hotels/${id}`),
+  rooms: (hotelId: number) => api<{ rooms: HotelRoom[] }>(`/hotels/${hotelId}/rooms`),
 };
 
 // Favorites
@@ -410,6 +411,21 @@ export const admin = {
         method: 'POST',
         body: JSON.stringify({ email, password, name }),
       }),
+    rooms: {
+      list: (hotelId: number) => api<{ rooms: HotelRoom[] }>(`/admin/hotels/${hotelId}/rooms`),
+      create: (hotelId: number, data: Partial<HotelRoom>) =>
+        api<{ room: HotelRoom }>(`/admin/hotels/${hotelId}/rooms`, {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }),
+      update: (roomId: number, data: Partial<HotelRoom>) =>
+        api<{ room: HotelRoom }>(`/admin/rooms/${roomId}`, {
+          method: 'PUT',
+          body: JSON.stringify(data),
+        }),
+      delete: (roomId: number) =>
+        api<{ success: boolean }>(`/admin/rooms/${roomId}`, { method: 'DELETE' }),
+    },
   },
   users: () =>
     api<{ users: (User & { active?: boolean; created_at?: string })[] }>('/admin/users'),
@@ -585,6 +601,18 @@ export interface Hotel {
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;
+}
+
+export interface HotelRoom {
+  id: number;
+  hotel_id: number;
+  room_type: string;
+  description: string | null;
+  base_price: number;
+  currency: string;
+  amenities: string[];
+  max_occupancy: number;
+  is_active: boolean;
 }
 
 export interface Coupon {

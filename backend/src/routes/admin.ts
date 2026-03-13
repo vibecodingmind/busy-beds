@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import { authMiddleware, adminMiddleware } from '../middleware/auth';
 import * as hotelModel from '../models/hotel';
 import * as hotelAccountModel from '../models/hotelAccount';
+import * as roomModel from '../models/room';
 import { sendHotelApprovalEmail } from '../services/email';
 import * as userModel from '../models/user';
 import { getAllForAdmin, updateSettings, getAllPagesForAdmin, updatePageContent } from '../services/settings';
@@ -664,6 +665,102 @@ router.patch('/withdraw-requests/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update withdraw request' });
+  }
+});
+
+// ============ Hotel Rooms Management ============
+
+// Get all rooms for a hotel (admin)
+router.get('/hotels/:hotelId/rooms', async (req, res) => {
+  try {
+    const hotelId = parseInt(req.params?.hotelId ?? '', 10);
+    if (isNaN(hotelId)) {
+      return res.status(400).json({ error: 'Invalid hotel ID' });
+    }
+    const rooms = await roomModel.findAllRoomsForHotelAdmin(hotelId);
+    res.json({ rooms });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch rooms' });
+  }
+});
+
+// Add room to hotel
+router.post(
+  '/hotels/:hotelId/rooms',
+  body('room_type').trim().notEmpty().withMessage('Room type is required'),
+  body('base_price').isFloat({ min: 0 }).withMessage('Base price must be positive'),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const hotelId = parseInt(req.params?.hotelId ?? '', 10);
+      if (isNaN(hotelId)) {
+        return res.status(400).json({ error: 'Invalid hotel ID' });
+      }
+      const { room_type, description, base_price, currency, amenities, max_occupancy, is_active } = req.body;
+      const room = await roomModel.createRoom({
+        hotel_id: hotelId,
+        room_type,
+        description,
+        base_price,
+        currency,
+        amenities,
+        max_occupancy,
+        is_active,
+      });
+      res.status(201).json({ room });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to create room' });
+    }
+  }
+);
+
+// Update room
+router.put('/rooms/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params?.id ?? '', 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid room ID' });
+    }
+    const { room_type, description, base_price, currency, amenities, max_occupancy, is_active } = req.body;
+    const room = await roomModel.updateRoom(id, {
+      room_type,
+      description,
+      base_price,
+      currency,
+      amenities,
+      max_occupancy,
+      is_active,
+    });
+    if (!room) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    res.json({ room });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update room' });
+  }
+});
+
+// Delete room
+router.delete('/rooms/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params?.id ?? '', 10);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid room ID' });
+    }
+    const deleted = await roomModel.deleteRoom(id);
+    if (!deleted) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete room' });
   }
 });
 

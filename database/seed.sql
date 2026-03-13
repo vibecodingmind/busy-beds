@@ -23,3 +23,25 @@ INSERT INTO hotels (name, description, location, contact_phone, contact_email, i
      '["https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80","https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800&q=80"]'::jsonb,
      39.1911, -106.8175, '20% off', 10, 'monthly')
 ;
+
+-- Sample hotel rooms (only if hotels exist)
+-- Grand Plaza Hotel (id 1): Standard $100, Deluxe $150, Suite $250
+INSERT INTO hotel_rooms (hotel_id, room_type, description, base_price, currency, amenities, max_occupancy) VALUES
+    (1, 'Standard Room', 'Comfortable room with city view', 100, 'USD', '["WiFi", "TV", "AC"]'::jsonb, 2),
+    (1, 'Deluxe Room', 'Spacious room with premium amenities', 150, 'USD', '["WiFi", "TV", "AC", "Mini Bar", "Safe"]'::jsonb, 2),
+    (1, 'Suite', 'Luxurious suite with separate living area', 250, 'USD', '["WiFi", "TV", "AC", "Mini Bar", "Safe", "Jacuzzi", "Breakfast"]'::jsonb, 4)
+ON CONFLICT DO NOTHING;
+
+-- Seaside Resort (id 2): Standard $120, Deluxe $180, Suite $300
+INSERT INTO hotel_rooms (hotel_id, room_type, description, base_price, currency, amenities, max_occupancy) VALUES
+    (2, 'Standard Room', 'Cozy room with partial ocean view', 120, 'USD', '["WiFi", "TV", "AC", "Balcony"]'::jsonb, 2),
+    (2, 'Deluxe Room', 'Room with full ocean view and balcony', 180, 'USD', '["WiFi", "TV", "AC", "Balcony", "Mini Bar"]'::jsonb, 2),
+    (2, 'Beach Suite', 'Suite with direct beach access', 300, 'USD', '["WiFi", "TV", "AC", "Balcony", "Mini Bar", "Jacuzzi", "Beach Access"]'::jsonb, 4)
+ON CONFLICT DO NOTHING;
+
+-- Mountain Lodge (id 3): Standard $80, Deluxe $120, Cabin $200
+INSERT INTO hotel_rooms (hotel_id, room_type, description, base_price, currency, amenities, max_occupancy) VALUES
+    (3, 'Standard Room', 'Cozy room with mountain view', 80, 'USD', '["WiFi", "Heater", "Fireplace"]'::jsonb, 2),
+    (3, 'Deluxe Room', 'Spacious room with balcony and mountain view', 120, 'USD', '["WiFi", "Heater", "Fireplace", "Balcony", "Bathtub"]'::jsonb, 2),
+    (3, 'Mountain Cabin', 'Private cabin with full kitchen and fireplace', 200, 'USD', '["WiFi", "Heater", "Fireplace", "Kitchen", "Bathtub", "Balcony"]'::jsonb, 6)
+ON CONFLICT DO NOTHING;

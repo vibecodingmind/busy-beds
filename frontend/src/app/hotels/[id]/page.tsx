@@ -9,6 +9,7 @@ import RecentlyViewedTracker from '@/components/hotel/RecentlyViewedTracker';
 import HotelDistance from '@/components/hotel/HotelDistance';
 import HotelReviews from '@/components/hotel/HotelReviews';
 import ShareButton from '@/components/hotel/ShareButton';
+import HotelRooms from './HotelRooms';
 import { MapPinIcon } from '@/components/icons';
 import StarRating from '@/components/StarRating';
 
@@ -97,6 +98,9 @@ export default async function HotelDetailPage({
             {hotel.description && (
               <p className="mt-6 text-black dark:text-zinc-400">{hotel.description}</p>
             )}
+
+            {/* Rooms with pricing */}
+            <HotelRooms hotelId={hotel.id} discountValue={hotel.coupon_discount_value} />
 
             {hasCoords && (
               <div className="mt-4">
