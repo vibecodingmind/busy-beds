@@ -11,6 +11,7 @@ export interface User {
   phone?: string | null;
   email_verified?: boolean | null;
   whatsapp_opt_in?: boolean | null;
+  active?: boolean | null;
 }
 
 export async function createUser(
@@ -43,7 +44,7 @@ export async function findUserById(id: number): Promise<User | null> {
 
 export async function updateUser(
   id: number,
-  data: { name?: string; email?: string; password_hash?: string; avatar_url?: string | null; phone?: string | null; whatsapp_opt_in?: boolean | null }
+  data: { name?: string; email?: string; password_hash?: string; avatar_url?: string | null; phone?: string | null; whatsapp_opt_in?: boolean | null; active?: boolean | null }
 ): Promise<User | null> {
   const updates: string[] = [];
   const values: unknown[] = [];
@@ -71,6 +72,10 @@ export async function updateUser(
   if (data.whatsapp_opt_in !== undefined) {
     updates.push(`whatsapp_opt_in = $${i++}`);
     values.push(!!data.whatsapp_opt_in);
+  }
+  if (data.active !== undefined) {
+    updates.push(`active = $${i++}`);
+    values.push(!!data.active);
   }
   if (updates.length === 0) return findUserById(id);
   values.push(id);
