@@ -32,7 +32,7 @@ export default function MaintenanceGate({ children }: { children: React.ReactNod
           We&apos;re performing scheduled maintenance. Please try again later.
         </p>
         <p className="mt-6 text-sm text-black dark:text-zinc-500">
-          Check <a href="/status" className="text-[#FF385C] hover:underline">system status</a> for updates.
+          Check <a href="/status" className="text-primary hover:underline">system status</a> for updates.
         </p>
       </div>
     </div>

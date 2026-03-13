@@ -15,7 +15,8 @@ export const validate = (validations: any[]) => {
         value: error.value
       }));
       
-      throw new CustomError('Validation failed', 400);
+      res.status(400).json({ error: 'Validation failed', details: errorMessages });
+      return;
     }
     
     next();

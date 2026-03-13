@@ -38,7 +38,7 @@ function CompareContent() {
         <p className="mt-4 text-sm text-black dark:text-zinc-500">
           Or open a hotel page and use &quot;Add to compare&quot; (if available).
         </p>
-        <Link href="/hotels" className="mt-6 inline-block font-medium text-[#FF385C] hover:underline">Browse hotels →</Link>
+        <Link href="/hotels" className="mt-6 inline-block font-medium text-primary hover:underline">Browse hotels →</Link>
       </div>
     );
   }
@@ -84,7 +84,7 @@ function CompareContent() {
           </tbody>
         </table>
       </div>
-      <Link href="/hotels" className="font-medium text-[#FF385C] hover:underline">Browse all hotels →</Link>
+      <Link href="/hotels" className="font-medium text-primary hover:underline">Browse all hotels →</Link>
     </div>
   );
 }

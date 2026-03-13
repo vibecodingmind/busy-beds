@@ -94,6 +94,7 @@ export async function getSetting(key: string): Promise<string | null> {
   const row = await pool.query<{ value: string | null }>('SELECT value FROM settings WHERE key = $1', [key]);
   const val = row.rows[0]?.value ?? null;
   cache[key] = val;
+  cacheTs = Date.now();
   return val;
 }
 
@@ -115,10 +116,22 @@ export async function getAllForAdmin(): Promise<
   { key: string; label: string; value: string; masked: boolean; group: string }[]
 > {
   const keys = Object.keys(SETTINGS_META);
+
+  // Fetch all DB values in a single query instead of N sequential queries
+  const dbRows = await pool.query<{ key: string; value: string | null }>(
+    'SELECT key, value FROM settings WHERE key = ANY($1::text[])',
+    [keys]
+  );
+  const dbMap: Record<string, string | null> = {};
+  for (const row of dbRows.rows) dbMap[row.key] = row.value;
+
   const result: { key: string; label: string; value: string; masked: boolean; group: string }[] = [];
   for (const key of keys) {
     const meta = SETTINGS_META[key]!;
-    const raw = await getSetting(key);
+    // Prefer env var, then DB value
+    const envVar = ENV_MAP[key];
+    const envVal = envVar ? process.env[envVar] : undefined;
+    const raw = (envVal != null && envVal !== '') ? envVal : (dbMap[key] ?? null);
     const value = meta.isSecret ? maskSecret(raw ?? '') : (raw ?? '');
     result.push({ key, label: meta.label, value, masked: meta.isSecret, group: meta.group });
   }
@@ -126,9 +139,19 @@ export async function getAllForAdmin(): Promise<
 }
 
 export async function getPublicSettings(): Promise<Record<string, string>> {
+  // Fetch all public keys in a single query
+  const dbRows = await pool.query<{ key: string; value: string | null }>(
+    'SELECT key, value FROM settings WHERE key = ANY($1::text[])',
+    [PUBLIC_KEYS]
+  );
+  const dbMap: Record<string, string | null> = {};
+  for (const row of dbRows.rows) dbMap[row.key] = row.value;
+
   const out: Record<string, string> = {};
   for (const key of PUBLIC_KEYS) {
-    const v = await getSetting(key);
+    const envVar = ENV_MAP[key];
+    const envVal = envVar ? process.env[envVar] : undefined;
+    const v = (envVal != null && envVal !== '') ? envVal : (dbMap[key] ?? null);
     if (v) out[key] = v;
   }
   return out;

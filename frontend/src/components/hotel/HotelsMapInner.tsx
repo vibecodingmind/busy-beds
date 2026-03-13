@@ -83,7 +83,7 @@ function HotelsMapInnerLoaded({
             <div className="min-w-[200px] p-1">
               <Link
                 href={`/hotels/${hotel.id}`}
-                className="font-semibold text-[#FF385C] hover:underline"
+                className="font-semibold text-primary hover:underline"
                 onClick={() => setSelectedHotelId(null)}
               >
                 {hotel.name}
@@ -95,7 +95,7 @@ function HotelsMapInnerLoaded({
                 {hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0 && (
                   <StarRating rating={Number(hotel.avg_rating)} size="sm" />
                 )}
-                <span className="text-sm font-medium text-[#FF385C]">{hotel.coupon_discount_value}</span>
+                <span className="text-sm font-medium text-primary">{hotel.coupon_discount_value}</span>
               </div>
             </div>
           </InfoWindow>

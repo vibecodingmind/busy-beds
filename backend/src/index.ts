@@ -43,7 +43,7 @@ app.use(
       if (allowed.includes(origin) || origin.endsWith('.vercel.app')) {
         return cb(null, true);
       }
-      return cb(null, allowed[0] || true);
+      return cb(new Error('Not allowed by CORS'));
     },
     credentials: true,
   })

@@ -2,6 +2,16 @@ import { Resend } from 'resend';
 import { getSetting } from './settings';
 import { config } from '../config';
 
+/** Escape user-supplied strings before inserting into HTML email templates. */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
   const apiKey = await getSetting('resend_api_key');
   const from = (await getSetting('email_from')) || 'Busy Beds <onboarding@resend.dev>';
@@ -21,8 +31,8 @@ export async function sendWelcomeEmail(to: string, name: string): Promise<boolea
   const siteName = (await getSetting('site_name')) || 'Busy Beds';
   return sendEmail(
     to,
-    `Welcome to ${siteName}`,
-    `<h1>Welcome, ${name}!</h1><p>Thanks for joining ${siteName}. Subscribe to a plan to start generating hotel discount coupons.</p><p><a href="${baseUrl}/subscription">Choose a plan</a></p>`
+    `Welcome to ${escapeHtml(siteName)}`,
+    `<h1>Welcome, ${escapeHtml(name)}!</h1><p>Thanks for joining ${escapeHtml(siteName)}. Subscribe to a plan to start generating hotel discount coupons.</p><p><a href="${baseUrl}/subscription">Choose a plan</a></p>`
   );
 }
 
@@ -32,7 +42,7 @@ export async function sendHotelApprovalEmail(to: string, hotelName: string): Pro
   return sendEmail(
     to,
     'Your hotel account has been approved',
-    `<h1>Account approved</h1><p>Your hotel account for <strong>${hotelName}</strong> has been approved. You can now log in and redeem coupons.</p><p><a href="${baseUrl}/hotel/login">Hotel Login</a></p><p>— ${siteName}</p>`
+    `<h1>Account approved</h1><p>Your hotel account for <strong>${escapeHtml(hotelName)}</strong> has been approved. You can now log in and redeem coupons.</p><p><a href="${baseUrl}/hotel/login">Hotel Login</a></p><p>— ${escapeHtml(siteName)}</p>`
   );
 }
 
@@ -58,8 +68,8 @@ export async function sendCouponExpiryReminder(to: string, userName: string, hot
   const siteName = (await getSetting('site_name')) || 'Busy Beds';
   return sendEmail(
     to,
-    `Your coupon for ${hotelName} expires soon`,
-    `<h1>Coupon expiring</h1><p>Hi ${userName},</p><p>Your discount coupon (${code}) for ${hotelName} expires on ${expiresAt}. Use it before it's too late!</p><p>— ${siteName}</p>`
+    `Your coupon for ${escapeHtml(hotelName)} expires soon`,
+    `<h1>Coupon expiring</h1><p>Hi ${escapeHtml(userName)},</p><p>Your discount coupon (${escapeHtml(code)}) for ${escapeHtml(hotelName)} expires on ${escapeHtml(expiresAt)}. Use it before it's too late!</p><p>— ${escapeHtml(siteName)}</p>`
   );
 }
 
@@ -70,14 +80,14 @@ export async function sendContactFormEmail(
   message: string
 ): Promise<boolean> {
   const siteName = (await getSetting('site_name')) || 'Busy Beds';
-  const subject = `Contact form: ${siteName} — from ${fromName}`;
+  const subject = `Contact form: ${escapeHtml(siteName)} — from ${escapeHtml(fromName)}`;
   const html = `
     <h2>New contact form submission</h2>
-    <p><strong>From:</strong> ${fromName} &lt;${fromEmail}&gt;</p>
+    <p><strong>From:</strong> ${escapeHtml(fromName)} &lt;${escapeHtml(fromEmail)}&gt;</p>
     <p><strong>Message:</strong></p>
-    <p>${message.replace(/\n/g, '<br>')}</p>
+    <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
     <hr>
-    <p><em>— ${siteName} contact form</em></p>
+    <p><em>— ${escapeHtml(siteName)} contact form</em></p>
   `;
   return sendEmail(to, subject, html);
 }

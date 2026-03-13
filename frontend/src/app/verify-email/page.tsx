@@ -44,7 +44,7 @@ function VerifyEmailContent() {
     return (
       <AuthLayout title="Email verified" subtitle="Your email has been verified." switchText="Back to " switchLabel="login" switchLink="/login">
         <p className="text-zinc-400">Redirecting you to login...</p>
-        <Link href="/login" className="mt-4 block text-[#FF385C] hover:text-[#ff6b81] transition-colors">
+        <Link href="/login" className="mt-4 block text-primary hover:text-primary-hover transition-colors">
           Go to Login
         </Link>
       </AuthLayout>
@@ -53,7 +53,7 @@ function VerifyEmailContent() {
 
   return (
     <AuthLayout title="Verification failed" subtitle={error} switchText="Back to " switchLabel="login" switchLink="/login">
-      <Link href="/login" className="block text-[#FF385C] hover:text-[#ff6b81] transition-colors">
+      <Link href="/login" className="block text-primary hover:text-primary-hover transition-colors">
         Go to Login
       </Link>
       <Link href="/profile" className="mt-2 block text-sm text-zinc-400 hover:text-zinc-300">

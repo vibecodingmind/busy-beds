@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
               </a>
             </div>
           )}
-          <Link href="/login" className="block text-center text-zinc-400 hover:text-[#FF385C] transition-colors">
+          <Link href="/login" className="block text-center text-zinc-400 hover:text-primary transition-colors">
             Back to Login
           </Link>
         </div>
@@ -93,13 +93,13 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="you@example.com"
-            className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
+            className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-[#FF385C] py-3 font-medium text-white hover:bg-[#e31c5f] disabled:opacity-50 transition-colors"
+          className="w-full rounded-xl bg-primary py-3 font-medium text-white hover:bg-primary-hover disabled:opacity-50 transition-colors"
         >
           {loading ? 'Sending...' : 'Send Reset Link'}
         </button>
@@ -109,7 +109,7 @@ export default function ForgotPasswordPage() {
             type="button"
             onClick={handleResendVerification}
             disabled={!email || resendSent}
-            className="text-[#FF385C] hover:text-[#ff6b81] underline hover:no-underline disabled:opacity-50 disabled:no-underline"
+            className="text-primary hover:text-primary-hover underline hover:no-underline disabled:opacity-50 disabled:no-underline"
           >
             {resendSent ? 'Sent' : 'Resend link'}
           </button>

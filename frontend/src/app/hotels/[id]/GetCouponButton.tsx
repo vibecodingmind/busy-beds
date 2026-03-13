@@ -19,7 +19,7 @@ export default function GetCouponButton({ hotelId, hotelName }: GetCouponButtonP
     return (
       <Link
         href="/login"
-        className="inline-flex w-full justify-center rounded-lg bg-[#FF385C] px-6 py-3 font-medium text-white transition-colors hover:bg-[#e31c5f]"
+        className="inline-flex w-full justify-center rounded-lg bg-primary px-6 py-3 font-medium text-white transition-colors hover:bg-primary-hover"
       >
         Login to get coupon
       </Link>
@@ -44,7 +44,7 @@ export default function GetCouponButton({ hotelId, hotelName }: GetCouponButtonP
       <button
         onClick={handleClick}
         disabled={loading}
-        className="w-full rounded-lg bg-[#FF385C] px-6 py-3 font-medium text-white transition-colors hover:bg-[#e31c5f] disabled:opacity-50"
+        className="w-full rounded-lg bg-primary px-6 py-3 font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
       >
         {loading ? 'Generating...' : `Get Coupon for ${hotelName}`}
       </button>

@@ -44,7 +44,7 @@ export default function StatusPage() {
         ) : (
           <p className="mt-6 text-red-600">Could not reach API.</p>
         )}
-        <Link href="/" className="mt-8 inline-block font-medium text-[#FF385C] hover:underline">Back to home</Link>
+        <Link href="/" className="mt-8 inline-block font-medium text-primary hover:underline">Back to home</Link>
       </div>
     </div>
   );

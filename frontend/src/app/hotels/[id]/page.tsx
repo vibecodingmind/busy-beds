@@ -31,7 +31,7 @@ export default async function HotelDetailPage({
     return (
       <div className="rounded-xl border border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-900">
         <p className="text-black dark:text-zinc-400">Property not found.</p>
-        <Link href="/hotels" className="mt-4 inline-block text-[#FF385C] hover:underline">
+        <Link href="/hotels" className="mt-4 inline-block text-primary hover:underline">
           Back to properties
         </Link>
       </div>
@@ -45,7 +45,7 @@ export default async function HotelDetailPage({
       <RecentlyViewedTracker hotelId={hotel.id} />
       <Link
         href="/hotels"
-        className="mb-4 inline-block text-sm text-[#FF385C] hover:underline"
+        className="mb-4 inline-block text-sm text-primary hover:underline"
       >
         ← Back to properties
       </Link>
@@ -172,7 +172,7 @@ export default async function HotelDetailPage({
             {/* Coupon discount preview */}
             <div className="rounded-lg bg-[#fff1f2] p-4 dark:bg-zinc-800">
               <p className="text-sm font-medium text-black dark:text-zinc-300">Save with coupon</p>
-              <p className="mt-1 text-xl font-bold text-[#FF385C]">{hotel.coupon_discount_value}</p>
+              <p className="mt-1 text-xl font-bold text-primary">{hotel.coupon_discount_value}</p>
               <p className="mt-1 text-xs text-black dark:text-zinc-400">
                 Show QR code at check-in to redeem
               </p>
@@ -188,7 +188,7 @@ export default async function HotelDetailPage({
                 href={hotel.booking_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-[#FF385C] bg-white px-4 py-3 font-medium text-[#FF385C] transition-colors hover:bg-[#fff1f2] dark:border-[#FF385C] dark:bg-transparent dark:hover:bg-zinc-800"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-primary bg-white px-4 py-3 font-medium text-primary transition-colors hover:bg-[#fff1f2] dark:border-primary dark:bg-transparent dark:hover:bg-zinc-800"
               >
                 Book now
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

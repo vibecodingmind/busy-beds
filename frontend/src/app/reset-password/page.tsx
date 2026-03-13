@@ -44,7 +44,7 @@ function ResetPasswordForm() {
     return (
       <div className="space-y-4">
         <p className="text-zinc-400">Password reset successfully. Redirecting to login...</p>
-        <Link href="/login" className="block text-[#FF385C] hover:text-[#ff6b81] transition-colors">
+        <Link href="/login" className="block text-primary hover:text-primary-hover transition-colors">
           Go to Login
         </Link>
       </div>
@@ -55,7 +55,7 @@ function ResetPasswordForm() {
     return (
       <div className="space-y-4">
         <p className="text-red-300">Invalid or missing reset token. Please request a new reset link.</p>
-        <Link href="/forgot-password" className="block text-[#FF385C] hover:text-[#ff6b81] transition-colors">
+        <Link href="/forgot-password" className="block text-primary hover:text-primary-hover transition-colors">
           Request new link
         </Link>
       </div>
@@ -80,7 +80,7 @@ function ResetPasswordForm() {
             required
             minLength={6}
             placeholder="Enter your password"
-            className="w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 pr-10 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
+            className="w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 pr-10 text-white placeholder:text-zinc-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
           <button
             type="button"
@@ -112,13 +112,13 @@ function ResetPasswordForm() {
           required
           minLength={6}
           placeholder="Confirm your password"
-          className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-[#FF385C] focus:outline-none focus:ring-1 focus:ring-[#FF385C]"
+          className="mt-1 w-full rounded-xl border border-zinc-600 bg-zinc-800/50 px-4 py-2.5 text-white placeholder:text-zinc-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-xl bg-[#FF385C] py-3 font-medium text-white hover:bg-[#e31c5f] disabled:opacity-50 transition-colors"
+        className="w-full rounded-xl bg-primary py-3 font-medium text-white hover:bg-primary-hover disabled:opacity-50 transition-colors"
       >
         {loading ? 'Resetting...' : 'Reset Password'}
       </button>

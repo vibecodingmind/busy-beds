@@ -8,13 +8,17 @@ import HotelCard from '@/components/hotel/HotelCard';
 import { CardSkeleton } from '@/components/LoadingSkeleton';
 import HotelsMapView from '@/components/hotel/HotelsMapView';
 import { HouseIcon, MapPinIcon } from '@/components/icons';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useToast } from '@/contexts/ToastContext';
 
 function HotelsClientInner() {
   const searchParams = useSearchParams();
   const nearme = searchParams.get('nearme') === '1';
+  const { toast } = useToast();
   const [hotelList, setHotelList] = useState<Hotel[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'map'>(nearme ? 'map' : 'grid');
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const [sort, setSort] = useState<string>(nearme ? 'distance' : 'name');
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [minRating, setMinRating] = useState<number | undefined>(undefined);
@@ -25,7 +29,7 @@ function HotelsClientInner() {
     setLoading(true);
     hotels
       .list({
-        search: search || undefined,
+        search: debouncedSearch || undefined,
         sort: sort || 'name',
         featured: featuredOnly ? true : undefined,
         min_rating: minRating,
@@ -39,7 +43,8 @@ function HotelsClientInner() {
 
   useEffect(() => {
     fetchHotels();
-  }, [search, sort, featuredOnly, minRating, coords?.lat, coords?.lng]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, sort, featuredOnly, minRating, coords?.lat, coords?.lng]);
 
   useEffect(() => {
     if (nearme && navigator.geolocation && !coords) {
@@ -55,7 +60,7 @@ function HotelsClientInner() {
 
   const handleNearby = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
+      toast('Geolocation is not supported by your browser.', 'error');
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -63,7 +68,7 @@ function HotelsClientInner() {
         setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setSort('distance');
       },
-      () => alert('Could not get your location. Check permissions.'),
+      () => toast('Could not get your location. Check permissions.', 'error'),
       { enableHighAccuracy: true }
     );
   };
@@ -72,7 +77,7 @@ function HotelsClientInner() {
     <div className="min-h-screen">
       <div className="rounded-2xl border border-black/10 dark:border-zinc-700/80 bg-white dark:border-zinc-700/80 dark:bg-zinc-900/50 backdrop-blur-xl p-6 mb-6">
         <h1 className="text-2xl font-bold text-black dark:text-zinc-100 flex items-center gap-2">
-          <HouseIcon className="h-7 w-7 text-[#FF385C]" />
+          <HouseIcon className="h-7 w-7 text-primary" />
           Properties
         </h1>
         <p className="mt-2 text-black dark:text-zinc-400">Browse properties and generate discount coupons.</p>
@@ -84,7 +89,7 @@ function HotelsClientInner() {
               placeholder="Search by name, location..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 rounded-xl border border-black/10 dark:border-zinc-700 px-4 py-2.5 bg-white dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 focus:ring-2 focus:ring-[#FF385C]/30 focus:border-[#FF385C] transition-colors"
+              className="flex-1 rounded-xl border border-black/10 dark:border-zinc-700 px-4 py-2.5 bg-white dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
             />
             <select
               value={sort}

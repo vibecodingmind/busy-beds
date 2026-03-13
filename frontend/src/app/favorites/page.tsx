@@ -43,7 +43,7 @@ export default function FavoritesPage() {
       ) : hotels.length === 0 ? (
         <div className="rounded-2xl border-2 border-dashed border-border bg-card p-12 text-center">
           <p className="text-muted">No favourites yet.</p>
-          <Link href="/hotels" className="mt-4 inline-block font-medium text-[#FF385C] hover:underline">
+          <Link href="/hotels" className="mt-4 inline-block font-medium text-primary hover:underline">
             Browse properties →
           </Link>
         </div>

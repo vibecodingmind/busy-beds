@@ -8,7 +8,7 @@ import * as referralModel from '../models/referral';
 import { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail } from '../services/email';
 import { authMiddleware, type JwtPayload } from '../middleware/auth';
 import { config } from '../config';
-import { Pool } from 'pg';
+import { pool } from '../config/db';
 import { authLimiter, passwordResetLimiter } from '../middleware/rateLimiter';
 import { logger } from '../config/logger';
 import { validate, validationSchemas, sanitizeInput, commonValidations } from '../middleware/validation';
@@ -16,7 +16,6 @@ import { asyncHandler } from '../middleware/errorHandler';
 import { refreshTokenHandler, invalidateTokensHandler, refreshTokenService } from '../middleware/refreshToken';
 
 const router = Router();
-const pool = new Pool({ connectionString: config.databaseUrl });
 
 router.post(
   '/register',
@@ -232,8 +231,22 @@ router.post(
       }
       const userId = r.rows[0].user_id;
       const hash = await bcrypt.hash(password, 10);
-      await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hash, userId]);
-      await pool.query('DELETE FROM password_reset_tokens WHERE token = $1', [token]);
+      // Use a transaction: update password + delete token + invalidate sessions atomically
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        await client.query(
+          'UPDATE users SET password_hash = $1, token_version = COALESCE(token_version, 0) + 1 WHERE id = $2',
+          [hash, userId]
+        );
+        await client.query('DELETE FROM password_reset_tokens WHERE token = $1', [token]);
+        await client.query('COMMIT');
+      } catch (txErr) {
+        await client.query('ROLLBACK');
+        throw txErr;
+      } finally {
+        client.release();
+      }
       res.json({ message: 'Password reset successfully' });
     })
   );
@@ -283,8 +296,18 @@ router.post(
         return res.status(400).json({ error: 'Invalid or expired verification link' });
       }
       const userId = r.rows[0].user_id;
-      await pool.query('UPDATE users SET email_verified = true WHERE id = $1', [userId]);
-      await pool.query('DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]);
+      const verifyClient = await pool.connect();
+      try {
+        await verifyClient.query('BEGIN');
+        await verifyClient.query('UPDATE users SET email_verified = true WHERE id = $1', [userId]);
+        await verifyClient.query('DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]);
+        await verifyClient.query('COMMIT');
+      } catch (txErr) {
+        await verifyClient.query('ROLLBACK');
+        throw txErr;
+      } finally {
+        verifyClient.release();
+      }
       res.json({ message: 'Email verified successfully' });
     })
   );

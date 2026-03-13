@@ -44,7 +44,7 @@ export default function DashboardPage() {
           )}
           <Link
             href="/subscription"
-            className="mt-4 inline-block text-sm font-medium text-[#FF385C] hover:underline"
+            className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
           >
             Manage subscription →
           </Link>
@@ -54,7 +54,7 @@ export default function DashboardPage() {
           <p className="mt-2 text-3xl font-bold text-foreground">{couponCount}</p>
           <Link
             href="/my-coupons"
-            className="mt-4 inline-block text-sm font-medium text-[#FF385C] hover:underline"
+            className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
           >
             View coupons →
           </Link>
@@ -62,7 +62,7 @@ export default function DashboardPage() {
       </div>
       <Link
         href="/hotels"
-        className="inline-flex items-center gap-2 rounded-xl bg-[#FF385C] px-6 py-3 font-medium text-white shadow-md hover:bg-[#e31c5f] transition-colors"
+        className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-medium text-white shadow-md hover:bg-primary-hover transition-colors"
       >
         <HouseIcon />
         Browse Properties & Get Coupons
