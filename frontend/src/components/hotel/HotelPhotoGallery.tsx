@@ -13,7 +13,7 @@ const PLACEHOLDER = 'https://images.unsplash.com/photo-1566073771259-6a850609994
 export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalleryProps) {
   const [index, setIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const list = images?.length ? images : [PLACEHOLDER];
+  const list = images?.length > 0 ? images : [PLACEHOLDER];
 
   const goPrev = useCallback(() => {
     setIndex((i) => (i <= 0 ? list.length - 1 : i - 1));
@@ -23,7 +23,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
     setIndex((i) => (i >= list.length - 1 ? 0 : i + 1));
   }, [list.length]);
 
-  // Keyboard in lightbox
+  // Keyboard and scroll lock for lightbox
   useEffect(() => {
     if (!lightboxOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -32,174 +32,222 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
       if (e.key === 'ArrowRight') goNext();
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden'; // Prevent scrolling behind lightbox
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = ''; // Restore scroll
+    };
   }, [lightboxOpen, goPrev, goNext]);
 
-  const currentSrc = list[index] ?? list[0];
+  const openLightbox = (idx: number) => {
+    setIndex(idx);
+    setLightboxOpen(true);
+  };
+
+  const displayImages = list.slice(0, 5);
+  const rightCount = displayImages.length - 1;
 
   return (
-    <div className="space-y-3">
-      {/* Single main image: slide area + arrows */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-white dark:bg-zinc-800">
-        <button
-          type="button"
-          onClick={() => setLightboxOpen(true)}
-          className="absolute inset-0 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-inset"
-        >
-          <Image
-            src={currentSrc}
-            alt={`${hotelName} - Photo ${index + 1}`}
-            fill
-            className="object-cover transition-transform hover:scale-[1.02]"
-            sizes="(max-width: 768px) 100vw, 80vw"
-            unoptimized={!currentSrc.includes('images.unsplash.com')}
-          />
-        </button>
-
-        {/* Left / Right slide arrows */}
+    <div className="w-full relative">
+      {/* MOBILE VIEW: Single image slider */}
+      <div className="md:hidden relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800">
+        <Image
+          src={list[index]}
+          alt={`${hotelName} - Photo ${index + 1}`}
+          fill
+          className="object-cover cursor-pointer"
+          sizes="(max-width: 768px) 100vw, 100vw"
+          unoptimized={!list[index].includes('images.unsplash.com')}
+          onClick={() => openLightbox(index)}
+        />
+        
         {list.length > 1 && (
           <>
+            <div className="absolute bottom-4 right-4 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white backdrop-blur-md">
+              {index + 1} / {list.length}
+            </div>
+            
             <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                goPrev();
-              }}
-              className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white"
-              aria-label="Previous photo"
+              onClick={(e) => { e.stopPropagation(); goPrev(); }}
+              className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/80 p-1.5 text-black shadow-sm backdrop-blur-sm hover:bg-white transition"
+              aria-label="Previous"
             >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             </button>
             <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                goNext();
-              }}
-              className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white"
-              aria-label="Next photo"
+              onClick={(e) => { e.stopPropagation(); goNext(); }}
+              className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/80 p-1.5 text-black shadow-sm backdrop-blur-sm hover:bg-white transition"
+              aria-label="Next"
             >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </button>
           </>
         )}
+      </div>
 
-        {/* Hint: click to open large preview */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-lg bg-black/60 px-3 py-1.5 text-xs text-white">
-          Click to view full size
+      {/* DESKTOP VIEW: Professional Grid (Airbnb style) */}
+      <div className="hidden md:grid h-[400px] lg:h-[460px] w-full grid-cols-4 gap-2 overflow-hidden rounded-xl">
+        {/* Main large image (left half) */}
+        <div 
+          className={`relative cursor-pointer group ${list.length === 1 ? 'col-span-4' : 'col-span-2 row-span-2'}`}
+          onClick={() => openLightbox(0)}
+        >
+          <Image
+            src={list[0]}
+            alt={hotelName}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 1200px) 50vw, 800px"
+            unoptimized={!list[0].includes('images.unsplash.com')}
+          />
+          <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10" />
         </div>
 
-        {/* Photo counter */}
-        {list.length > 1 && (
-          <div className="absolute right-3 top-3 rounded-lg bg-black/50 px-2.5 py-1 text-sm text-white">
-            {index + 1} / {list.length}
+        {/* Remaining images grid (right half) */}
+        {rightCount > 0 && (
+          <div className={`grid gap-2 col-span-2 row-span-2 ${
+            rightCount === 1 ? 'grid-cols-1 grid-rows-1' :
+            rightCount === 2 ? 'grid-cols-1 grid-rows-2' :
+            'grid-cols-2 grid-rows-2'
+          }`}>
+            {displayImages.slice(1).map((src, i) => {
+              const globalIdx = i + 1;
+              const isLastBox = globalIdx === 4 || globalIdx === displayImages.length - 1;
+              const isThirdPhotoInFour = rightCount === 3 && i === 0;
+              
+              return (
+                <div 
+                  key={globalIdx} 
+                  className={`relative cursor-pointer group overflow-hidden ${
+                    isThirdPhotoInFour ? 'col-span-2' : ''
+                  }`}
+                  onClick={() => openLightbox(globalIdx)}
+                >
+                  <Image
+                    src={src}
+                    alt={`${hotelName} - ${globalIdx + 1}`}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 1200px) 25vw, 400px"
+                    unoptimized={!src.includes('images.unsplash.com')}
+                  />
+                  <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10" />
+                  
+                  {/* Show All Photos overlay on the very last box if there are more than 5 photos total */}
+                  {isLastBox && list.length > 5 && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 hover:bg-black/60 transition-colors">
+                      <span className="text-white font-semibold text-lg">+{list.length - 5} photos</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
 
-      {/* Dots for slide position */}
-      {list.length > 1 && list.length <= 12 && (
-        <div className="flex justify-center gap-1.5">
-          {list.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setIndex(i)}
-              className={`h-2 rounded-full transition-all ${
-                i === index
-                  ? 'w-6 bg-[var(--primary)]'
-                  : 'w-2 bg-zinc-300 hover:bg-zinc-400 dark:bg-zinc-600 dark:hover:bg-zinc-500'
-              }`}
-              aria-label={`Go to photo ${i + 1}`}
-            />
-          ))}
-        </div>
+      {/* Show All Photos floating button (bottom right on desktop) */}
+      {list.length > 1 && (
+        <button
+          onClick={() => openLightbox(0)}
+          className="hidden md:flex absolute bottom-4 right-4 z-10 items-center gap-2 rounded-lg border border-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-black shadow-md transition hover:bg-zinc-50 dark:border-white/20 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+          Show all photos
+        </button>
       )}
 
-      {/* Large preview lightbox (opens on click) */}
+      {/* Fullscreen Lightbox / Gallery Viewer */}
       {lightboxOpen && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col bg-black/95"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Photo gallery"
-        >
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm font-medium text-white">
+        <div className="fixed inset-0 z-[100] flex flex-col bg-black/98 backdrop-blur-2xl" role="dialog" aria-modal="true">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between p-4 md:p-6 z-20">
+            <div className="text-sm font-medium text-zinc-400">
               {index + 1} / {list.length}
-            </span>
+            </div>
             <button
               type="button"
               onClick={() => setLightboxOpen(false)}
-              className="rounded-full p-2 text-white hover:bg-white/10"
-              aria-label="Close"
+              className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition-colors backdrop-blur-md"
+              aria-label="Close gallery"
             >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              Close
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <div className="relative flex flex-1 items-center justify-center p-4">
+          {/* Main Photo Area */}
+          <div className="relative flex flex-1 items-center justify-center overflow-hidden">
+            {/* Previous Button */}
             {list.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={goPrev}
-                  className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/20 p-2 text-white hover:bg-white/30"
-                  aria-label="Previous"
-                >
-                  <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={goNext}
-                  className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/20 p-2 text-white hover:bg-white/30"
-                  aria-label="Next"
-                >
-                  <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                className="absolute left-4 md:left-8 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/10 p-3 md:p-4 text-white hover:bg-white/20 hover:scale-110 transition-all backdrop-blur-md"
+                aria-label="Previous photo"
+              >
+                <svg className="h-6 w-6 md:h-8 md:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
             )}
-            <Image
-              src={list[index]}
-              alt={`${hotelName} - Photo ${index + 1}`}
-              width={1200}
-              height={800}
-              className="max-h-[calc(100vh-8rem)] w-auto max-w-full object-contain"
-              unoptimized={!list[index].includes('images.unsplash.com')}
-            />
+
+            {/* Photo Wrapper */}
+            <div className="relative w-full h-full max-w-7xl max-h-[75vh] px-16 md:px-28">
+              <Image
+                src={list[index]}
+                alt={`${hotelName} - Photo ${index + 1}`}
+                fill
+                className="object-contain"
+                sizes="100vw"
+                priority
+                unoptimized={!list[index].includes('images.unsplash.com')}
+              />
+            </div>
+
+            {/* Next Button */}
+            {list.length > 1 && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); goNext(); }}
+                className="absolute right-4 md:right-8 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/10 p-3 md:p-4 text-white hover:bg-white/20 hover:scale-110 transition-all backdrop-blur-md"
+                aria-label="Next photo"
+              >
+                <svg className="h-6 w-6 md:h-8 md:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
           </div>
 
+          {/* Thumbnails Strip */}
           {list.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto border-t border-white/10 px-4 py-3">
-              {list.map((url, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setIndex(i)}
-                  className={`relative h-14 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
-                    i === index ? 'border-[var(--primary)]' : 'border-transparent opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <Image
-                    src={url}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="80px"
-                    unoptimized={!url.includes('images.unsplash.com')}
-                  />
-                </button>
-              ))}
+            <div className="h-28 md:h-32 bg-transparent px-4 flex items-center justify-center pb-4 md:pb-8">
+              <div className="flex items-center gap-2 overflow-x-auto max-w-full px-4 scrollbar-hide py-2">
+                {list.map((url, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setIndex(i)}
+                    className={`relative h-16 w-24 md:h-20 md:w-32 flex-shrink-0 overflow-hidden rounded-lg transition-all duration-300 ${
+                      i === index 
+                        ? 'ring-2 ring-white opacity-100 scale-105 shadow-xl' 
+                        : 'opacity-40 hover:opacity-100'
+                    }`}
+                  >
+                    <Image
+                      src={url}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="128px"
+                      unoptimized={!url.includes('images.unsplash.com')}
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
