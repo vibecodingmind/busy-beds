@@ -14,7 +14,7 @@ import { useToast } from '@/contexts/ToastContext';
 function HotelsClientInner() {
   const searchParams = useSearchParams();
   const nearme = searchParams.get('nearme') === '1';
-  const { toast } = useToast();
+  const toast = useToast();
   const [hotelList, setHotelList] = useState<Hotel[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'map'>(nearme ? 'map' : 'grid');
   const [search, setSearch] = useState('');
