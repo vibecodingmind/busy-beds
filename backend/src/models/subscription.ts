@@ -8,6 +8,7 @@ export interface SubscriptionPlan {
   currency?: string;
   stripe_price_id?: string | null;
   paypal_plan_id?: string | null;
+  flutterwave_plan_id?: string | null;
 }
 
 export interface Subscription {
@@ -21,7 +22,7 @@ export interface Subscription {
 
 export async function findAllPlans(): Promise<SubscriptionPlan[]> {
   const result = await pool.query(
-    'SELECT id, name, monthly_coupon_limit, price, COALESCE(currency, \'USD\') as currency, stripe_price_id, paypal_plan_id FROM subscription_plans ORDER BY monthly_coupon_limit'
+    'SELECT id, name, monthly_coupon_limit, price, COALESCE(currency, \'USD\') as currency, stripe_price_id, paypal_plan_id, flutterwave_plan_id FROM subscription_plans ORDER BY monthly_coupon_limit'
   );
   return result.rows;
 }
@@ -44,7 +45,8 @@ export async function createStripeSubscription(userId: number, planId: number, s
        current_period_start = EXCLUDED.current_period_start,
        current_period_end = EXCLUDED.current_period_end,
        stripe_subscription_id = EXCLUDED.stripe_subscription_id,
-       paypal_subscription_id = NULL
+       paypal_subscription_id = NULL,
+       flutterwave_subscription_id = NULL
      RETURNING *`,
     [userId, planId, now, periodEnd, stripeSubscriptionId]
   );
@@ -64,9 +66,35 @@ export async function createPayPalSubscription(userId: number, planId: number, p
        current_period_start = EXCLUDED.current_period_start,
        current_period_end = EXCLUDED.current_period_end,
        paypal_subscription_id = EXCLUDED.paypal_subscription_id,
-       stripe_subscription_id = NULL
+       stripe_subscription_id = NULL,
+       flutterwave_subscription_id = NULL
      RETURNING *`,
     [userId, planId, now, periodEnd, paypalSubscriptionId]
+  );
+  return result.rows[0]!;
+}
+
+export async function createFlutterwaveSubscription(
+  userId: number,
+  planId: number,
+  flutterwaveSubscriptionId: string
+): Promise<Subscription> {
+  const now = new Date();
+  const periodEnd = new Date(now);
+  periodEnd.setMonth(periodEnd.getMonth() + 1);
+  const result = await pool.query(
+    `INSERT INTO subscriptions (user_id, plan_id, status, current_period_start, current_period_end, flutterwave_subscription_id)
+     VALUES ($1, $2, 'active', $3, $4, $5)
+     ON CONFLICT (user_id) DO UPDATE SET
+       plan_id = EXCLUDED.plan_id,
+       status = 'active',
+       current_period_start = EXCLUDED.current_period_start,
+       current_period_end = EXCLUDED.current_period_end,
+       flutterwave_subscription_id = EXCLUDED.flutterwave_subscription_id,
+       stripe_subscription_id = NULL,
+       paypal_subscription_id = NULL
+     RETURNING *`,
+    [userId, planId, now, periodEnd, flutterwaveSubscriptionId]
   );
   return result.rows[0]!;
 }

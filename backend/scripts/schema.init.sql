@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS subscription_plans (
     price DECIMAL(10, 2) DEFAULT 0,
     stripe_price_id VARCHAR(255),
     paypal_plan_id VARCHAR(255),
+    flutterwave_plan_id VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -29,6 +30,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     current_period_end TIMESTAMP WITH TIME ZONE NOT NULL,
     stripe_subscription_id VARCHAR(255),
     paypal_subscription_id VARCHAR(255),
+    flutterwave_subscription_id VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id)
 );
@@ -160,6 +162,9 @@ BEGIN
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='whatsapp_opt_in') THEN
     ALTER TABLE users ADD COLUMN whatsapp_opt_in BOOLEAN DEFAULT false;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='active') THEN
+    ALTER TABLE users ADD COLUMN active BOOLEAN DEFAULT true;
   END IF;
 END $$;
 
@@ -345,6 +350,25 @@ BEGIN
     ALTER TABLE subscription_plans ADD COLUMN currency VARCHAR(3) NOT NULL DEFAULT 'USD' CHECK (currency IN ('USD','EUR','GBP','TZS'));
   END IF;
 END $$;
+
+-- Flutterwave: add columns if missing (for existing deploys)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='subscription_plans' AND column_name='flutterwave_plan_id') THEN
+    ALTER TABLE subscription_plans ADD COLUMN flutterwave_plan_id VARCHAR(255);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='subscriptions' AND column_name='flutterwave_subscription_id') THEN
+    ALTER TABLE subscriptions ADD COLUMN flutterwave_subscription_id VARCHAR(255);
+  END IF;
+END $$;
+
+-- Pending Flutterwave charges (tx_ref -> user_id, plan_id) until webhook charge.completed
+CREATE TABLE IF NOT EXISTS flutterwave_charge_pending (
+    tx_ref VARCHAR(255) PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    plan_id INTEGER NOT NULL REFERENCES subscription_plans(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Pending PayPal subscriptions (subscription_id -> user_id, plan_id) until webhook ACTIVATED
 CREATE TABLE IF NOT EXISTS paypal_subscription_pending (

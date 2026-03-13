@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { subscriptions, stripe, paypal, promo } from '@/lib/api';
+import { subscriptions, stripe, paypal, flutterwave, promo } from '@/lib/api';
 import type { SubscriptionPlan } from '@/lib/api';
 import { formatPlanPrice } from '@/lib/formatPlanPrice';
 import { useToast } from '@/contexts/ToastContext';
@@ -79,6 +79,7 @@ function SubscriptionContent() {
         window.location.href = session.url;
         return;
       }
+      toast('Could not start Stripe checkout. Please check payment configuration or try again.', 'error');
     } catch (err) {
       const message =
         err instanceof Error
@@ -97,11 +98,31 @@ function SubscriptionContent() {
         window.location.href = res.url;
         return;
       }
+      toast('Could not start PayPal checkout. Please check payment configuration or try again.', 'error');
     } catch (err) {
       const message =
         err instanceof Error
           ? err.message
           : 'Could not start PayPal checkout. Please check payment configuration.';
+      toast(message, 'error');
+    }
+    setLoading(null);
+  };
+
+  const handleFlutterwaveSubscribe = async (planId: number) => {
+    setLoading(`flutterwave-${planId}`);
+    try {
+      const res = await flutterwave.createCharge(planId);
+      if (res?.url) {
+        window.location.href = res.url;
+        return;
+      }
+      toast('Could not start Flutterwave checkout. Please check payment configuration or try again.', 'error');
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Could not start Flutterwave checkout. Please check payment configuration.';
       toast(message, 'error');
     }
     setLoading(null);
@@ -190,7 +211,8 @@ function SubscriptionContent() {
         {plans.map((plan) => {
           const hasStripe = !!plan.stripe_price_id;
           const hasPayPal = !!plan.paypal_plan_id;
-          const hasPayment = hasStripe || hasPayPal;
+          const hasFlutterwave = !!plan.flutterwave_plan_id;
+          const hasPayment = hasStripe || hasPayPal || hasFlutterwave;
           const isCurrent = currentSub?.plan.id === plan.id;
           const isLoading = loading !== null;
 
@@ -232,7 +254,24 @@ function SubscriptionContent() {
                         {loading === `paypal-${plan.id}` ? 'Redirecting…' : 'Pay with PayPal'}
                       </button>
                     )}
-                    {!hasPayment && (
+                    {hasFlutterwave && (
+                      <button
+                        onClick={() => handleFlutterwaveSubscribe(plan.id)}
+                        disabled={isLoading}
+                        className="w-full rounded-lg bg-[#F5A623] py-2.5 font-medium text-white hover:bg-[#e69512] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {loading === `flutterwave-${plan.id}` ? 'Redirecting…' : 'Pay with Flutterwave'}
+                      </button>
+                    )}
+                    {!hasPayment && plan.price > 0 && (
+                      <button
+                        disabled
+                        className="w-full rounded-lg bg-zinc-200 py-2.5 font-medium text-zinc-600 cursor-not-allowed dark:bg-zinc-700 dark:text-zinc-400"
+                      >
+                        Payment not configured for this plan
+                      </button>
+                    )}
+                    {!hasPayment && plan.price === 0 && (
                       <button
                         onClick={() => handleDirectSubscribe(plan.id)}
                         disabled={isLoading}

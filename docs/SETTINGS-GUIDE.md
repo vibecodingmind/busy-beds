@@ -43,7 +43,25 @@ Required for subscription payments and referral rewards.
 4. Click **Add endpoint** → copy the **Signing secret** (`whsec_...`)
 5. Add to Railway: `STRIPE_WEBHOOK_SECRET` = that signing secret
 
-### 1.5 Optional Variables
+### 1.5 Flutterwave (African Payment Methods)
+
+Flutterwave supports cards, mobile money (MTN, M-Pesa, etc.), and recurring subscriptions. Useful for African markets (NGN, TZS, KES, etc.).
+
+| Variable | Where to get it |
+|----------|-----------------|
+| `FLUTTERWAVE_SECRET_KEY` | [Flutterwave Dashboard](https://dashboard.flutterwave.com) → Settings → API Keys |
+| `FLUTTERWAVE_PUBLIC_KEY` | Same as above (for future client-side use) |
+| `FLUTTERWAVE_SECRET_HASH` | Flutterwave Dashboard → Settings → Webhooks → set a secret hash for webhook verification |
+
+**Flutterwave Webhook:**
+1. In Flutterwave Dashboard → Settings → Webhooks → Add webhook URL
+2. **URL:** `https://YOUR-API-URL/api/v1/flutterwave/webhook`
+3. Set the **Secret Hash** (random string) and add it as `FLUTTERWAVE_SECRET_HASH` in Railway/Admin Settings
+4. Flutterwave will send `charge.completed` events when payments succeed
+
+**Plans:** Create Payment Plans in Flutterwave Dashboard (or use Standard payment for one-time charges). Add the plan ID to each subscription plan in Admin → Plans → Flutterwave Plan ID.
+
+### 1.6 Optional Variables
 
 | Variable | Purpose |
 |----------|---------|

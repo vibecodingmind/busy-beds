@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { getSetting } from '../services/settings';
 
-const SKIP_PATHS = ['/health', '/api/v1/settings/public', '/api/v1/cron', '/api/v1/stripe/webhook', '/api/v1/paypal/webhook'];
+const SKIP_PATHS = ['/health', '/api/v1/settings/public', '/api/v1/cron', '/api/v1/stripe/webhook', '/api/v1/paypal/webhook', '/api/v1/flutterwave/webhook'];
 
 export function maintenanceMiddleware() {
   return async (req: Request, res: Response, next: NextFunction) => {

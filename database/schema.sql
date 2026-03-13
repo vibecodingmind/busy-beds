@@ -24,6 +24,7 @@ CREATE TABLE subscription_plans (
     price DECIMAL(10, 2) DEFAULT 0,
     stripe_price_id VARCHAR(255),
     paypal_plan_id VARCHAR(255),
+    flutterwave_plan_id VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -37,6 +38,7 @@ CREATE TABLE subscriptions (
     current_period_end TIMESTAMP WITH TIME ZONE NOT NULL,
     stripe_subscription_id VARCHAR(255),
     paypal_subscription_id VARCHAR(255),
+    flutterwave_subscription_id VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id)
 );
@@ -96,6 +98,14 @@ CREATE INDEX idx_coupons_status ON coupons(status);
 CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX idx_redemptions_hotel_account_id ON redemptions(hotel_account_id);
 CREATE INDEX idx_redemptions_redeemed_at ON redemptions(redeemed_at);
+
+-- Pending Flutterwave charges (tx_ref -> user_id, plan_id) until webhook charge.completed
+CREATE TABLE flutterwave_charge_pending (
+    tx_ref VARCHAR(255) PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    plan_id INTEGER NOT NULL REFERENCES subscription_plans(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Admin-configurable settings (keys, API keys, secrets) - env vars used as fallback
 CREATE TABLE settings (

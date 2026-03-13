@@ -152,12 +152,48 @@ router.post(
 router.get('/users', async (_req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, email, name, role, created_at FROM users ORDER BY created_at DESC'
+      'SELECT id, email, name, role, created_at, COALESCE(active, true) as active FROM users ORDER BY created_at DESC'
     );
     res.json({ users: result.rows });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isInteger(id)) return res.status(400).json({ error: 'Invalid user id' });
+    const row = await pool.query('SELECT id, role FROM users WHERE id = $1', [id]);
+    if (!row.rows[0]) return res.status(404).json({ error: 'User not found' });
+    if (row.rows[0].role === 'admin') {
+      return res.status(403).json({ error: 'Admin users cannot be deleted' });
+    }
+    await pool.query('DELETE FROM users WHERE id = $1', [id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
+router.patch('/users/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isInteger(id)) return res.status(400).json({ error: 'Invalid user id' });
+    const { active } = req.body as { active?: boolean };
+    if (typeof active !== 'boolean') return res.status(400).json({ error: 'active must be a boolean' });
+    const row = await pool.query('SELECT id, role FROM users WHERE id = $1', [id]);
+    if (!row.rows[0]) return res.status(404).json({ error: 'User not found' });
+    if (row.rows[0].role === 'admin') {
+      return res.status(403).json({ error: 'Admin users cannot be deactivated' });
+    }
+    await userModel.updateUser(id, { active });
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update user' });
   }
 });
 
@@ -269,16 +305,17 @@ router.post(
   body('currency').optional().isIn(['USD', 'EUR', 'GBP', 'TZS']),
   body('stripe_price_id').optional().trim(),
   body('paypal_plan_id').optional().trim(),
+  body('flutterwave_plan_id').optional().trim(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-      const { name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id } = req.body;
+      const { name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id, flutterwave_plan_id } = req.body;
       const planCurrency = currency || 'USD';
       const result = await pool.query(
-        `INSERT INTO subscription_plans (name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id)
-         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        [name, monthly_coupon_limit, price, planCurrency, stripe_price_id || null, paypal_plan_id || null]
+        `INSERT INTO subscription_plans (name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id, flutterwave_plan_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        [name, monthly_coupon_limit, price, planCurrency, stripe_price_id || null, paypal_plan_id || null, flutterwave_plan_id || null]
       );
       res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -291,7 +328,7 @@ router.post(
 router.put('/plans/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id || '0');
-    const { name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id } = req.body;
+    const { name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id, flutterwave_plan_id } = req.body;
     const updates: string[] = [];
     const values: unknown[] = [];
     let i = 2;
@@ -301,6 +338,7 @@ router.put('/plans/:id', async (req, res) => {
     if (currency !== undefined && ['USD', 'EUR', 'GBP', 'TZS'].includes(currency)) { updates.push(`currency = $${i++}`); values.push(currency); }
     if (stripe_price_id !== undefined) { updates.push(`stripe_price_id = $${i++}`); values.push(stripe_price_id || null); }
     if (paypal_plan_id !== undefined) { updates.push(`paypal_plan_id = $${i++}`); values.push(paypal_plan_id || null); }
+    if (flutterwave_plan_id !== undefined) { updates.push(`flutterwave_plan_id = $${i++}`); values.push(flutterwave_plan_id || null); }
     if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
     values.unshift(id);
     const result = await pool.query(

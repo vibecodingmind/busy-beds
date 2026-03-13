@@ -55,12 +55,12 @@ router.post(
       if (!plan) {
         return res.status(400).json({ error: 'Invalid plan' });
       }
+      if (plan.price > 0) {
+        return res.status(400).json({ error: 'This plan must be purchased via Stripe, PayPal or Flutterwave' });
+      }
 
       const userId = (req.user as JwtPayload).userId;
       const sub = await subscriptionModel.createSubscription(userId, plan_id);
-      if (plan.price > 0) {
-        processReferralReward(userId, plan_id, Number(plan.price)).catch((e) => console.error('Referral reward:', e));
-      }
       res.json({ subscription: sub });
     } catch (err) {
       console.error(err);

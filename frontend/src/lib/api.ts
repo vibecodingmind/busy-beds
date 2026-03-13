@@ -230,6 +230,22 @@ export const paypal = {
     }),
 };
 
+export const flutterwave = {
+  createCharge: (planId: number, successUrl?: string, cancelUrl?: string) =>
+    api<{ url: string; tx_ref: string }>('/flutterwave/create-charge', {
+      method: 'POST',
+      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
+    }),
+};
+
+export const flutterwave = {
+  createCharge: (planId: number, successUrl?: string, cancelUrl?: string) =>
+    api<{ url: string; tx_ref: string }>('/flutterwave/create-charge', {
+      method: 'POST',
+      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
+    }),
+};
+
 // Reviews
 export const reviews = {
   recent: (limit?: number) =>
@@ -403,7 +419,15 @@ export const admin = {
         body: JSON.stringify({ email, password, name }),
       }),
   },
-  users: () => api<{ users: User[] }>('/admin/users'),
+  users: () =>
+    api<{ users: (User & { active?: boolean; created_at?: string })[] }>('/admin/users'),
+  userDelete: (id: number) =>
+    api<{ success: boolean }>(`/admin/users/${id}`, { method: 'DELETE' }),
+  userUpdateActive: (id: number, active: boolean) =>
+    api<{ success: boolean }>(`/admin/users/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ active }),
+    }),
   coupons: () => api<{ coupons: CouponAdmin[] }>('/admin/coupons'),
   redemptions: () => api<{ redemptions: RedemptionAdmin[] }>('/admin/redemptions'),
   pendingHotelAccounts: () =>
@@ -437,6 +461,7 @@ export const admin = {
           currency?: string;
           stripe_price_id: string | null;
           paypal_plan_id: string | null;
+          flutterwave_plan_id: string | null;
         }[];
       }>('/admin/plans'),
     create: (data: {
@@ -446,6 +471,7 @@ export const admin = {
       currency?: string;
       stripe_price_id?: string;
       paypal_plan_id?: string;
+      flutterwave_plan_id?: string;
     }) => api<object>('/admin/plans', { method: 'POST', body: JSON.stringify(data) }),
     update: (
       id: number,
@@ -456,6 +482,7 @@ export const admin = {
         currency: string;
         stripe_price_id: string;
         paypal_plan_id: string;
+        flutterwave_plan_id: string;
       }>
     ) => api<object>(`/admin/plans/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: number) => api<{ success: boolean }>(`/admin/plans/${id}`, { method: 'DELETE' }),
@@ -592,6 +619,7 @@ export interface SubscriptionPlan {
   currency?: string;
   stripe_price_id?: string | null;
   paypal_plan_id?: string | null;
+  flutterwave_plan_id?: string | null;
 }
 
 export interface User {

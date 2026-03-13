@@ -30,6 +30,8 @@ Use this list to confirm everything is production-ready after domain and core fe
 
 - [ ] **Stripe**: Live keys in Railway (or Admin Settings); webhook URL `https://api.busybeds.com/api/v1/stripe/webhook`; each plan has `stripe_price_id` in Admin → Plans.
 - [ ] **PayPal**: Live client ID/secret in Railway (or Admin); each plan has `paypal_plan_id` in Admin → Plans; optional webhook `https://api.busybeds.com/api/v1/paypal/webhook` for BILLING.SUBSCRIPTION.*.
+- [ ] **Flutterwave**: Live keys and secret hash in Railway (or Admin); webhook `https://api.busybeds.com/api/v1/flutterwave/webhook`; each plan has `flutterwave_plan_id` in Admin → Plans.
+- [ ] **Flutterwave**: Secret key, public key, secret hash in Railway (or Admin Settings); webhook URL `https://api.busybeds.com/api/v1/flutterwave/webhook`; each plan has `flutterwave_plan_id` in Admin → Plans (for cards, mobile money).
 - [ ] **Referral withdrawals**: In Admin → Settings set **Withdraw min amount** / **Withdraw max amount per request**. In Admin → Referral withdrawals, review and mark payout requests as paid after you send money via bank / mobile money / PayPal.
 
 ---
@@ -37,7 +39,7 @@ Use this list to confirm everything is production-ready after domain and core fe
 ## 4. Admin & content
 
 - [ ] **Admin user**: At least one admin exists. **Easiest:** set `SEED_SECRET` in Railway, then run once (see **Create admin via API** below).
-- [ ] **Plans**: Subscription plans created and priced; Stripe/PayPal IDs set.
+- [ ] **Plans**: Subscription plans created and priced; Stripe/PayPal/Flutterwave IDs set.
 - [ ] **Hotels**: Real hotels added; hotel accounts created and approved where needed.
 - [ ] **Admin → Settings**: Site name, support email, Google Maps key, Stripe/PayPal, etc. filled as needed.
 - [ ] **Maintenance mode** (optional): In Admin → Settings, set **Maintenance mode** to `true` to show “We'll be back soon” to non-admins; set back to `false` when done.
@@ -82,7 +84,7 @@ Use this list to confirm everything is production-ready after domain and core fe
 - [ ] **API**: https://api.busybeds.com/health returns `{"status":"ok"}`.
 - [ ] **Profile**: Change name/avatar; “Resend verification” sends email; link opens `/verify-email` and verifies.
 - [ ] **Password**: Forgot password → email received → reset works.
-- [ ] **Subscription**: Choose plan → Stripe or PayPal flow completes (test or live as intended).
+- [ ] **Subscription**: Choose plan → Stripe, PayPal or Flutterwave flow completes (test or live as intended).
 - [ ] **Hotel**: Hotel login → redeem coupon flow works.
 
 Once these are done, the app is finalized for production use.

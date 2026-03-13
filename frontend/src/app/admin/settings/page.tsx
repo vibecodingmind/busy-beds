@@ -9,7 +9,7 @@ import { useToast } from '@/contexts/ToastContext';
 
 type SettingRow = { key: string; label: string; value: string; masked: boolean; group: string };
 
-const GROUP_ORDER = ['Site', 'Stripe', 'PayPal', 'Maps', 'OAuth', 'Business', 'Features', 'WhatsApp', 'Security', 'Operations'];
+const GROUP_ORDER = ['Site', 'Stripe', 'PayPal', 'Flutterwave', 'Maps', 'OAuth', 'Business', 'Features', 'WhatsApp', 'Security', 'Operations'];
 
 export default function AdminSettingsPage() {
   const { user, loading: authLoading, logout } = useAuth();
