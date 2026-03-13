@@ -114,11 +114,6 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
                 {hotel.redemptions_this_month} redemption{hotel.redemptions_this_month !== 1 ? 's' : ''} this month
               </p>
             )}
-            {hotel.created_at && (
-              <p className="mt-1 text-xs text-muted">
-                Member since {new Date(hotel.created_at).getFullYear()}
-              </p>
-            )}
             {lowestPrice ? (
               <p className="mt-3 text-sm">
                 <span className="text-zinc-400 line-through dark:text-zinc-500">
