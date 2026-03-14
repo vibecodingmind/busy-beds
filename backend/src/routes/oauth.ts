@@ -5,6 +5,7 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import jwt from 'jsonwebtoken';
 import * as userModel from '../models/user';
 import { config } from '../config';
+import { pool } from '../config/db';
 
 const router = Router();
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
@@ -31,7 +32,7 @@ if (googleClientId && googleClientSecret) {
       async (
         _accessToken: string,
         _refreshToken: string,
-        profile: { emails?: { value: string }[]; displayName?: string; name?: { givenName?: string } },
+        profile: { emails?: { value: string }[]; displayName?: string; name?: { givenName?: string }; id: string },
         done: (err: Error | null, user?: object) => void
       ) => {
         try {
@@ -43,6 +44,14 @@ if (googleClientId && googleClientSecret) {
             const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
             user = await userModel.createUser(email, hash, name);
           }
+          // Save OAuth provider info
+          await pool.query(
+            `INSERT INTO user_oauth_providers (user_id, provider, provider_id, provider_email)
+             VALUES ($1, $2, $3, $4)
+             ON CONFLICT (provider, provider_id) DO UPDATE
+             SET provider_email = $4`,
+            [user.id, 'google', profile.id, email]
+          );
           return done(null, user);
         } catch (err) {
           return done(err as Error);
@@ -64,7 +73,7 @@ if (facebookAppId && facebookAppSecret) {
       async (
         _accessToken: string,
         _refreshToken: string,
-        profile: { emails?: { value: string }[]; displayName?: string; name?: { givenName?: string } },
+        profile: { emails?: { value: string }[]; displayName?: string; name?: { givenName?: string }; id: string },
         done: (err: Error | null, user?: object) => void
       ) => {
         try {
@@ -76,6 +85,14 @@ if (facebookAppId && facebookAppSecret) {
             const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
             user = await userModel.createUser(email, hash, name);
           }
+          // Save OAuth provider info
+          await pool.query(
+            `INSERT INTO user_oauth_providers (user_id, provider, provider_id, provider_email)
+             VALUES ($1, $2, $3, $4)
+             ON CONFLICT (provider, provider_id) DO UPDATE
+             SET provider_email = $4`,
+            [user.id, 'facebook', profile.id, email]
+          );
           return done(null, user);
         } catch (err) {
           return done(err as Error);
@@ -139,15 +156,25 @@ router.get('/google/complete', async (req, res) => {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
     if (!userRes.ok) return res.redirect(`${config.frontendUrl}/login?error=Google+profile+failed`);
-    const profile = (await userRes.json()) as { email?: string; name?: string };
-    const email = profile.email;
-    const name = profile.name || 'User';
-    if (!email) return res.redirect(`${config.frontendUrl}/login?error=No+email+from+Google`);
-    let user = await userModel.findUserByEmail(email);
-    if (!user) {
-      const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
-      user = await userModel.createUser(email, hash, name);
-    }
+  const profile = (await userRes.json()) as { email?: string; name?: string; id?: string };
+      const email = profile.email;
+      const name = profile.name || 'User';
+      if (!email) return res.redirect(`${config.frontendUrl}/login?error=No+email+from+Google`);
+      let user = await userModel.findUserByEmail(email);
+      if (!user) {
+        const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
+        user = await userModel.createUser(email, hash, name);
+      }
+      // Save OAuth provider info
+      if (profile.id) {
+        await pool.query(
+          `INSERT INTO user_oauth_providers (user_id, provider, provider_id, provider_email)
+           VALUES ($1, $2, $3, $4)
+           ON CONFLICT (provider, provider_id) DO UPDATE
+           SET provider_email = $4`,
+          [user!.id, 'google', profile.id, email]
+        );
+      }
     const token = jwt.sign(
       { userId: user!.id, email: user!.email, role: user!.role, type: 'user' },
       config.jwtSecret,
@@ -200,15 +227,25 @@ router.get('/facebook/complete', async (req, res) => {
     const tokens = (await tokenRes.json()) as { access_token?: string };
     const meRes = await fetch(`https://graph.facebook.com/me?fields=id,name,email&access_token=${encodeURIComponent(tokens.access_token || '')}`);
     if (!meRes.ok) return res.redirect(`${config.frontendUrl}/login?error=Facebook+profile+failed`);
-    const profile = (await meRes.json()) as { email?: string; name?: string };
-    const email = profile.email;
-    const name = profile.name || 'User';
-    if (!email) return res.redirect(`${config.frontendUrl}/login?error=No+email+from+Facebook`);
-    let user = await userModel.findUserByEmail(email);
-    if (!user) {
-      const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
-      user = await userModel.createUser(email, hash, name);
-    }
+     const profile = (await meRes.json()) as { email?: string; name?: string; id?: string };
+     const email = profile.email;
+     const name = profile.name || 'User';
+     if (!email) return res.redirect(`${config.frontendUrl}/login?error=No+email+from+Facebook`);
+     let user = await userModel.findUserByEmail(email);
+     if (!user) {
+       const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
+       user = await userModel.createUser(email, hash, name);
+     }
+     // Save OAuth provider info
+     if (profile.id) {
+       await pool.query(
+         `INSERT INTO user_oauth_providers (user_id, provider, provider_id, provider_email)
+          VALUES ($1, $2, $3, $4)
+          ON CONFLICT (provider, provider_id) DO UPDATE
+          SET provider_email = $4`,
+         [user!.id, 'facebook', profile.id, email]
+       );
+     }
     const token = jwt.sign(
       { userId: user!.id, email: user!.email, role: user!.role, type: 'user' },
       config.jwtSecret,
@@ -266,15 +303,25 @@ router.get('/linkedin/complete', async (req, res) => {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
     if (!userRes.ok) return res.redirect(`${config.frontendUrl}/login?error=LinkedIn+profile+failed`);
-    const profile = (await userRes.json()) as { email?: string; name?: string; given_name?: string };
-    const email = profile.email;
-    const name = profile.name || profile.given_name || 'User';
-    if (!email) return res.redirect(`${config.frontendUrl}/login?error=No+email+from+LinkedIn`);
-    let user = await userModel.findUserByEmail(email);
-    if (!user) {
-      const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
-      user = await userModel.createUser(email, hash, name);
-    }
+     const profile = (await userRes.json()) as { email?: string; name?: string; given_name?: string; sub?: string };
+     const email = profile.email;
+     const name = profile.name || profile.given_name || 'User';
+     if (!email) return res.redirect(`${config.frontendUrl}/login?error=No+email+from+LinkedIn`);
+     let user = await userModel.findUserByEmail(email);
+     if (!user) {
+       const hash = await import('bcrypt').then((b) => b.default.hash(Math.random().toString(36), 10));
+       user = await userModel.createUser(email, hash, name);
+     }
+     // Save OAuth provider info
+     if (profile.sub) {
+       await pool.query(
+         `INSERT INTO user_oauth_providers (user_id, provider, provider_id, provider_email)
+          VALUES ($1, $2, $3, $4)
+          ON CONFLICT (provider, provider_id) DO UPDATE
+          SET provider_email = $4`,
+         [user!.id, 'linkedin', profile.sub, email]
+       );
+     }
     const token = jwt.sign(
       { userId: user!.id, email: user!.email, role: user!.role, type: 'user' },
       config.jwtSecret,

@@ -47,7 +47,12 @@ export const auth = {
       { method: 'POST', body: JSON.stringify({ email, password, name, referral_code: referralCode }) }
     ),
   login: (email: string, password: string) =>
-    api<{ user: { id: number; email: string; name: string; role: string }; token: string }>(
+    api<{ 
+      user?: { id: number; email: string; name: string; role: string }; 
+      token?: string;
+      requires_2fa?: boolean;
+      temp_token?: string;
+    }>(
       '/auth/login',
       { method: 'POST', body: JSON.stringify({ email, password }) }
     ),
@@ -61,10 +66,13 @@ export const auth = {
       phone?: string | null;
       email_verified?: boolean;
       whatsapp_opt_in?: boolean;
+      notif_coupon_expiry?: boolean;
+      notif_promos?: boolean;
+      notif_new_hotels?: boolean;
     }>('/auth/me'),
   meStats: () =>
     api<{ redemptions_this_month: number }>('/auth/me/stats'),
-  updateProfile: (data: { name?: string; email?: string; phone?: string | null; avatar_url?: string | null; whatsapp_opt_in?: boolean }) =>
+  updateProfile: (data: { name?: string; email?: string; phone?: string | null; avatar_url?: string | null; whatsapp_opt_in?: boolean; notif_coupon_expiry?: boolean; notif_promos?: boolean; notif_new_hotels?: boolean }) =>
     api<{
       id: number;
       email: string;
@@ -74,6 +82,9 @@ export const auth = {
       phone?: string | null;
       email_verified?: boolean;
       whatsapp_opt_in?: boolean;
+      notif_coupon_expiry?: boolean;
+      notif_promos?: boolean;
+      notif_new_hotels?: boolean;
     }>('/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -102,6 +113,71 @@ export const auth = {
     api<{ message: string }>('/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify({ token }),
+    }),
+  deleteAccount: (password?: string) =>
+    api<{ success: boolean }>('/auth/account', {
+      method: 'DELETE',
+      body: JSON.stringify(password ? { password } : {}),
+    }),
+  logout: () =>
+    api<{ success: boolean }>('/auth/logout', {
+      method: 'POST',
+    }),
+  getActivity: (limit?: number) =>
+    api<{
+      activity: {
+        id: number;
+        action: string;
+        details: Record<string, any>;
+        created_at: string;
+      }[];
+    }>(`/auth/activity${limit ? `?limit=${limit}` : ''}`),
+  getProviders: () =>
+    api<{
+      providers: {
+        provider: string;
+        provider_id: string;
+        provider_email: string;
+        created_at: string;
+      }[];
+    }>('/auth/providers'),
+  unlinkProvider: (provider: string) =>
+    api<{ success: boolean }>(`/auth/providers/${provider}`, {
+      method: 'DELETE',
+    }),
+  setup2fa: () =>
+    api<{ secret: string; qr_url: string; qr_image: string }>('/auth/2fa/setup', {
+      method: 'POST',
+    }),
+  verify2fa: (code: string) =>
+    api<{ backup_codes: string[] }>('/auth/2fa/verify-setup', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    }),
+  disable2fa: (password?: string, code?: string) =>
+    api<{ success: boolean }>('/auth/2fa/disable', {
+      method: 'POST',
+      body: JSON.stringify(password ? { password } : code ? { code } : {}),
+    }),
+  validate2fa: (tempToken: string, code: string) =>
+    api<{
+      user: {
+        id: number;
+        email: string;
+        name: string;
+        role: string;
+        avatar_url?: string | null;
+        phone?: string | null;
+        email_verified?: boolean;
+        whatsapp_opt_in?: boolean;
+        notif_coupon_expiry?: boolean;
+        notif_promos?: boolean;
+        notif_new_hotels?: boolean;
+      };
+      token: string;
+    }>('/auth/2fa/validate', {
+      method: 'POST',
+      body: JSON.stringify({ temp_token: tempToken, code }),
     }),
 };
 

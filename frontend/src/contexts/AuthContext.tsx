@@ -12,12 +12,16 @@ interface User {
   phone?: string | null;
   email_verified?: boolean;
   whatsapp_opt_in?: boolean;
+  notif_coupon_expiry?: boolean;
+  notif_promos?: boolean;
+  notif_new_hotels?: boolean;
+  totp_enabled?: boolean;
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ requires_2fa: boolean; temp_token?: string } | void>;
   register: (email: string, password: string, name: string, referralCode?: string) => Promise<void>;
   logout: () => void;
   setUser: (u: User | null) => void;
@@ -57,11 +61,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = async (email: string, password: string) => {
-    const { user: u, token } = await auth.login(email, password);
-    localStorage.setItem('token', token);
-    setAuthCookie(token);
-    setUser(u);
+  const login = async (email: string, password: string): Promise<{ requires_2fa: boolean; temp_token?: string } | void> => {
+    const result = await auth.login(email, password);
+    if (result.requires_2fa) {
+      return { requires_2fa: true, temp_token: result.temp_token };
+    }
+    if (result.token && result.user) {
+      localStorage.setItem('token', result.token);
+      setAuthCookie(result.token);
+      setUser(result.user);
+    }
   };
 
   const register = async (email: string, password: string, name: string, referralCode?: string) => {
@@ -71,10 +80,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(u);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    clearAuthCookie();
-    setUser(null);
+  const logout = async () => {
+    try {
+      await auth.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('token');
+      clearAuthCookie();
+      setUser(null);
+    }
   };
 
   return (

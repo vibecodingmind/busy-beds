@@ -12,6 +12,12 @@ export interface User {
   email_verified?: boolean | null;
   whatsapp_opt_in?: boolean | null;
   active?: boolean | null;
+  notif_coupon_expiry?: boolean | null;
+  notif_promos?: boolean | null;
+  notif_new_hotels?: boolean | null;
+  totp_secret?: string | null;
+  totp_enabled?: boolean | null;
+  totp_backup_codes?: string | null;
 }
 
 export async function createUser(
@@ -44,7 +50,7 @@ export async function findUserById(id: number): Promise<User | null> {
 
 export async function updateUser(
   id: number,
-  data: { name?: string; email?: string; password_hash?: string; avatar_url?: string | null; phone?: string | null; whatsapp_opt_in?: boolean | null; active?: boolean | null }
+  data: { name?: string; email?: string; password_hash?: string; avatar_url?: string | null; phone?: string | null; whatsapp_opt_in?: boolean | null; active?: boolean | null; notif_coupon_expiry?: boolean | null; notif_promos?: boolean | null; notif_new_hotels?: boolean | null; totp_secret?: string | null; totp_enabled?: boolean | null; totp_backup_codes?: string | null }
 ): Promise<User | null> {
   const updates: string[] = [];
   const values: unknown[] = [];
@@ -76,6 +82,30 @@ export async function updateUser(
   if (data.active !== undefined) {
     updates.push(`active = $${i++}`);
     values.push(!!data.active);
+  }
+  if (data.notif_coupon_expiry !== undefined) {
+    updates.push(`notif_coupon_expiry = $${i++}`);
+    values.push(!!data.notif_coupon_expiry);
+  }
+  if (data.notif_promos !== undefined) {
+    updates.push(`notif_promos = $${i++}`);
+    values.push(!!data.notif_promos);
+  }
+  if (data.notif_new_hotels !== undefined) {
+    updates.push(`notif_new_hotels = $${i++}`);
+    values.push(!!data.notif_new_hotels);
+  }
+  if (data.totp_secret !== undefined) {
+    updates.push(`totp_secret = $${i++}`);
+    values.push(data.totp_secret);
+  }
+  if (data.totp_enabled !== undefined) {
+    updates.push(`totp_enabled = $${i++}`);
+    values.push(!!data.totp_enabled);
+  }
+  if (data.totp_backup_codes !== undefined) {
+    updates.push(`totp_backup_codes = $${i++}`);
+    values.push(data.totp_backup_codes);
   }
   if (updates.length === 0) return findUserById(id);
   values.push(id);
