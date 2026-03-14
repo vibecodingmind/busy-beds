@@ -62,6 +62,7 @@ app.use('/auth', oauthRoutes);
 // API routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/auth/hotel', authHotelRoutes);
+app.use('/api/v1/stripe', stripeRoutes);
 app.use('/api/v1/hotels', hotelsRoutes);
 app.use('/api/v1/coupons', couponsRoutes);
 app.use('/api/v1/subscriptions', subscriptionsRoutes);
