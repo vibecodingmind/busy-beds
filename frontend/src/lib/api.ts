@@ -135,6 +135,14 @@ export const hotels = {
     min_rating?: number;
     lat?: number;
     lng?: number;
+    north?: number;
+    south?: number;
+    east?: number;
+    west?: number;
+    min_price?: number;
+    max_price?: number;
+    amenities?: string[];
+    has_discount?: boolean;
   }) => {
     const params = new URLSearchParams();
     params.set('limit', String(opts?.limit || 50));
@@ -145,6 +153,14 @@ export const hotels = {
     if (opts?.min_rating != null) params.set('min_rating', String(opts.min_rating));
     if (opts?.lat != null) params.set('lat', String(opts.lat));
     if (opts?.lng != null) params.set('lng', String(opts.lng));
+    if (opts?.north != null) params.set('north', String(opts.north));
+    if (opts?.south != null) params.set('south', String(opts.south));
+    if (opts?.east != null) params.set('east', String(opts.east));
+    if (opts?.west != null) params.set('west', String(opts.west));
+    if (opts?.min_price != null) params.set('min_price', String(opts.min_price));
+    if (opts?.max_price != null) params.set('max_price', String(opts.max_price));
+    if (opts?.amenities && opts.amenities.length > 0) params.set('amenities', opts.amenities.join(','));
+    if (opts?.has_discount !== undefined) params.set('has_discount', String(opts.has_discount));
     return api<{ hotels: Hotel[] }>(`/hotels?${params}`);
   },
   get: (id: number) => api<Hotel>(`/hotels/${id}`),

@@ -14,6 +14,14 @@ router.get('/', async (req, res) => {
     const minRating = req.query.min_rating != null ? parseFloat(req.query.min_rating as string) : undefined;
     const lat = req.query.lat != null ? parseFloat(req.query.lat as string) : undefined;
     const lng = req.query.lng != null ? parseFloat(req.query.lng as string) : undefined;
+    const north = req.query.north != null ? parseFloat(req.query.north as string) : undefined;
+    const south = req.query.south != null ? parseFloat(req.query.south as string) : undefined;
+    const east = req.query.east != null ? parseFloat(req.query.east as string) : undefined;
+    const west = req.query.west != null ? parseFloat(req.query.west as string) : undefined;
+    const minPrice = req.query.min_price != null ? parseFloat(req.query.min_price as string) : undefined;
+    const maxPrice = req.query.max_price != null ? parseFloat(req.query.max_price as string) : undefined;
+    const amenities = req.query.amenities ? (req.query.amenities as string).split(',') : undefined;
+    const hasDiscount = req.query.has_discount === 'true' ? true : undefined;
     const hotels = await hotelModel.findAllHotels(limit, offset, {
       search,
       sort,
@@ -21,6 +29,14 @@ router.get('/', async (req, res) => {
       min_rating: minRating,
       lat,
       lng,
+      north,
+      south,
+      east,
+      west,
+      min_price: minPrice,
+      max_price: maxPrice,
+      amenities,
+      has_discount: hasDiscount,
     });
     res.json({ hotels });
   } catch (err) {

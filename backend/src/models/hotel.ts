@@ -32,6 +32,14 @@ export async function findAllHotels(
     lat?: number;
     lng?: number;
     activeOnly?: boolean;
+    north?: number;
+    south?: number;
+    east?: number;
+    west?: number;
+    min_price?: number;
+    max_price?: number;
+    amenities?: string[];
+    has_discount?: boolean;
   }
 ): Promise<(Hotel & { avg_rating?: number | null; review_count?: number })[]> {
   const conditions: string[] = [];
@@ -52,6 +60,33 @@ export async function findAllHotels(
     conditions.push(`(SELECT AVG(r.rating) FROM hotel_reviews r WHERE r.hotel_id = h.id) >= $${i}`);
     params.push(opts.min_rating);
     i++;
+  }
+  if (opts?.north != null && opts?.south != null && opts?.east != null && opts?.west != null) {
+    conditions.push(`h.latitude BETWEEN $${i} AND $${i + 1} AND h.longitude BETWEEN $${i + 2} AND $${i + 3}`);
+    params.push(opts.south, opts.north, opts.west, opts.east);
+    i += 4;
+  }
+  if (opts?.min_price != null) {
+    conditions.push(`(SELECT MIN(r.base_price) FROM hotel_rooms r WHERE r.hotel_id = h.id) >= $${i}`);
+    params.push(opts.min_price);
+    i++;
+  }
+  if (opts?.max_price != null) {
+    conditions.push(`(SELECT MAX(r.base_price) FROM hotel_rooms r WHERE r.hotel_id = h.id) <= $${i}`);
+    params.push(opts.max_price);
+    i++;
+  }
+  if (opts?.has_discount === true) {
+    conditions.push(`h.coupon_discount_value IS NOT NULL AND h.coupon_discount_value != ''`);
+  }
+  if (opts?.amenities && opts.amenities.length > 0) {
+    const amenityConditions: string[] = [];
+    for (const amenity of opts.amenities) {
+      amenityConditions.push(`EXISTS (SELECT 1 FROM hotel_rooms r WHERE r.hotel_id = h.id AND $${i} = ANY(r.amenities))`);
+      params.push(amenity);
+      i++;
+    }
+    conditions.push(`(${amenityConditions.join(' OR ')})`);
   }
   const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
   let orderBy = 'COALESCE(h.featured, false) DESC, ';
