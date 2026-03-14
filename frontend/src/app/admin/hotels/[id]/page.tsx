@@ -5,9 +5,20 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { admin } from '@/lib/api';
-import type { ManagingAccount } from '@/lib/api';
+import type { ManagingAccount, MediaItem } from '@/lib/api';
 import PhotosInput from '@/components/admin/PhotosInput';
 import HotelRoomsManager from '@/components/admin/HotelRoomsManager';
+
+function isMediaItemArray(arr: string[] | MediaItem[]): arr is MediaItem[] {
+  return arr.length > 0 && typeof arr[0] === 'object' && 'url' in arr[0];
+}
+
+function toStringArray(images: string[] | MediaItem[]): string[] {
+  if (isMediaItemArray(images)) {
+    return images.map(item => item.url);
+  }
+  return images;
+}
 
 export default function EditHotelPage() {
   const params = useParams();
@@ -47,7 +58,7 @@ export default function EditHotelPage() {
         contact_phone: h.contact_phone || '',
         contact_email: h.contact_email || '',
         contact_whatsapp: h.contact_whatsapp || '',
-        images: h.images || [],
+        images: toStringArray(h.images || []),
         booking_url: h.booking_url || '',
         latitude: h.latitude ?? '',
         longitude: h.longitude ?? '',

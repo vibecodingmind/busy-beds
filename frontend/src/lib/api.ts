@@ -671,6 +671,14 @@ export const admin = {
 };
 
 // Types
+export interface MediaItem {
+  url: string;
+  type?: 'image' | 'video';
+  thumbnail?: string;
+  category?: string;
+  caption?: string;
+}
+
 export interface Hotel {
   id: number;
   name: string;
@@ -679,7 +687,7 @@ export interface Hotel {
   contact_phone: string | null;
   contact_email: string | null;
   contact_whatsapp?: string | null;
-  images: string[];
+  images: string[] | MediaItem[];
   latitude?: number | null;
   longitude?: number | null;
   booking_url?: string | null;

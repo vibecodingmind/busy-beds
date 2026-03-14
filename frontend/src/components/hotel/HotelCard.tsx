@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import type { Hotel, HotelRoom } from '@/lib/api';
+import { useState, useEffect, useRef } from 'react';
+import type { Hotel, MediaItem } from '@/lib/api';
 import { hotels } from '@/lib/api';
 import FavoriteButton from './FavoriteButton';
 import { MapPinIcon, ChevronRightIcon } from '@/components/icons';
@@ -11,10 +11,79 @@ import StarRating from '@/components/StarRating';
 
 interface HotelCardProps {
   hotel: Hotel;
-  onRemoveFavorite?: () => void; // When on favorites page, remove from list when unfavorited
+  onRemoveFavorite?: () => void;
 }
 
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80';
+
+function getFirstImageUrl(images: string[] | MediaItem[] | undefined): string {
+  if (!images || images.length === 0) return PLACEHOLDER;
+  const first = images[0];
+  if (typeof first === 'string') return first;
+  return first.url || PLACEHOLDER;
+}
+
+function BlurImage({
+  src,
+  alt,
+  fill,
+  sizes,
+  className,
+  priority,
+}: {
+  src: string;
+  alt: string;
+  fill?: boolean;
+  sizes?: string;
+  className?: string;
+  priority?: boolean;
+}) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const imgRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '100px' }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  const isExternalImage = src.includes('images.unsplash.com') || src.includes('res.cloudinary') || src.includes('cloudfront');
+
+  return (
+    <div ref={imgRef} className={`relative ${className}`}>
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
+      )}
+      {isInView && (
+        <Image
+          src={src}
+          alt={alt}
+          fill={fill}
+          sizes={sizes}
+          className={`object-cover transition-all duration-500 ${
+            isLoaded ? 'blur-0 opacity-100' : 'blur-xl opacity-0'
+          }`}
+          onLoad={() => setIsLoaded(true)}
+          priority={priority}
+          unoptimized={!isExternalImage}
+        />
+      )}
+    </div>
+  );
+}
 
 // Parse discount value for display (e.g. "10% off" -> "10%")
 function getDiscountLabel(value: string | null | undefined): string | null {
@@ -40,7 +109,7 @@ function formatPrice(price: number, currency: string): string {
 }
 
 export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
-  const imageUrl = hotel.images?.length ? hotel.images[0] : PLACEHOLDER;
+  const imageUrl = getFirstImageUrl(hotel.images);
   const discountLabel = getDiscountLabel(hotel.coupon_discount_value);
   const [lowestPrice, setLowestPrice] = useState<{ original: number; discounted: number; currency: string } | null>(null);
 
@@ -69,13 +138,12 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
       <Link href={`/hotels/${hotel.id}`} className="block">
         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:shadow-lg hover:border-black/20 dark:hover:border-zinc-600">
           <div className="relative aspect-[4/3] w-full overflow-hidden">
-            <Image
+            <BlurImage
               src={imageUrl}
               alt={hotel.name}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 640px) 50vw, 300px"
-              unoptimized={!imageUrl.includes('images.unsplash.com')}
+              className="transition-transform duration-300 group-hover:scale-105"
             />
             {/* Dark gradient overlay for text readability */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />

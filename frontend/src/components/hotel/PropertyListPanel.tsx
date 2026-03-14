@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { Hotel } from '@/lib/api';
+import type { Hotel, MediaItem } from '@/lib/api';
 import FavoriteButton from './FavoriteButton';
 import { MapPinIcon } from '@/components/icons';
 
@@ -17,6 +17,13 @@ interface PropertyListPanelProps {
 }
 
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80';
+
+function getFirstImageUrl(images: string[] | MediaItem[] | undefined): string {
+  if (!images || images.length === 0) return PLACEHOLDER;
+  const first = images[0];
+  if (typeof first === 'string') return first;
+  return first.url || PLACEHOLDER;
+}
 
 function getDiscountLabel(value: string | null | undefined): string | null {
   if (!value) return null;
@@ -82,7 +89,7 @@ export default function PropertyListPanel({
     <div className="h-full overflow-y-auto">
       <div className="p-4 space-y-4">
         {hotels.map((hotel) => {
-          const imageUrl = hotel.images?.[0] || PLACEHOLDER;
+          const imageUrl = getFirstImageUrl(hotel.images);
           const discountLabel = getDiscountLabel(hotel.coupon_discount_value);
           const isSelected = selectedHotelId === hotel.id;
 
