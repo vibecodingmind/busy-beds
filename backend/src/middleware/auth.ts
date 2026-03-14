@@ -6,7 +6,7 @@ export interface JwtPayload {
   userId: number;
   email: string;
   role: string;
-  type: 'user';
+  type: 'user' | '2fa_pending';
 }
 
 export interface HotelJwtPayload {

@@ -32,7 +32,7 @@ if (googleClientId && googleClientSecret) {
       async (
         _accessToken: string,
         _refreshToken: string,
-        profile: { emails?: { value: string }[]; displayName?: string; name?: { givenName?: string }; id: string },
+        profile: any,
         done: (err: Error | null, user?: object) => void
       ) => {
         try {
@@ -73,7 +73,7 @@ if (facebookAppId && facebookAppSecret) {
       async (
         _accessToken: string,
         _refreshToken: string,
-        profile: { emails?: { value: string }[]; displayName?: string; name?: { givenName?: string }; id: string },
+        profile: any,
         done: (err: Error | null, user?: object) => void
       ) => {
         try {

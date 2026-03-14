@@ -15,7 +15,7 @@ import { logger } from '../config/logger';
 import { validate, validationSchemas, sanitizeInput, commonValidations } from '../middleware/validation';
 import { asyncHandler } from '../middleware/errorHandler';
 import { refreshTokenHandler, invalidateTokensHandler, refreshTokenService } from '../middleware/refreshToken';
-import { authenticator } from 'otplib';
+import { authenticator } from '@otplib/preset-default';
 import qrcode from 'qrcode';
 
 const router = Router();
