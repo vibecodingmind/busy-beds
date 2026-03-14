@@ -152,17 +152,25 @@ export const sanitizeInput = (req: Request, res: Response, next: NextFunction) =
               .trim();
   };
   
+  // Fields that must never be transformed (passwords must reach bcrypt unchanged)
+  const PASSWORD_FIELDS = new Set(['password', 'new_password', 'current_password', 'confirm_password', 'password_hash']);
+
   const sanitizeObject = (obj: any): any => {
     if (typeof obj === 'string') {
       return sanitizeString(obj);
     }
     if (Array.isArray(obj)) {
-      return obj.map(sanitizeObject);
+      return obj.map((v) => sanitizeObject(v));
     }
     if (obj && typeof obj === 'object') {
       const sanitized: any = {};
       for (const [key, value] of Object.entries(obj)) {
-        sanitized[key] = sanitizeObject(value);
+        // Skip sanitization for password fields — bcrypt requires the exact original value
+        if (PASSWORD_FIELDS.has(key)) {
+          sanitized[key] = value;
+        } else {
+          sanitized[key] = sanitizeObject(value);
+        }
       }
       return sanitized;
     }

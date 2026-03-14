@@ -30,18 +30,21 @@ function LoginForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    let userAuthError: string | null = null;
     try {
       try {
         await login(email, password);
         router.push(redirectTo || '/dashboard');
         return;
-      } catch {
-        // Guest login failed, try hotel login
+      } catch (err) {
+        // Store the real user-auth error, then attempt hotel login
+        userAuthError = err instanceof Error ? err.message : 'Login failed';
       }
       await hotelLogin(email, password);
       router.push(redirectTo || '/hotel/dashboard');
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Login failed';
+      // Both user and hotel login failed — show the user-auth error (more relevant)
+      const msg = userAuthError ?? (err instanceof Error ? err.message : 'Login failed');
       setError(msg === 'Failed to fetch' ? 'Cannot reach the server. If this is the live site, ensure NEXT_PUBLIC_API_URL is set to https://api.busybeds.com/api/v1 and redeploy.' : msg);
     } finally {
       setLoading(false);

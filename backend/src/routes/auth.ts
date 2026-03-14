@@ -88,11 +88,11 @@ router.post(
         return res.status(401).json({ error: 'Invalid email or password' });
       }
 
-      // Log login activity
-      await logUserActivity(user.id, 'login', {
+      // Log login activity (non-blocking — never fail the login if logging fails)
+      logUserActivity(user.id, 'login', {
         ip: req.ip,
         user_agent: req.get('User-Agent'),
-      });
+      }).catch((err: unknown) => console.error('Activity log error:', err));
 
       // Check if 2FA is enabled
       if ((user as { totp_enabled?: boolean }).totp_enabled) {
