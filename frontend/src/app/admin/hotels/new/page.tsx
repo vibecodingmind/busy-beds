@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { admin } from '@/lib/api';
 import PhotosInput from '@/components/admin/PhotosInput';
+import LocationFields from '@/components/admin/LocationFields';
 
 export default function NewHotelPage() {
   const { user } = useAuth();
@@ -14,6 +15,9 @@ export default function NewHotelPage() {
     name: '',
     description: '',
     location: '',
+    country: '',
+    region: '',
+    city: '',
     contact_phone: '',
     contact_email: '',
     contact_whatsapp: '',
@@ -41,6 +45,9 @@ export default function NewHotelPage() {
         featured: form.featured,
         latitude: form.latitude === '' ? undefined : Number(form.latitude),
         longitude: form.longitude === '' ? undefined : Number(form.longitude),
+        country: form.country || undefined,
+        region: form.region || undefined,
+        city: form.city || undefined,
       });
       router.push('/admin/hotels');
     } catch (err) {
@@ -52,155 +59,114 @@ export default function NewHotelPage() {
 
   if (!user || user.role !== 'admin') return null;
 
+  const inputClass = 'mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2.5 text-black dark:text-zinc-100 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors';
+  const labelClass = 'block text-sm font-medium text-black dark:text-zinc-300';
+  const sectionClass = 'rounded-xl border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 space-y-4';
+
   return (
-    <div>
-      <Link href="/admin/hotels" className="text-sm text-emerald-600 hover:underline">
+    <div className="max-w-2xl">
+      <Link href="/admin/hotels" className="text-sm text-emerald-600 hover:underline dark:text-emerald-400">
         ← Back to hotels
       </Link>
-      <h1 className="mt-6 text-2xl font-bold text-black">Add Hotel</h1>
-      <form onSubmit={handleSubmit} className="mt-6 max-w-lg space-y-4">
+      <h1 className="mt-4 text-2xl font-bold text-black dark:text-zinc-100">Add Property</h1>
+
+      <form onSubmit={handleSubmit} className="mt-6 space-y-6">
         {error && (
-          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+          <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-300">{error}</div>
         )}
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Name</label>
-          <input
-            value={form.name}
-            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            required
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
+
+        {/* Basic Info */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Basic Information</p>
+          <div>
+            <label className={labelClass}>Property Name <span className="text-red-500">*</span></label>
+            <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required placeholder="e.g. Serengeti Safari Lodge" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Description</label>
+            <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={4} placeholder="Describe the property, its ambiance, and highlights…" className={inputClass} />
+          </div>
+          <div className="flex items-center gap-3 pt-1">
+            <input type="checkbox" id="featured" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="h-4 w-4 rounded border-black/20 dark:border-zinc-600 accent-emerald-600" />
+            <label htmlFor="featured" className="text-sm font-medium text-black dark:text-zinc-300">Featured property (shown prominently in search results)</label>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Description</label>
-          <textarea
-            value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            rows={3}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Location</label>
-          <input
-            value={form.location}
-            onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Contact Email</label>
-          <input
-            type="email"
-            value={form.contact_email}
-            onChange={(e) => setForm((f) => ({ ...f, contact_email: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Booking URL</label>
-          <input
-            type="url"
-            value={form.booking_url}
-            onChange={(e) => setForm((f) => ({ ...f, booking_url: e.target.value }))}
-            placeholder="https://example.com/book"
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Contact Phone</label>
-          <input
-            value={form.contact_phone}
-            onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">WhatsApp (optional)</label>
-          <input
-            value={form.contact_whatsapp}
-            onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))}
-            placeholder="e.g. +1234567890"
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="featured"
-            checked={form.featured}
-            onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
-            className="h-4 w-4 rounded border-black/20 dark:border-zinc-600"
-          />
-          <label htmlFor="featured" className="text-sm font-medium text-zinc-700">Featured hotel</label>
-        </div>
-        <PhotosInput
-          value={form.images}
-          onChange={(urls) => setForm((f) => ({ ...f, images: urls }))}
-          placeholder="https://images.unsplash.com/photo-..."
+
+        {/* Location */}
+        <LocationFields
+          value={{ country: form.country, region: form.region, city: form.city, location: form.location }}
+          onChange={(v) => setForm((f) => ({ ...f, country: v.country, region: v.region, city: v.city, location: v.location }))}
         />
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-zinc-700">Latitude</label>
-            <input
-              type="number"
-              step="any"
-              value={form.latitude}
-              onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))}
-              placeholder="e.g. 37.7749"
-              className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-zinc-700">Longitude</label>
-            <input
-              type="number"
-              step="any"
-              value={form.longitude}
-              onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))}
-              placeholder="e.g. -122.4194"
-              className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-            />
+
+        {/* Coordinates */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">GPS Coordinates <span className="font-normal normal-case text-zinc-400">(optional — enables map & distance features)</span></p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Latitude</label>
+              <input type="number" step="any" value={form.latitude} onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))} placeholder="e.g. -3.3869" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Longitude</label>
+              <input type="number" step="any" value={form.longitude} onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))} placeholder="e.g. 36.6830" className={inputClass} />
+            </div>
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Coupon Discount</label>
-          <input
-            value={form.coupon_discount_value}
-            onChange={(e) => setForm((f) => ({ ...f, coupon_discount_value: e.target.value }))}
-            placeholder="e.g. 15% off or $50 off"
-            required
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
+
+        {/* Contact */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Contact Information</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Phone</label>
+              <input value={form.contact_phone} onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))} placeholder="+255 xxx xxx xxx" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Email</label>
+              <input type="email" value={form.contact_email} onChange={(e) => setForm((f) => ({ ...f, contact_email: e.target.value }))} placeholder="info@hotel.com" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>WhatsApp</label>
+              <input value={form.contact_whatsapp} onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))} placeholder="+255 xxx xxx xxx" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Booking URL</label>
+              <input type="url" value={form.booking_url} onChange={(e) => setForm((f) => ({ ...f, booking_url: e.target.value }))} placeholder="https://…" className={inputClass} />
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Coupon Limit</label>
-          <input
-            type="number"
-            min={1}
-            value={form.coupon_limit}
-            onChange={(e) => setForm((f) => ({ ...f, coupon_limit: parseInt(e.target.value) || 0 }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
+
+        {/* Photos */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Photos</p>
+          <PhotosInput value={form.images} onChange={(urls) => setForm((f) => ({ ...f, images: urls }))} placeholder="https://images.unsplash.com/photo-…" />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-zinc-700">Limit Period</label>
-          <select
-            value={form.limit_period}
-            onChange={(e) => setForm((f) => ({ ...f, limit_period: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-          </select>
+
+        {/* Coupon Settings */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Coupon Settings</p>
+          <div>
+            <label className={labelClass}>Discount Value <span className="text-red-500">*</span></label>
+            <input value={form.coupon_discount_value} onChange={(e) => setForm((f) => ({ ...f, coupon_discount_value: e.target.value }))} placeholder="e.g. 15% off or $50 off" required className={inputClass} />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Coupon Limit</label>
+              <input type="number" min={1} value={form.coupon_limit} onChange={(e) => setForm((f) => ({ ...f, coupon_limit: parseInt(e.target.value) || 0 }))} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Limit Period</label>
+              <select value={form.limit_period} onChange={(e) => setForm((f) => ({ ...f, limit_period: e.target.value }))} className={inputClass}>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-lg bg-emerald-600 px-6 py-2 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
-        >
-          {loading ? 'Creating...' : 'Create Hotel'}
+
+        <button type="submit" disabled={loading} className="w-full rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors">
+          {loading ? 'Creating…' : 'Create Property'}
         </button>
       </form>
     </div>

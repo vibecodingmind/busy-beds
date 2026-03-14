@@ -40,6 +40,9 @@ CREATE TABLE IF NOT EXISTS hotels (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     location VARCHAR(500),
+    country VARCHAR(100),
+    region VARCHAR(200),
+    city VARCHAR(200),
     contact_phone VARCHAR(50),
     contact_email VARCHAR(255),
     images JSONB DEFAULT '[]',
@@ -49,6 +52,20 @@ CREATE TABLE IF NOT EXISTS hotels (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Add country/region/city columns to existing hotels tables
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='country') THEN
+    ALTER TABLE hotels ADD COLUMN country VARCHAR(100);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='region') THEN
+    ALTER TABLE hotels ADD COLUMN region VARCHAR(200);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='city') THEN
+    ALTER TABLE hotels ADD COLUMN city VARCHAR(200);
+  END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS hotel_accounts (
     id SERIAL PRIMARY KEY,

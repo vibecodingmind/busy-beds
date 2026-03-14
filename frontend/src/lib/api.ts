@@ -219,6 +219,9 @@ export const hotels = {
     max_price?: number;
     amenities?: string[];
     has_discount?: boolean;
+    country?: string;
+    region?: string;
+    city?: string;
   }) => {
     const params = new URLSearchParams();
     params.set('limit', String(opts?.limit || 50));
@@ -237,10 +240,23 @@ export const hotels = {
     if (opts?.max_price != null) params.set('max_price', String(opts.max_price));
     if (opts?.amenities && opts.amenities.length > 0) params.set('amenities', opts.amenities.join(','));
     if (opts?.has_discount !== undefined) params.set('has_discount', String(opts.has_discount));
+    if (opts?.country) params.set('country', opts.country);
+    if (opts?.region) params.set('region', opts.region);
+    if (opts?.city) params.set('city', opts.city);
     return api<{ hotels: Hotel[] }>(`/hotels?${params}`);
   },
   get: (id: number) => api<Hotel>(`/hotels/${id}`),
   rooms: (hotelId: number) => api<{ rooms: HotelRoom[] }>(`/hotels/${hotelId}/rooms`),
+  locations: () =>
+    fetch(`${API_BASE}/hotels/locations`)
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Failed to fetch locations');
+        return res.json() as Promise<{
+          countries: string[];
+          regions: { country: string; region: string }[];
+          cities: { country: string; region: string | null; city: string }[];
+        }>;
+      }),
 };
 
 // Favorites
@@ -684,6 +700,9 @@ export interface Hotel {
   name: string;
   description: string | null;
   location: string | null;
+  country?: string | null;
+  region?: string | null;
+  city?: string | null;
   contact_phone: string | null;
   contact_email: string | null;
   contact_whatsapp?: string | null;

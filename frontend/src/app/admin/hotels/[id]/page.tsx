@@ -8,6 +8,7 @@ import { admin } from '@/lib/api';
 import type { ManagingAccount, MediaItem } from '@/lib/api';
 import PhotosInput from '@/components/admin/PhotosInput';
 import HotelRoomsManager from '@/components/admin/HotelRoomsManager';
+import LocationFields from '@/components/admin/LocationFields';
 
 function isMediaItemArray(arr: string[] | MediaItem[]): arr is MediaItem[] {
   return arr.length > 0 && typeof arr[0] === 'object' && 'url' in arr[0];
@@ -29,6 +30,9 @@ export default function EditHotelPage() {
     name: '',
     description: '',
     location: '',
+    country: '',
+    region: '',
+    city: '',
     contact_phone: '',
     contact_email: '',
     contact_whatsapp: '',
@@ -55,6 +59,9 @@ export default function EditHotelPage() {
         name: h.name,
         description: h.description || '',
         location: h.location || '',
+        country: (h as any).country || '',
+        region: (h as any).region || '',
+        city: (h as any).city || '',
         contact_phone: h.contact_phone || '',
         contact_email: h.contact_email || '',
         contact_whatsapp: h.contact_whatsapp || '',
@@ -87,6 +94,9 @@ export default function EditHotelPage() {
         booking_url: form.booking_url || null,
         latitude: form.latitude === '' ? null : Number(form.latitude),
         longitude: form.longitude === '' ? null : Number(form.longitude),
+        country: (form.country || null) as any,
+        region: (form.region || null) as any,
+        city: (form.city || null) as any,
       });
       router.push('/admin/hotels');
     } catch (err) {
@@ -126,246 +136,179 @@ export default function EditHotelPage() {
   };
 
   if (!user || user.role !== 'admin') return null;
-  if (!loaded) return <div className="py-8">Loading...</div>;
+  if (!loaded) return <div className="py-8 text-zinc-500">Loading…</div>;
+
+  const inputClass = 'mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2.5 text-black dark:text-zinc-100 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors';
+  const labelClass = 'block text-sm font-medium text-black dark:text-zinc-300';
+  const sectionClass = 'rounded-xl border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 space-y-4';
 
   return (
-    <div>
-      <Link href="/admin/hotels" className="text-sm text-emerald-600 hover:underline">
+    <div className="max-w-2xl">
+      <Link href="/admin/hotels" className="text-sm text-emerald-600 hover:underline dark:text-emerald-400">
         ← Back to hotels
       </Link>
-      <h1 className="mt-6 text-2xl font-bold text-black">Edit Hotel</h1>
-      <form onSubmit={handleSubmit} className="mt-6 max-w-lg space-y-4">
+      <h1 className="mt-4 text-2xl font-bold text-black dark:text-zinc-100">Edit Property</h1>
+
+      <form onSubmit={handleSubmit} className="mt-6 space-y-6">
         {error && (
-          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
+          <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-sm text-red-700 dark:text-red-300">{error}</div>
         )}
-        <div>
-          <label className="block text-sm font-medium text-black">Name</label>
-          <input
-            value={form.name}
-            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            required
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Description</label>
-          <textarea
-            value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            rows={3}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Location</label>
-          <input
-            value={form.location}
-            onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Booking URL</label>
-          <input
-            type="url"
-            value={form.booking_url}
-            onChange={(e) => setForm((f) => ({ ...f, booking_url: e.target.value }))}
-            placeholder="https://example.com/book"
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Contact Phone</label>
-          <input
-            value={form.contact_phone}
-            onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Contact Email</label>
-          <input
-            type="email"
-            value={form.contact_email}
-            onChange={(e) => setForm((f) => ({ ...f, contact_email: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-black">WhatsApp (optional)</label>
-          <input
-            value={form.contact_whatsapp}
-            onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))}
-            placeholder="e.g. +1234567890"
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="featured"
-              checked={form.featured}
-              onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
-              className="h-4 w-4 rounded border-black/20 dark:border-zinc-600"
-            />
-            <label htmlFor="featured" className="text-sm font-medium text-black dark:text-zinc-300">Featured hotel</label>
+
+        {/* Basic Info */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Basic Information</p>
+          <div>
+            <label className={labelClass}>Property Name <span className="text-red-500">*</span></label>
+            <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required className={inputClass} />
           </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="active"
-              checked={form.active}
-              onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
-              className="h-4 w-4 rounded border-black/20 dark:border-zinc-600"
-            />
-            <label htmlFor="active" className="text-sm font-medium text-black dark:text-zinc-300">Active (shown on site)</label>
+          <div>
+            <label className={labelClass}>Description</label>
+            <textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} rows={4} className={inputClass} />
+          </div>
+          <div className="flex flex-col gap-3 pt-1">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="featured" checked={form.featured} onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))} className="h-4 w-4 rounded border-black/20 dark:border-zinc-600 accent-emerald-600" />
+              <span className="text-sm font-medium text-black dark:text-zinc-300">Featured property (shown prominently)</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="active" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} className="h-4 w-4 rounded border-black/20 dark:border-zinc-600 accent-emerald-600" />
+              <span className="text-sm font-medium text-black dark:text-zinc-300">Active (visible on site)</span>
+            </label>
           </div>
         </div>
-        <PhotosInput
-          value={form.images}
-          onChange={(urls) => setForm((f) => ({ ...f, images: urls }))}
-          placeholder="https://images.unsplash.com/photo-..."
+
+        {/* Location */}
+        <LocationFields
+          value={{ country: form.country, region: form.region, city: form.city, location: form.location }}
+          onChange={(v) => setForm((f) => ({ ...f, country: v.country, region: v.region, city: v.city, location: v.location }))}
         />
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-black">Latitude</label>
-            <input
-              type="number"
-              step="any"
-              value={form.latitude}
-              onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))}
-              placeholder="e.g. 37.7749"
-              className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-black">Longitude</label>
-            <input
-              type="number"
-              step="any"
-              value={form.longitude}
-              onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))}
-              placeholder="e.g. -122.4194"
-              className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-            />
+
+        {/* Coordinates */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">GPS Coordinates</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Latitude</label>
+              <input type="number" step="any" value={form.latitude} onChange={(e) => setForm((f) => ({ ...f, latitude: e.target.value }))} placeholder="e.g. -3.3869" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Longitude</label>
+              <input type="number" step="any" value={form.longitude} onChange={(e) => setForm((f) => ({ ...f, longitude: e.target.value }))} placeholder="e.g. 36.6830" className={inputClass} />
+            </div>
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Coupon Discount</label>
-          <input
-            value={form.coupon_discount_value}
-            onChange={(e) => setForm((f) => ({ ...f, coupon_discount_value: e.target.value }))}
-            required
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
+
+        {/* Contact */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Contact Information</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Phone</label>
+              <input value={form.contact_phone} onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Email</label>
+              <input type="email" value={form.contact_email} onChange={(e) => setForm((f) => ({ ...f, contact_email: e.target.value }))} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>WhatsApp</label>
+              <input value={form.contact_whatsapp} onChange={(e) => setForm((f) => ({ ...f, contact_whatsapp: e.target.value }))} placeholder="+255 xxx xxx xxx" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Booking URL</label>
+              <input type="url" value={form.booking_url} onChange={(e) => setForm((f) => ({ ...f, booking_url: e.target.value }))} placeholder="https://…" className={inputClass} />
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Coupon Limit</label>
-          <input
-            type="number"
-            min={1}
-            value={form.coupon_limit}
-            onChange={(e) => setForm((f) => ({ ...f, coupon_limit: parseInt(e.target.value) || 0 }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          />
+
+        {/* Photos */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Photos</p>
+          <PhotosInput value={form.images} onChange={(urls) => setForm((f) => ({ ...f, images: urls }))} placeholder="https://images.unsplash.com/photo-…" />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-black">Limit Period</label>
-          <select
-            value={form.limit_period}
-            onChange={(e) => setForm((f) => ({ ...f, limit_period: e.target.value }))}
-            className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2"
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-          </select>
+
+        {/* Coupon Settings */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Coupon Settings</p>
+          <div>
+            <label className={labelClass}>Discount Value <span className="text-red-500">*</span></label>
+            <input value={form.coupon_discount_value} onChange={(e) => setForm((f) => ({ ...f, coupon_discount_value: e.target.value }))} required className={inputClass} />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Coupon Limit</label>
+              <input type="number" min={1} value={form.coupon_limit} onChange={(e) => setForm((f) => ({ ...f, coupon_limit: parseInt(e.target.value) || 0 }))} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Limit Period</label>
+              <select value={form.limit_period} onChange={(e) => setForm((f) => ({ ...f, limit_period: e.target.value }))} className={inputClass}>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-lg bg-emerald-600 px-6 py-2 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
-          >
-            Save Hotel Details
+
+        <div className="flex items-center gap-4">
+          <button type="submit" disabled={loading} className="flex-1 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors">
+            {loading ? 'Saving…' : 'Save Property'}
           </button>
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={loading}
-            className="rounded-lg border border-red-500 px-6 py-2 font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 disabled:opacity-50"
-          >
-            Delete property
+          <button type="button" onClick={handleDelete} disabled={loading} className="rounded-xl border border-red-500 px-6 py-3 font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 disabled:opacity-50 transition-colors">
+            Delete
           </button>
         </div>
       </form>
 
-      <HotelRoomsManager hotelId={id} />
+      {/* Rooms Manager */}
+      <div className="mt-10">
+        <HotelRoomsManager hotelId={id} />
+      </div>
 
-      <h2 className="mt-12 text-lg font-semibold text-black dark:text-zinc-100">Hotel account</h2>
-      {managingAccount ? (
-        <div className="mt-4 rounded-xl border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4 max-w-lg">
-          <p className="text-sm font-medium text-black dark:text-zinc-300">Managing account</p>
-          <p className="mt-1 text-black dark:text-zinc-400">{managingAccount.name}</p>
-          <p className="text-sm text-black dark:text-zinc-400">{managingAccount.email}</p>
-          <p className="mt-2">
-            <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${managingAccount.approved ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'}`}>
-              {managingAccount.approved ? 'Approved' : 'Pending approval'}
-            </span>
-          </p>
-          {!managingAccount.approved && (
-            <Link href="/admin/hotel-accounts" className="mt-2 inline-block text-sm text-emerald-600 hover:underline dark:text-emerald-400">
-              Approve in Pending Hotel Approvals →
-            </Link>
-          )}
-        </div>
-      ) : (
-        <>
-          <p className="mt-1 text-sm text-black dark:text-zinc-400">
-            Create an account so the hotel can log in and redeem coupons.
-          </p>
-          <form onSubmit={handleCreateAccount} className="mt-4 max-w-lg space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-black dark:text-zinc-300">Name</label>
-              <input
-                value={accountForm.name}
-                onChange={(e) => setAccountForm((f) => ({ ...f, name: e.target.value }))}
-                required
-                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-800 dark:text-zinc-100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-black dark:text-zinc-300">Email</label>
-              <input
-                type="email"
-                value={accountForm.email}
-                onChange={(e) => setAccountForm((f) => ({ ...f, email: e.target.value }))}
-                required
-                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-800 dark:text-zinc-100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-black dark:text-zinc-300">Password</label>
-              <input
-                type="password"
-                value={accountForm.password}
-                onChange={(e) => setAccountForm((f) => ({ ...f, password: e.target.value }))}
-                required
-                minLength={6}
-                className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-800 dark:text-zinc-100"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-lg bg-zinc-900 px-6 py-2 font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-            >
-              Create Account
-            </button>
-          </form>
-        </>
-      )}
+      {/* Hotel account */}
+      <div className="mt-10">
+        <h2 className="text-lg font-semibold text-black dark:text-zinc-100">Hotel Login Account</h2>
+        {managingAccount ? (
+          <div className="mt-4 rounded-xl border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5 max-w-lg">
+            <p className="text-sm font-medium text-black dark:text-zinc-300">Managing account</p>
+            <p className="mt-1 text-black dark:text-zinc-200 font-medium">{managingAccount.name}</p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">{managingAccount.email}</p>
+            <p className="mt-2">
+              <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${managingAccount.approved ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'}`}>
+                {managingAccount.approved ? 'Approved' : 'Pending approval'}
+              </span>
+            </p>
+            {!managingAccount.approved && (
+              <Link href="/admin/hotel-accounts" className="mt-2 inline-block text-sm text-emerald-600 hover:underline dark:text-emerald-400">
+                Approve in Pending Hotel Approvals →
+              </Link>
+            )}
+          </div>
+        ) : (
+          <>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+              Create an account so the hotel can log in and redeem coupons.
+            </p>
+            <form onSubmit={handleCreateAccount} className="mt-4 max-w-lg space-y-4 rounded-xl border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5">
+              <div>
+                <label className={labelClass}>Name</label>
+                <input value={accountForm.name} onChange={(e) => setAccountForm((f) => ({ ...f, name: e.target.value }))} required className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-800 dark:text-zinc-100 outline-none" />
+              </div>
+              <div>
+                <label className={labelClass}>Email</label>
+                <input type="email" value={accountForm.email} onChange={(e) => setAccountForm((f) => ({ ...f, email: e.target.value }))} required className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-800 dark:text-zinc-100 outline-none" />
+              </div>
+              <div>
+                <label className={labelClass}>Password</label>
+                <input type="password" value={accountForm.password} onChange={(e) => setAccountForm((f) => ({ ...f, password: e.target.value }))} required minLength={6} className="mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:bg-zinc-800 dark:text-zinc-100 outline-none" />
+              </div>
+              <button type="submit" disabled={loading} className="rounded-lg bg-zinc-900 px-6 py-2 font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
+                Create Account
+              </button>
+            </form>
+          </>
+        )}
+      </div>
     </div>
   );
 }

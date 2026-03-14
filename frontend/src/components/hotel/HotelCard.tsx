@@ -60,7 +60,8 @@ function BlurImage({
     return () => observer.disconnect();
   }, []);
 
-  const isExternalImage = src.includes('images.unsplash.com') || src.includes('res.cloudinary') || src.includes('cloudfront');
+  // Use unoptimized for any absolute URL — hotel images come from user-provided URLs
+  const isExternalImage = src.startsWith('http://') || src.startsWith('https://');
 
   return (
     <div ref={imgRef} className={`relative ${className}`}>

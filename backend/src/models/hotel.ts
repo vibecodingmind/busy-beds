@@ -5,6 +5,9 @@ export interface Hotel {
   name: string;
   description: string | null;
   location: string | null;
+  country: string | null;
+  region: string | null;
+  city: string | null;
   contact_phone: string | null;
   contact_email: string | null;
   contact_whatsapp: string | null;
@@ -40,6 +43,9 @@ export async function findAllHotels(
     max_price?: number;
     amenities?: string[];
     has_discount?: boolean;
+    country?: string;
+    region?: string;
+    city?: string;
   }
 ): Promise<(Hotel & { avg_rating?: number | null; review_count?: number })[]> {
   const conditions: string[] = [];
@@ -49,8 +55,23 @@ export async function findAllHotels(
     conditions.push('COALESCE(h.active, true) = true');
   }
   if (opts?.search?.trim()) {
-    conditions.push(`(h.name ILIKE $${i} OR h.location ILIKE $${i} OR h.description ILIKE $${i})`);
+    conditions.push(`(h.name ILIKE $${i} OR h.location ILIKE $${i} OR h.description ILIKE $${i} OR h.city ILIKE $${i} OR h.region ILIKE $${i} OR h.country ILIKE $${i})`);
     params.push(`%${opts.search.trim()}%`);
+    i++;
+  }
+  if (opts?.country) {
+    conditions.push(`h.country ILIKE $${i}`);
+    params.push(opts.country);
+    i++;
+  }
+  if (opts?.region) {
+    conditions.push(`h.region ILIKE $${i}`);
+    params.push(opts.region);
+    i++;
+  }
+  if (opts?.city) {
+    conditions.push(`h.city ILIKE $${i}`);
+    params.push(opts.city);
     i++;
   }
   if (opts?.featured === true) {
@@ -91,7 +112,7 @@ export async function findAllHotels(
   const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
   let orderBy = 'COALESCE(h.featured, false) DESC, ';
   if (opts?.sort === 'location') {
-    orderBy += 'h.location NULLS LAST, h.name';
+    orderBy += 'h.country NULLS LAST, h.region NULLS LAST, h.city NULLS LAST, h.name';
   } else if (opts?.sort === 'rating') {
     orderBy = '(SELECT AVG(r.rating) FROM hotel_reviews r WHERE r.hotel_id = h.id) DESC NULLS LAST, ' + orderBy + 'h.name';
   } else if (opts?.sort === 'distance' && opts?.lat != null && opts?.lng != null) {
@@ -152,6 +173,9 @@ export async function findAllHotels(
     longitude: r.longitude != null ? Number(r.longitude) : null,
     featured: Boolean(r.featured),
     active: r.active !== false,
+    country: (r.country as string) || null,
+    region: (r.region as string) || null,
+    city: (r.city as string) || null,
   })) as (Hotel & { avg_rating?: number | null; review_count?: number; redemptions_this_month?: number; avg_response_hours?: number | null })[];
 }
 
@@ -194,6 +218,9 @@ export async function findHotelById(id: number, includeInactive = false): Promis
     active: row.active !== false,
     redemptions_this_month: row.redemptions_this_month != null ? Number(row.redemptions_this_month) : 0,
     avg_response_hours: row.avg_response_hours != null ? Number(row.avg_response_hours) : null,
+    country: row.country || null,
+    region: row.region || null,
+    city: row.city || null,
   };
 }
 
@@ -247,6 +274,9 @@ export async function findHotelsByIds(ids: number[]): Promise<(Hotel & { avg_rat
     longitude: r.longitude != null ? Number(r.longitude) : null,
     featured: Boolean(r.featured),
     active: r.active !== false,
+    country: (r.country as string) || null,
+    region: (r.region as string) || null,
+    city: (r.city as string) || null,
   })) as (Hotel & { avg_rating?: number | null; review_count?: number; redemptions_this_month?: number; avg_response_hours?: number | null })[];
 }
 
@@ -254,6 +284,9 @@ export async function createHotel(data: {
   name: string;
   description?: string;
   location?: string;
+  country?: string;
+  region?: string;
+  city?: string;
   contact_phone?: string;
   contact_email?: string;
   contact_whatsapp?: string | null;
@@ -268,13 +301,16 @@ export async function createHotel(data: {
   limit_period: string;
 }): Promise<Hotel> {
   const result = await pool.query(
-    `INSERT INTO hotels (name, description, location, contact_phone, contact_email, contact_whatsapp, images, latitude, longitude, booking_url, featured, active, coupon_discount_value, coupon_limit, limit_period)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+    `INSERT INTO hotels (name, description, location, country, region, city, contact_phone, contact_email, contact_whatsapp, images, latitude, longitude, booking_url, featured, active, coupon_discount_value, coupon_limit, limit_period)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
      RETURNING *`,
     [
       data.name,
       data.description || null,
       data.location || null,
+      data.country || null,
+      data.region || null,
+      data.city || null,
       data.contact_phone || null,
       data.contact_email || null,
       data.contact_whatsapp || null,
@@ -290,7 +326,16 @@ export async function createHotel(data: {
     ]
   );
   const row = result.rows[0]!;
-  return { ...row, images: row.images || [], latitude: row.latitude ? Number(row.latitude) : null, longitude: row.longitude ? Number(row.longitude) : null, active: row.active !== false };
+  return {
+    ...row,
+    images: row.images || [],
+    latitude: row.latitude ? Number(row.latitude) : null,
+    longitude: row.longitude ? Number(row.longitude) : null,
+    active: row.active !== false,
+    country: row.country || null,
+    region: row.region || null,
+    city: row.city || null,
+  };
 }
 
 export async function updateHotel(
@@ -299,6 +344,9 @@ export async function updateHotel(
     name: string;
     description: string;
     location: string;
+    country: string;
+    region: string;
+    city: string;
     contact_phone: string;
     contact_email: string;
     contact_whatsapp: string | null;
@@ -332,5 +380,38 @@ export async function updateHotel(
   );
   const row = result.rows[0];
   if (!row) return null;
-  return { ...row, images: row.images || [], latitude: row.latitude ? Number(row.latitude) : null, longitude: row.longitude ? Number(row.longitude) : null, active: row.active !== false };
+  return {
+    ...row,
+    images: row.images || [],
+    latitude: row.latitude ? Number(row.latitude) : null,
+    longitude: row.longitude ? Number(row.longitude) : null,
+    active: row.active !== false,
+    country: row.country || null,
+    region: row.region || null,
+    city: row.city || null,
+  };
+}
+
+/** Returns distinct countries, then regions within a country, then cities within a region */
+export async function getHotelLocations(): Promise<{
+  countries: string[];
+  regions: { country: string; region: string }[];
+  cities: { country: string; region: string | null; city: string }[];
+}> {
+  const [countriesRes, regionsRes, citiesRes] = await Promise.all([
+    pool.query(
+      `SELECT DISTINCT country FROM hotels WHERE country IS NOT NULL AND country != '' AND COALESCE(active, true) = true ORDER BY country`
+    ),
+    pool.query(
+      `SELECT DISTINCT country, region FROM hotels WHERE country IS NOT NULL AND region IS NOT NULL AND region != '' AND COALESCE(active, true) = true ORDER BY country, region`
+    ),
+    pool.query(
+      `SELECT DISTINCT country, region, city FROM hotels WHERE city IS NOT NULL AND city != '' AND COALESCE(active, true) = true ORDER BY country NULLS LAST, region NULLS LAST, city`
+    ),
+  ]);
+  return {
+    countries: countriesRes.rows.map((r: any) => r.country),
+    regions: regionsRes.rows.map((r: any) => ({ country: r.country, region: r.region })),
+    cities: citiesRes.rows.map((r: any) => ({ country: r.country || null, region: r.region || null, city: r.city })),
+  };
 }

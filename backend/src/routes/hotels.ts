@@ -3,6 +3,17 @@ import * as hotelModel from '../models/hotel';
 
 const router = Router();
 
+// GET /hotels/locations — unique countries, regions, cities for filter dropdowns
+router.get('/locations', async (_req, res) => {
+  try {
+    const data = await hotelModel.getHotelLocations();
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch locations' });
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
@@ -22,6 +33,9 @@ router.get('/', async (req, res) => {
     const maxPrice = req.query.max_price != null ? parseFloat(req.query.max_price as string) : undefined;
     const amenities = req.query.amenities ? (req.query.amenities as string).split(',') : undefined;
     const hasDiscount = req.query.has_discount === 'true' ? true : undefined;
+    const country = req.query.country as string | undefined;
+    const region = req.query.region as string | undefined;
+    const city = req.query.city as string | undefined;
     const hotels = await hotelModel.findAllHotels(limit, offset, {
       search,
       sort,
@@ -37,6 +51,9 @@ router.get('/', async (req, res) => {
       max_price: maxPrice,
       amenities,
       has_discount: hasDiscount,
+      country,
+      region,
+      city,
     });
     res.json({ hotels });
   } catch (err) {
