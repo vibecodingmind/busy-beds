@@ -804,7 +804,8 @@ export interface Hotel {
   created_at?: string;
   coupon_discount_value: string;
   coupon_limit: number;
-  limit_period: string;
+  limit_period: 'daily' | 'weekly' | 'monthly';
+  price_type: 'day' | 'month';
   social_facebook?: string | null;
   social_instagram?: string | null;
   social_x?: string | null;

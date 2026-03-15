@@ -240,8 +240,8 @@ export default function AdminHotelsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${h.active !== false
-                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400'
-                          : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-500/20 dark:text-zinc-400'
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400'
+                        : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-500/20 dark:text-zinc-400'
                         }`}>
                         <div className={`w-1.5 h-1.5 rounded-full ${h.active !== false ? 'bg-emerald-500' : 'bg-zinc-400'}`} />
                         {h.active !== false ? 'Active' : 'Inactive'}
@@ -262,13 +262,17 @@ export default function AdminHotelsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2 text-xs font-bold text-primary">
+                        <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-tight">
                           <Percent size={12} />
                           {h.coupon_discount_value} OFF
                         </div>
                         <div className="flex items-center gap-2 text-[10px] text-muted">
                           <Clock size={10} />
                           {h.coupon_limit} / {h.limit_period}
+                        </div>
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">
+                          <Building2 size={10} />
+                          Per {h.price_type || 'day'}
                         </div>
                       </div>
                     </td>

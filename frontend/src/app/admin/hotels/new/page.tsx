@@ -35,7 +35,8 @@ export default function NewHotelPage() {
     booking_expedia: '',
     coupon_discount_value: '',
     coupon_limit: 10,
-    limit_period: 'daily',
+    limit_period: 'daily' as 'daily' | 'weekly' | 'monthly',
+    price_type: 'day' as 'day' | 'month',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,6 +53,7 @@ export default function NewHotelPage() {
         featured: form.featured,
         latitude: form.latitude === '' ? undefined : Number(form.latitude),
         longitude: form.longitude === '' ? undefined : Number(form.longitude),
+        price_type: form.price_type,
         country: 'Tanzania',
         region: form.region || undefined,
         city: undefined,
@@ -208,25 +210,35 @@ export default function NewHotelPage() {
           <PhotosInput value={form.images} onChange={(urls) => setForm((f) => ({ ...f, images: urls }))} placeholder="https://images.unsplash.com/photo-…" />
         </div>
 
-        {/* Coupon Settings */}
+        {/* Pricing & Coupon Settings */}
         <div className={sectionClass}>
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Coupon Settings</p>
-          <div>
-            <label className={labelClass}>Discount Value <span className="text-red-500">*</span></label>
-            <input value={form.coupon_discount_value} onChange={(e) => setForm((f) => ({ ...f, coupon_discount_value: e.target.value }))} placeholder="e.g. 15% off or $50 off" required className={inputClass} />
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Pricing & Coupon Settings</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Price Type <span className="text-red-500">*</span></label>
+              <select value={form.price_type} onChange={(e) => setForm((f) => ({ ...f, price_type: e.target.value as 'day' | 'month' }))} className={inputClass}>
+                <option value="day">Per Day</option>
+                <option value="month">Per Month</option>
+              </select>
+              <p className="mt-1 text-xs text-zinc-500">Determines if price is displayed as /day or /month</p>
+            </div>
+            <div>
+              <label className={labelClass}>Discount Value <span className="text-red-500">*</span></label>
+              <input value={form.coupon_discount_value} onChange={(e) => setForm((f) => ({ ...f, coupon_discount_value: e.target.value }))} placeholder="e.g. 15% off or $50 off" required className={inputClass} />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Coupon Limit</label>
-              <input type="number" min={1} value={form.coupon_limit} onChange={(e) => setForm((f) => ({ ...f, coupon_limit: parseInt(e.target.value) || 0 }))} className={inputClass} />
-            </div>
-            <div>
               <label className={labelClass}>Limit Period</label>
-              <select value={form.limit_period} onChange={(e) => setForm((f) => ({ ...f, limit_period: e.target.value }))} className={inputClass}>
+              <select value={form.limit_period} onChange={(e) => setForm((f) => ({ ...f, limit_period: e.target.value as any }))} className={inputClass}>
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
               </select>
+            </div>
+            <div>
+              <label className={labelClass}>Booking Coupon Limit</label>
+              <input type="number" min={1} value={form.coupon_limit} onChange={(e) => setForm((f) => ({ ...f, coupon_limit: parseInt(e.target.value) || 0 }))} className={inputClass} />
             </div>
           </div>
         </div>

@@ -44,6 +44,7 @@ router.post(
   body('coupon_discount_value').trim().notEmpty(),
   body('coupon_limit').isInt({ min: 1 }),
   body('limit_period').isIn(['daily', 'weekly', 'monthly']),
+  body('price_type').optional().isIn(['day', 'month']),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -78,6 +79,7 @@ router.post(
         booking_bookingcom: req.body.booking_bookingcom || null,
         booking_agoda: req.body.booking_agoda || null,
         booking_expedia: req.body.booking_expedia || null,
+        price_type: req.body.price_type || 'day',
       });
       res.status(201).json(hotel);
     } catch (err) {

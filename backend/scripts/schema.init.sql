@@ -274,6 +274,9 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='booking_expedia') THEN
     ALTER TABLE hotels ADD COLUMN booking_expedia VARCHAR(500);
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='price_type') THEN
+    ALTER TABLE hotels ADD COLUMN price_type VARCHAR(10) DEFAULT 'day' CHECK (price_type IN ('day', 'month'));
+  END IF;
 END $$;
 
 -- Allow 'cancelled' status on coupons

@@ -24,6 +24,7 @@ export interface Hotel {
   social_x: string | null;
   social_linkedin: string | null;
   social_tiktok: string | null;
+  price_type: 'day' | 'month';
   created_at: Date;
   updated_at: Date;
 }
@@ -342,10 +343,11 @@ export async function createHotel(data: {
   booking_bookingcom?: string | null;
   booking_agoda?: string | null;
   booking_expedia?: string | null;
+  price_type?: 'day' | 'month';
 }): Promise<Hotel> {
   const result = await pool.query(
-    `INSERT INTO hotels (name, description, location, country, region, city, contact_phone, contact_email, contact_whatsapp, images, latitude, longitude, booking_url, featured, active, coupon_discount_value, coupon_limit, limit_period, social_facebook, social_instagram, social_x, social_linkedin, social_tiktok, booking_airbnb, booking_bookingcom, booking_agoda, booking_expedia)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27)
+    `INSERT INTO hotels (name, description, location, country, region, city, contact_phone, contact_email, contact_whatsapp, images, latitude, longitude, booking_url, featured, active, coupon_discount_value, coupon_limit, limit_period, social_facebook, social_instagram, social_x, social_linkedin, social_tiktok, booking_airbnb, booking_bookingcom, booking_agoda, booking_expedia, price_type)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28)
      RETURNING *`,
     [
       data.name,
@@ -375,6 +377,7 @@ export async function createHotel(data: {
       data.booking_bookingcom || null,
       data.booking_agoda || null,
       data.booking_expedia || null,
+      data.price_type || 'day',
     ]
   );
   const row = result.rows[0]!;
@@ -425,6 +428,7 @@ export async function updateHotel(
     booking_bookingcom: string | null;
     booking_agoda: string | null;
     booking_expedia: string | null;
+    price_type: 'day' | 'month';
   }>
 ): Promise<Hotel | null> {
   const fields: string[] = [];
