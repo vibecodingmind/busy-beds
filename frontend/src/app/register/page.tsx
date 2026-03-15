@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHotelAuth } from '@/contexts/HotelAuthContext';
 import { hotelAuth, promo } from '@/lib/api';
 import AuthLayout from '@/components/auth/AuthLayout';
+import SearchableSelect from '@/components/SearchableSelect';
 import {
   User,
   Building2,
@@ -20,7 +21,8 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
-  ChevronRight
+  ChevronRight,
+  Globe
 } from 'lucide-react';
 
 type RegisterType = 'guest' | 'hotel' | null;
@@ -31,7 +33,8 @@ function RegisterContent() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [hotelId, setHotelId] = useState('');
-  const [hotels, setHotels] = useState<{ id: number; name: string }[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<string>('');
+  const [hotels, setHotels] = useState<{ id: number; name: string; country?: string }[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [promoCode, setPromoCode] = useState('');
   const [promoValid, setPromoValid] = useState<{ valid: boolean; message?: string } | null>(null);
@@ -48,6 +51,16 @@ function RegisterContent() {
       hotelAuth.hotelsWithoutAccount().then((r) => setHotels(r.hotels)).catch(() => { });
     }
   }, [registerType]);
+
+  const uniqueCountries = useMemo(() => {
+    const countries = Array.from(new Set(hotels.map(h => h.country).filter(Boolean)));
+    return countries.sort() as string[];
+  }, [hotels]);
+
+  const filteredHotels = useMemo(() => {
+    if (!selectedCountry) return [];
+    return hotels.filter(h => h.country === selectedCountry);
+  }, [hotels, selectedCountry]);
 
   const handleGuestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,27 +207,45 @@ function RegisterContent() {
           )}
 
           <div className="space-y-1.5">
+            <label htmlFor="country" className="text-sm font-semibold text-foreground/80 px-1">
+              Country
+            </label>
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted z-10">
+                <Globe size={18} />
+              </div>
+              <SearchableSelect
+                value={selectedCountry}
+                options={uniqueCountries}
+                onChange={(val) => {
+                  setSelectedCountry(val);
+                  setHotelId(''); // Reset hotel when country changes
+                }}
+                placeholder="Search or Select Country..."
+                searchPlaceholder="Search countries..."
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
             <label htmlFor="hotel" className="text-sm font-semibold text-foreground/80 px-1">
               Select Property
             </label>
             <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted z-10">
                 <Building2 size={18} />
               </div>
-              <select
-                id="hotel"
-                value={hotelId}
-                onChange={(e) => setHotelId(e.target.value)}
-                required
-                className="w-full rounded-xl border border-border bg-background/50 pl-11 pr-4 py-3 text-foreground focus:bg-background focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/5 outline-none transition-all appearance-none"
-              >
-                <option value="">Choose your property...</option>
-                {hotels.map((h) => (
-                  <option key={h.id} value={h.id}>
-                    {h.name}
-                  </option>
-                ))}
-              </select>
+              <SearchableSelect
+                value={filteredHotels.find(h => h.id.toString() === hotelId) || null}
+                options={filteredHotels}
+                onChange={(h) => setHotelId(h?.id.toString() || '')}
+                placeholder={selectedCountry ? "Choose your property..." : "Select country first"}
+                searchPlaceholder="Search properties..."
+                optionLabel={(h) => h ? h.name : ''}
+                disabled={!selectedCountry || filteredHotels.length === 0}
+                className="w-full"
+              />
             </div>
           </div>
 

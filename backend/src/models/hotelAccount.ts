@@ -40,7 +40,7 @@ export async function findHotelAccountById(id: number): Promise<HotelAccount | n
 
 export async function findHotelsWithoutAccount(): Promise<{ id: number; name: string }[]> {
   const result = await pool.query(
-    `SELECT h.id, h.name FROM hotels h
+    `SELECT h.id, h.name, h.country FROM hotels h
      LEFT JOIN hotel_accounts ha ON h.id = ha.hotel_id
      WHERE ha.id IS NULL`
   );

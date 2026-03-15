@@ -213,7 +213,7 @@ export const hotelAuth = {
   me: () =>
     api<{ hotelAccount: object; hotel: object }>('/auth/hotel/me', { tokenType: 'hotel' }),
   hotelsWithoutAccount: () =>
-    api<{ hotels: { id: number; name: string }[] }>('/auth/hotel/hotels-without-account'),
+    api<{ hotels: { id: number; name: string; country?: string }[] }>('/auth/hotel/hotels-without-account'),
 };
 
 // Hotels
