@@ -178,10 +178,20 @@ export const tanzaniaRegions: TanzaniaRegion[] = [
   {
     region: 'Manyara',
     wards: [
-      'Aber', 'Ainabul', 'Arusha Chini', 'Bargash', 'Basodoun', 'Bonga', 'Duken', 'Endasaka', 'Endashang', 'Gararaye',
-      'Geda', 'Hambar', 'Haydom', 'Ifulu', 'Itigi', 'Kakess', 'Kampuni', 'Karyat', 'Katiti', 'Khamak',
-      'Kibaya', 'Kigoma', 'Kilo', 'Kinyerezi', 'Kitete', 'Kokuru', 'Lalaji', 'Libokoni', 'Maghang', 'Makame',
-      'Maua', 'Mbulu', 'Mbuga', 'Miyombwi', 'Mogabiri', 'Naberera', 'Nahonga', 'Naiti', 'Nduguti', 'Newland'
+      'Arri',
+      'Babati', 'Bashnet', 'Bonga',
+      'Dabil', 'Dareda', 'Duru',
+      'Endakiso',
+      'Gallapo', 'Gidas',
+      'Katesh', 'Kibaya', 'Kiru',
+      'Magugu', 'Mamire', 'Mwada',
+      'Nkaiti',
+      'Orkesumet',
+      'Qash',
+      'Riroda',
+      'Sigino', 'Singe',
+      'Terrat',
+      'Ufana'
     ],
   },
   {
