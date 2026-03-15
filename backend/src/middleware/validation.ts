@@ -6,7 +6,7 @@ import { CustomError } from './errorHandler';
 export const validate = (validations: any[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     await Promise.all(validations.map(validation => validation.run(req)));
-    
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const errorMessages = errors.array().map((error: any) => ({
@@ -14,11 +14,11 @@ export const validate = (validations: any[]) => {
         message: error.msg,
         value: error.value
       }));
-      
+
       res.status(400).json({ error: 'Validation failed', details: errorMessages });
       return;
     }
-    
+
     next();
   };
 };
@@ -29,21 +29,21 @@ export const commonValidations = {
   password: body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
   name: body('name').trim().notEmpty().withMessage('Name is required'),
   id: param('id').isInt({ min: 1 }).withMessage('Valid ID required'),
-  
+
   // Hotel specific
   hotelId: body('hotel_id').isInt({ min: 1 }).withMessage('Valid hotel ID required'),
   hotelName: body('name').trim().isLength({ min: 1, max: 255 }).withMessage('Hotel name must be 1-255 characters'),
   hotelDescription: body('description').optional().trim().isLength({ max: 1000 }).withMessage('Description too long'),
   hotelLocation: body('location').optional().trim().isLength({ max: 500 }).withMessage('Location too long'),
-  
+
   // Coupon specific
   couponCode: body('code').trim().isLength({ min: 3, max: 50 }).withMessage('Coupon code must be 3-50 characters'),
   discountValue: body('discount_value').trim().notEmpty().withMessage('Discount value is required'),
-  
+
   // Pagination
   page: query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   limit: query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  
+
   // Search
   search: query('search').optional().trim().isLength({ min: 1, max: 100 }).withMessage('Search term too long'),
 };
@@ -56,34 +56,38 @@ export const validationSchemas = {
     commonValidations.password,
     commonValidations.name,
   ],
-  
+
   login: [
     commonValidations.email,
     body('password').notEmpty().withMessage('Password is required'),
   ],
-  
+
   updateProfile: [
     body('name').optional().trim().isLength({ min: 1, max: 255 }).withMessage('Name must be 1-255 characters'),
     commonValidations.email.optional(),
     body('phone').optional().trim().isLength({ max: 50 }).withMessage('Phone must be at most 50 characters'),
     body('avatar_url').optional().trim().isLength({ max: 512 }).withMessage('Avatar URL must be at most 512 characters'),
     body('whatsapp_opt_in').optional().isBoolean().withMessage('whatsapp_opt_in must be boolean'),
+    body('dob').optional().trim().isISO8601().withMessage('Date of birth must be a valid date'),
+    body('gender').optional().trim().isLength({ max: 50 }).withMessage('Gender too long'),
+    body('nationality').optional().trim().isLength({ max: 100 }).withMessage('Nationality too long'),
+    body('address').optional().trim().isLength({ max: 1000 }).withMessage('Address too long'),
   ],
-  
+
   changePassword: [
     body('current_password').notEmpty().withMessage('Current password is required'),
     body('new_password').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
   ],
-  
+
   forgotPassword: [
     commonValidations.email,
   ],
-  
+
   resetPassword: [
     body('token').notEmpty().withMessage('Reset token is required'),
     commonValidations.password,
   ],
-  
+
   // Hotel auth
   hotelRegister: [
     commonValidations.hotelId,
@@ -91,17 +95,17 @@ export const validationSchemas = {
     commonValidations.password,
     commonValidations.name,
   ],
-  
+
   hotelLogin: [
     commonValidations.email,
     body('password').notEmpty().withMessage('Password is required'),
   ],
-  
+
   // Hotels
   getHotel: [
     commonValidations.id,
   ],
-  
+
   createHotel: [
     commonValidations.hotelName,
     commonValidations.hotelDescription,
@@ -112,31 +116,31 @@ export const validationSchemas = {
     body('coupon_limit').isInt({ min: 1, max: 1000 }).withMessage('Coupon limit must be between 1 and 1000'),
     body('limit_period').isIn(['daily', 'weekly', 'monthly']).withMessage('Invalid limit period'),
   ],
-  
+
   updateHotel: [
     commonValidations.id,
     commonValidations.hotelName.optional(),
     commonValidations.hotelDescription.optional(),
     commonValidations.hotelLocation.optional(),
   ],
-  
+
   // Coupons
   getCoupon: [
     param('code').trim().isLength({ min: 3, max: 50 }).withMessage('Invalid coupon code'),
   ],
-  
+
   createCoupon: [
     commonValidations.hotelId,
     commonValidations.couponCode,
   ],
-  
+
   // Reviews
   createReview: [
     commonValidations.hotelId,
     body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
     body('comment').optional().trim().isLength({ max: 1000 }).withMessage('Comment too long'),
   ],
-  
+
   // Subscriptions
   createSubscription: [
     body('plan_id').isInt({ min: 1 }).withMessage('Valid plan ID required'),
@@ -148,10 +152,10 @@ export const sanitizeInput = (req: Request, res: Response, next: NextFunction) =
   // Remove potential XSS from string fields
   const sanitizeString = (str: string): string => {
     return str.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-              .replace(/<[^>]*>/g, '')
-              .trim();
+      .replace(/<[^>]*>/g, '')
+      .trim();
   };
-  
+
   // Fields that must never be transformed (passwords must reach bcrypt unchanged)
   const PASSWORD_FIELDS = new Set(['password', 'new_password', 'current_password', 'confirm_password', 'password_hash']);
 
@@ -176,10 +180,10 @@ export const sanitizeInput = (req: Request, res: Response, next: NextFunction) =
     }
     return obj;
   };
-  
+
   req.body = sanitizeObject(req.body);
   req.query = sanitizeObject(req.query);
   req.params = sanitizeObject(req.params);
-  
+
   next();
 };

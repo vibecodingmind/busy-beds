@@ -204,6 +204,18 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='active') THEN
     ALTER TABLE users ADD COLUMN active BOOLEAN DEFAULT true;
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='dob') THEN
+    ALTER TABLE users ADD COLUMN dob DATE;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='gender') THEN
+    ALTER TABLE users ADD COLUMN gender VARCHAR(50);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='nationality') THEN
+    ALTER TABLE users ADD COLUMN nationality VARCHAR(100);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='address') THEN
+    ALTER TABLE users ADD COLUMN address TEXT;
+  END IF;
 END $$;
 
 -- Add latitude/longitude to hotels for map and distance

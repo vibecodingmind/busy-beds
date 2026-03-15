@@ -16,6 +16,10 @@ interface User {
   notif_promos?: boolean;
   notif_new_hotels?: boolean;
   totp_enabled?: boolean;
+  dob?: string | null;
+  gender?: string | null;
+  nationality?: string | null;
+  address?: string | null;
 }
 
 interface AuthContextType {
@@ -25,6 +29,7 @@ interface AuthContextType {
   register: (email: string, password: string, name: string, referralCode?: string) => Promise<void>;
   logout: () => void;
   setUser: (u: User | null) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -92,8 +97,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const u = await auth.me();
+      setUser(u);
+    } catch (error) {
+      console.error('Refresh user error:', error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, setUser }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, setUser, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

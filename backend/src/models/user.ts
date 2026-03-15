@@ -18,6 +18,10 @@ export interface User {
   totp_secret?: string | null;
   totp_enabled?: boolean | null;
   totp_backup_codes?: string | null;
+  dob?: Date | string | null;
+  gender?: string | null;
+  nationality?: string | null;
+  address?: string | null;
 }
 
 export async function createUser(
@@ -50,7 +54,13 @@ export async function findUserById(id: number): Promise<User | null> {
 
 export async function updateUser(
   id: number,
-  data: { name?: string; email?: string; password_hash?: string; avatar_url?: string | null; phone?: string | null; whatsapp_opt_in?: boolean | null; active?: boolean | null; notif_coupon_expiry?: boolean | null; notif_promos?: boolean | null; notif_new_hotels?: boolean | null; totp_secret?: string | null; totp_enabled?: boolean | null; totp_backup_codes?: string | null }
+  data: {
+    name?: string; email?: string; password_hash?: string; avatar_url?: string | null; phone?: string | null;
+    whatsapp_opt_in?: boolean | null; active?: boolean | null; notif_coupon_expiry?: boolean | null;
+    notif_promos?: boolean | null; notif_new_hotels?: boolean | null; totp_secret?: string | null;
+    totp_enabled?: boolean | null; totp_backup_codes?: string | null;
+    dob?: Date | string | null; gender?: string | null; nationality?: string | null; address?: string | null;
+  }
 ): Promise<User | null> {
   const updates: string[] = [];
   const values: unknown[] = [];
@@ -106,6 +116,22 @@ export async function updateUser(
   if (data.totp_backup_codes !== undefined) {
     updates.push(`totp_backup_codes = $${i++}`);
     values.push(data.totp_backup_codes);
+  }
+  if (data.dob !== undefined) {
+    updates.push(`dob = $${i++}`);
+    values.push(data.dob);
+  }
+  if (data.gender !== undefined) {
+    updates.push(`gender = $${i++}`);
+    values.push(data.gender);
+  }
+  if (data.nationality !== undefined) {
+    updates.push(`nationality = $${i++}`);
+    values.push(data.nationality);
+  }
+  if (data.address !== undefined) {
+    updates.push(`address = $${i++}`);
+    values.push(data.address);
   }
   if (updates.length === 0) return findUserById(id);
   values.push(id);

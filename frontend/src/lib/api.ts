@@ -69,10 +69,18 @@ export const auth = {
       notif_coupon_expiry?: boolean;
       notif_promos?: boolean;
       notif_new_hotels?: boolean;
+      dob?: string | null;
+      gender?: string | null;
+      nationality?: string | null;
+      address?: string | null;
     }>('/auth/me'),
   meStats: () =>
     api<{ redemptions_this_month: number }>('/auth/me/stats'),
-  updateProfile: (data: { name?: string; email?: string; phone?: string | null; avatar_url?: string | null; whatsapp_opt_in?: boolean; notif_coupon_expiry?: boolean; notif_promos?: boolean; notif_new_hotels?: boolean }) =>
+  updateProfile: (data: {
+    name?: string; email?: string; phone?: string | null; avatar_url?: string | null;
+    whatsapp_opt_in?: boolean; notif_coupon_expiry?: boolean; notif_promos?: boolean; notif_new_hotels?: boolean;
+    dob?: string | null; gender?: string | null; nationality?: string | null; address?: string | null;
+  }) =>
     api<{
       id: number;
       email: string;
@@ -85,6 +93,10 @@ export const auth = {
       notif_coupon_expiry?: boolean;
       notif_promos?: boolean;
       notif_new_hotels?: boolean;
+      dob?: string | null;
+      gender?: string | null;
+      nationality?: string | null;
+      address?: string | null;
     }>('/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -173,6 +185,10 @@ export const auth = {
         notif_coupon_expiry?: boolean;
         notif_promos?: boolean;
         notif_new_hotels?: boolean;
+        dob?: string | null;
+        gender?: string | null;
+        nationality?: string | null;
+        address?: string | null;
       };
       token: string;
     }>('/auth/2fa/validate', {
@@ -829,6 +845,10 @@ export interface User {
   name: string;
   role: string;
   created_at: string;
+  dob?: string | null;
+  gender?: string | null;
+  nationality?: string | null;
+  address?: string | null;
 }
 
 export interface Redemption {
