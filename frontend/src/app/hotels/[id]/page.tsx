@@ -322,31 +322,41 @@ export default async function HotelDetailPage({
             {(hotel.booking_airbnb || hotel.booking_bookingcom || hotel.booking_agoda || hotel.booking_expedia) && (
               <div className="mt-6 pt-5 border-t border-black/5 dark:border-white/5">
                 <p className="text-sm font-semibold text-black dark:text-zinc-100 mb-3 uppercase tracking-wider">Or book via our partners</p>
-                <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-3 mt-4">
                   {hotel.booking_bookingcom && (
-                    <AppLink href={hotel.booking_bookingcom} className="flex items-center gap-2 text-sm text-[#003580] dark:text-[#337ab7] hover:underline font-medium">
-                      <ExternalLinkIcon /> Booking.com
+                    <AppLink href={hotel.booking_bookingcom} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#003580] px-4 py-3 text-sm font-medium text-white transition-all shadow-sm hover:bg-[#00224f] hover:shadow active:scale-[0.98]">
+                      Booking.com <ExternalLinkIcon className="h-4 w-4 opacity-80" />
                     </AppLink>
                   )}
                   {hotel.booking_airbnb && (
-                    <AppLink href={hotel.booking_airbnb} className="flex items-center gap-2 text-sm text-[#FF5A5F] hover:underline font-medium">
-                      <ExternalLinkIcon /> Airbnb
+                    <AppLink href={hotel.booking_airbnb} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#FF5A5F] px-4 py-3 text-sm font-medium text-white transition-all shadow-sm hover:bg-[#e0484d] hover:shadow active:scale-[0.98]">
+                      Airbnb <ExternalLinkIcon className="h-4 w-4 opacity-80" />
                     </AppLink>
                   )}
                   {hotel.booking_agoda && (
-                    <AppLink href={hotel.booking_agoda} className="flex items-center gap-2 text-sm text-[#2a82c6] dark:text-[#42a5f5] hover:underline font-medium">
-                      <ExternalLinkIcon /> Agoda
+                    <AppLink href={hotel.booking_agoda} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#2a82c6] px-4 py-3 text-sm font-medium text-white transition-all shadow-sm hover:bg-[#1f669e] hover:shadow active:scale-[0.98]">
+                      Agoda <ExternalLinkIcon className="h-4 w-4 opacity-80" />
                     </AppLink>
                   )}
                   {hotel.booking_expedia && (
-                    <AppLink href={hotel.booking_expedia} className="flex items-center gap-2 text-sm text-[#0000A0] dark:text-[#5c6bc0] hover:underline font-medium">
-                      <ExternalLinkIcon /> Expedia
+                    <AppLink href={hotel.booking_expedia} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0000A0] px-4 py-3 text-sm font-medium text-white transition-all shadow-sm hover:bg-[#00007a] hover:shadow active:scale-[0.98]">
+                      Expedia <ExternalLinkIcon className="h-4 w-4 opacity-80" />
                     </AppLink>
                   )}
                 </div>
-                <p className="mt-4 text-xs text-zinc-500 dark:text-zinc-400 italic">
-                  Note: App discount coupons only apply to direct bookings.
-                </p>
+
+                <div className="mt-5 rounded-xl border border-orange-200/60 bg-orange-50/70 p-4 dark:border-orange-900/40 dark:bg-orange-950/30">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 shrink-0 rounded-full bg-orange-100 p-1 text-orange-600 dark:bg-orange-900/50 dark:text-orange-400">
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-sm font-medium leading-snug text-orange-800 dark:text-orange-300">
+                      Note: <span className="font-bold">BusyBeds</span> discount coupons only apply to direct bookings.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -456,9 +466,10 @@ function TicketIcon() {
   );
 }
 
-function ExternalLinkIcon() {
+function ExternalLinkIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
-    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
     </svg>
   );
 }
