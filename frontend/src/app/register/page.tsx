@@ -7,6 +7,21 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useHotelAuth } from '@/contexts/HotelAuthContext';
 import { hotelAuth, promo } from '@/lib/api';
 import AuthLayout from '@/components/auth/AuthLayout';
+import {
+  User,
+  Building2,
+  ArrowLeft,
+  Mail,
+  Lock,
+  User as UserIcon,
+  Ticket,
+  Eye,
+  EyeOff,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  ChevronRight
+} from 'lucide-react';
 
 type RegisterType = 'guest' | 'hotel' | null;
 
@@ -50,11 +65,9 @@ function RegisterContent() {
 
   const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
   const oauthBase = apiBase.replace('/api/v1', '');
-  const handleGoogleRegister = () => {
-    window.location.href = `${oauthBase}/auth/google?returnTo=${encodeURIComponent('/subscription')}`;
-  };
-  const handleLinkedInRegister = () => {
-    window.location.href = `${oauthBase}/auth/linkedin?returnTo=${encodeURIComponent('/subscription')}`;
+
+  const handleSocialRegister = (provider: 'google' | 'linkedin') => {
+    window.location.href = `${oauthBase}/auth/${provider}?returnTo=${encodeURIComponent('/subscription')}`;
   };
 
   const [hotelSubmitted, setHotelSubmitted] = useState(false);
@@ -85,51 +98,45 @@ function RegisterContent() {
   if (registerType === null) {
     return (
       <AuthLayout
-        title="Create Account"
-        subtitle="Choose how you want to join Busy Beds"
+        title="Join Busy Beds"
+        subtitle="Select your account type to get started"
         switchText="Already have an account?"
         switchLink="/login"
         switchLabel="Login"
         hideTopButton
       >
-        <div className="space-y-4">
-          <Link
-            href="/"
-            className="mb-4 inline-flex items-center gap-2 text-sm text-muted hover:text-foreground transition-colors"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </Link>
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <button
             type="button"
             onClick={() => setRegisterType('guest')}
-            className="flex w-full items-center gap-4 rounded-xl border border-border bg-black/5 dark:bg-zinc-800/50 p-4 text-left transition hover:bg-black/10 dark:hover:bg-zinc-700/50"
+            className="group flex w-full items-center gap-5 rounded-2xl border border-border bg-background/50 p-5 text-left transition-all hover:border-primary/50 hover:bg-background hover:shadow-xl hover:shadow-primary/5 active:scale-[0.99]"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black/10 dark:bg-zinc-700">
-              <svg className="h-6 w-6 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+              <UserIcon size={28} />
             </div>
-            <div>
-              <p className="font-semibold text-foreground">Guest / Traveler</p>
-              <p className="text-sm text-muted">Subscribe to get hotel discount coupons</p>
+            <div className="flex-1">
+              <p className="font-bold text-lg text-foreground tracking-tight">Guest / Traveler</p>
+              <p className="text-sm text-muted/80">Subscribe to unlock massive hotel discounts</p>
+            </div>
+            <div className="text-muted/30 group-hover:text-primary transition-colors pr-2">
+              <ChevronRight size={20} />
             </div>
           </button>
+
           <button
             type="button"
             onClick={() => setRegisterType('hotel')}
-            className="flex w-full items-center gap-4 rounded-xl border border-border bg-black/5 dark:bg-zinc-800/50 p-4 text-left transition hover:bg-black/10 dark:hover:bg-zinc-700/50"
+            className="group flex w-full items-center gap-5 rounded-2xl border border-border bg-background/50 p-5 text-left transition-all hover:border-primary/50 hover:bg-background hover:shadow-xl hover:shadow-primary/5 active:scale-[0.99]"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black/10 dark:bg-zinc-700">
-              <svg className="h-6 w-6 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+              <Building2 size={28} />
             </div>
-            <div>
-              <p className="font-semibold text-foreground">Hotel Owner</p>
-              <p className="text-sm text-muted">Register your hotel to redeem coupons</p>
+            <div className="flex-1">
+              <p className="font-bold text-lg text-foreground tracking-tight">Hotel Owner</p>
+              <p className="text-sm text-muted/80">Register your property to start redeeming coupons</p>
+            </div>
+            <div className="text-muted/30 group-hover:text-indigo-600 transition-colors pr-2">
+              <ChevronRight size={20} />
             </div>
           </button>
         </div>
@@ -141,21 +148,24 @@ function RegisterContent() {
     if (hotelSubmitted) {
       return (
         <AuthLayout
-          title="Registration Submitted"
-          subtitle="Your hotel account is pending approval"
-          switchText="Already have an account?"
-          switchLink="/login?type=hotel"
-          switchLabel="Login"
+          title="Review Pending"
+          subtitle="We've received your registration"
+          switchText="Need help?"
+          switchLink="/contact"
+          switchLabel="Support"
           hideTopButton
         >
-          <div className="space-y-4">
-            <div className="rounded-xl border border-emerald-300 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-900/30 p-4 text-emerald-800 dark:text-emerald-300">
-              <p className="font-medium">Thank you for registering!</p>
-              <p className="mt-2 text-sm">
-                Your registration has been submitted. An admin will review and approve your account. You will be able to log in once approved.
+          <div className="space-y-6 animate-in zoom-in-95 duration-500">
+            <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20 p-6 text-center">
+              <div className="mx-auto w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center text-emerald-600 mb-4">
+                <CheckCircle2 size={28} />
+              </div>
+              <h3 className="font-bold text-emerald-800 dark:text-emerald-400 text-lg">Submission Successful</h3>
+              <p className="mt-2 text-sm text-emerald-700/80 dark:text-emerald-400/80 leading-relaxed">
+                An administrator will review your hotel details. You will receive an email once your account is activated.
               </p>
             </div>
-            <Link href="/login?type=hotel" className="block text-center text-muted hover:text-primary transition-colors">
+            <Link href="/login" className="block w-full text-center py-3 rounded-xl border border-border font-bold hover:bg-background transition-colors">
               Back to Login
             </Link>
           </div>
@@ -164,98 +174,118 @@ function RegisterContent() {
     }
     return (
       <AuthLayout
-        title="Register Your Hotel"
-        subtitle="Create an account to redeem coupons"
-        switchText="Already have an account?"
-        switchLink="/login?type=hotel"
-        switchLabel="Login"
+        title="Hotel Account"
+        subtitle="Set up your property manager account"
+        switchText="Wait, I'm a guest"
+        switchLink="#"
+        switchLabel="Back"
         hideTopButton
       >
         <form onSubmit={handleHotelSubmit} className="space-y-4">
+          <button type="button" onClick={goBack} className="flex items-center gap-1.5 text-xs font-bold text-muted hover:text-foreground transition-colors mb-2">
+            <ArrowLeft size={14} /> Change Account Type
+          </button>
+
           {error && (
-            <div className="rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800/50 p-3 text-sm text-red-700 dark:text-red-300">{error}</div>
+            <div className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/50 p-4 text-sm text-red-600 dark:text-red-400 animate-in fade-in slide-in-from-top-2 flex gap-3">
+              <AlertCircle size={18} className="shrink-0" />
+              {error}
+            </div>
           )}
-          <div>
-            <label htmlFor="hotel" className="block text-sm font-medium text-foreground">
-              Property
+
+          <div className="space-y-1.5">
+            <label htmlFor="hotel" className="text-sm font-semibold text-foreground/80 px-1">
+              Select Property
             </label>
-            <select
-              id="hotel"
-              value={hotelId}
-              onChange={(e) => setHotelId(e.target.value)}
-              required
-              className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              <option value="">Select property</option>
-              {hotels.map((h) => (
-                <option key={h.id} value={h.id}>
-                  {h.name}
-                </option>
-              ))}
-            </select>
-            {hotels.length === 0 && (
-              <p className="mt-1 text-sm text-muted">
-                No properties available. Contact admin to add your property.
-              </p>
-            )}
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted">
+                <Building2 size={18} />
+              </div>
+              <select
+                id="hotel"
+                value={hotelId}
+                onChange={(e) => setHotelId(e.target.value)}
+                required
+                className="w-full rounded-xl border border-border bg-background/50 pl-11 pr-4 py-3 text-foreground focus:bg-background focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/5 outline-none transition-all appearance-none"
+              >
+                <option value="">Choose your property...</option>
+                {hotels.map((h) => (
+                  <option key={h.id} value={h.id}>
+                    {h.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div>
-            <label htmlFor="hotel-name" className="block text-sm font-medium text-foreground">
-              Your Name
+
+          <div className="space-y-1.5">
+            <label htmlFor="hotel-name" className="text-sm font-semibold text-foreground/80 px-1">
+              Full Name
             </label>
-            <input
-              id="hotel-name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-indigo-600 transition-colors">
+                <UserIcon size={18} />
+              </div>
+              <input
+                id="hotel-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="Manager Name"
+                className="w-full rounded-xl border border-border bg-background/50 pl-11 pr-4 py-3 text-foreground placeholder:text-muted/60 focus:bg-background focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/5 outline-none transition-all"
+              />
+            </div>
           </div>
-          <div>
-            <label htmlFor="hotel-email" className="block text-sm font-medium text-foreground">
-              Your Email
+
+          <div className="space-y-1.5">
+            <label htmlFor="hotel-email" className="text-sm font-semibold text-foreground/80 px-1">
+              Manager Email
             </label>
-            <input
-              id="hotel-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-indigo-600 transition-colors">
+                <Mail size={18} />
+              </div>
+              <input
+                id="hotel-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="manager@hotel.com"
+                className="w-full rounded-xl border border-border bg-background/50 pl-11 pr-4 py-3 text-foreground placeholder:text-muted/60 focus:bg-background focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/5 outline-none transition-all"
+              />
+            </div>
           </div>
-          <div>
-            <label htmlFor="hotel-password" className="block text-sm font-medium text-foreground">
-              Password
+
+          <div className="space-y-1.5">
+            <label htmlFor="hotel-password" className="text-sm font-semibold text-foreground/80 px-1">
+              Secure Password
             </label>
-            <input
-              id="hotel-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              placeholder="Enter your password"
-              className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            />
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-indigo-600 transition-colors">
+                <Lock size={18} />
+              </div>
+              <input
+                id="hotel-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                placeholder="••••••••"
+                className="w-full rounded-xl border border-border bg-background/50 pl-11 pr-4 py-3 text-foreground placeholder:text-muted/60 focus:bg-background focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/5 outline-none transition-all"
+              />
+            </div>
           </div>
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={goBack}
-              className="rounded-xl border border-border px-6 py-2.5 font-medium text-foreground hover:bg-black/10 dark:hover:bg-zinc-700/50 transition-colors"
-            >
-              Back
-            </button>
-            <button
-              type="submit"
-              disabled={loading || hotels.length === 0 || !hotelId}
-              className="flex-1 rounded-xl bg-primary py-3 font-medium text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
-            >
-              {loading ? 'Creating account...' : 'Register'}
-            </button>
-          </div>
+
+          <button
+            type="submit"
+            disabled={loading || hotels.length === 0 || !hotelId}
+            className="w-full rounded-xl bg-indigo-600 py-3.5 font-bold text-white shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-50 transition-all mt-4"
+          >
+            {loading ? <Loader2 className="animate-spin mx-auto" size={20} /> : 'Submit Manager Application'}
+          </button>
         </form>
       </AuthLayout>
     );
@@ -264,90 +294,114 @@ function RegisterContent() {
   return (
     <AuthLayout
       title="Create Account"
-      subtitle="Sign up as a guest to get started"
-      switchText="Already have an account?"
-      switchLink="/login"
-      switchLabel="Login"
+      subtitle="Join Busy Beds as a guest"
+      switchText="Wait, I'm an owner"
+      switchLink="#"
+      switchLabel="Back"
       hideTopButton
     >
       <form onSubmit={handleGuestSubmit} className="space-y-4">
+        <button type="button" onClick={goBack} className="flex items-center gap-1.5 text-xs font-bold text-muted hover:text-foreground transition-colors mb-2">
+          <ArrowLeft size={14} /> Change Account Type
+        </button>
+
         {error && (
-          <div className="rounded-lg bg-red-900/30 border border-red-800/50 p-3 text-sm text-red-300">{error}</div>
+          <div className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/50 p-4 text-sm text-red-600 dark:text-red-400 animate-in fade-in slide-in-from-top-2 flex gap-3">
+            <AlertCircle size={18} className="shrink-0" />
+            {error}
+          </div>
         )}
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-foreground">
-            Name
-          </label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            placeholder="First name"
-            className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label htmlFor="name" className="text-sm font-semibold text-foreground/80 px-1">
+              Full Name
+            </label>
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
+                <UserIcon size={18} />
+              </div>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="First Last"
+                className="w-full rounded-xl border border-border bg-background/50 pl-11 pr-4 py-3 text-foreground placeholder:text-muted/60 focus:bg-background focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label htmlFor="promo" className="text-sm font-semibold text-foreground/80 px-1">
+              Promo Code
+            </label>
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
+                <Ticket size={18} />
+              </div>
+              <input
+                id="promo"
+                type="text"
+                value={promoCode}
+                onChange={async (e) => {
+                  const v = e.target.value.toUpperCase();
+                  setPromoCode(v);
+                  if (!v.trim()) {
+                    setPromoValid(null);
+                    return;
+                  }
+                  try {
+                    const res = await promo.validate(v);
+                    setPromoValid({ valid: res.valid, message: res.message });
+                  } catch {
+                    setPromoValid({ valid: false });
+                  }
+                }}
+                placeholder="Optional"
+                className="w-full rounded-xl border border-border bg-background/50 pl-11 pr-4 py-3 text-foreground placeholder:text-muted/60 focus:bg-background focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all"
+              />
+              {promoValid?.valid && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500">
+                  <CheckCircle2 size={18} />
+                </div>
+              )}
+            </div>
+            {promoValid && !promoValid.valid && promoCode.trim() && (
+              <p className="px-1 text-[10px] font-bold text-amber-500 uppercase tracking-wider">Invalid Code</p>
+            )}
+          </div>
         </div>
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-foreground">
-            Your Email
+
+        <div className="space-y-1.5">
+          <label htmlFor="email" className="text-sm font-semibold text-foreground/80 px-1">
+            Email Address
           </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="you@example.com"
-            className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
+          <div className="relative group">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
+              <Mail size={18} />
+            </div>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="you@example.com"
+              className="w-full rounded-xl border border-border bg-background/50 pl-11 pr-4 py-3 text-foreground placeholder:text-muted/60 focus:bg-background focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all"
+            />
+          </div>
         </div>
-        <div>
-          <label htmlFor="promo" className="block text-sm font-medium text-foreground">
-            Promo code (optional)
+
+        <div className="space-y-1.5">
+          <label htmlFor="password" className="text-sm font-semibold text-foreground/80 px-1">
+            Create Password
           </label>
-          <input
-            id="promo"
-            type="text"
-            value={promoCode}
-            onChange={async (e) => {
-              const v = e.target.value;
-              setPromoCode(v);
-              if (!v.trim()) {
-                setPromoValid(null);
-                return;
-              }
-              try {
-                const res = await promo.validate(v);
-                setPromoValid({ valid: res.valid, message: res.message });
-              } catch {
-                setPromoValid({ valid: false });
-              }
-            }}
-            onBlur={async () => {
-              if (!promoCode.trim()) return;
-              try {
-                const res = await promo.validate(promoCode);
-                setPromoValid({ valid: res.valid, message: res.message });
-              } catch {
-                setPromoValid({ valid: false });
-              }
-            }}
-            placeholder="e.g. WELCOME10"
-            className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-          {promoValid?.valid && promoValid.message && (
-            <p className="mt-1 text-sm text-emerald-400">✓ {promoValid.message}</p>
-          )}
-          {promoValid && !promoValid.valid && promoCode.trim() && (
-            <p className="mt-1 text-sm text-amber-400">Invalid or expired code</p>
-          )}
-        </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-foreground">
-            Password
-          </label>
-          <div className="relative mt-1">
+          <div className="relative group">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors">
+              <Lock size={18} />
+            </div>
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
@@ -355,49 +409,44 @@ function RegisterContent() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              placeholder="Enter your password"
-              className="w-full rounded-xl border border-border bg-background px-4 py-2.5 pr-10 text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              placeholder="Min. 6 characters"
+              className="w-full rounded-xl border border-border bg-background/50 pl-11 pr-12 py-3 text-foreground placeholder:text-muted/60 focus:bg-background focus:border-primary/50 focus:ring-4 focus:ring-primary/5 outline-none transition-all"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-foreground transition-colors"
+              tabIndex={-1}
             >
-              {showPassword ? (
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z" />
-                </svg>
-              )}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </div>
+
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-primary py-3 font-medium text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
+          className="w-full rounded-xl bg-primary py-3.5 font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary-hover active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 transition-all mt-2"
         >
-          {loading ? 'Creating account...' : 'Create account'}
+          {loading ? <Loader2 className="animate-spin mx-auto" size={20} /> : 'Create Account'}
         </button>
-        <div className="relative my-6">
+
+        <div className="relative my-4">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border" />
+            <div className="w-full border-t border-border/60" />
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="bg-card px-3 text-muted">Or register with</span>
+          <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
+            <span className="bg-card px-4 text-muted/60">Social Registration</span>
           </div>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
+
+        <div className="grid grid-cols-2 gap-4">
           <button
             type="button"
-            onClick={handleGoogleRegister}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-black/5 dark:bg-zinc-800/50 py-2.5 font-medium text-foreground hover:bg-black/10 dark:hover:bg-zinc-700/50 transition-colors"
+            onClick={() => handleSocialRegister('google')}
+            className="flex items-center justify-center gap-2.5 rounded-xl border border-border bg-background/50 py-3 text-sm font-bold text-foreground hover:bg-background hover:border-border/80 hover:shadow-sm transition-all"
           >
-            <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
+            <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
@@ -407,22 +456,13 @@ function RegisterContent() {
           </button>
           <button
             type="button"
-            onClick={handleLinkedInRegister}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-black/5 dark:bg-zinc-800/50 py-2.5 font-medium text-foreground hover:bg-black/10 dark:hover:bg-zinc-700/50 transition-colors"
+            onClick={() => handleSocialRegister('linkedin')}
+            className="flex items-center justify-center gap-2.5 rounded-xl border border-border bg-background/50 py-3 text-sm font-bold text-foreground hover:bg-background hover:border-border/80 hover:shadow-sm transition-all"
           >
-            <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="#0A66C2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="#0A66C2">
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
             </svg>
             LinkedIn
-          </button>
-        </div>
-        <div className="flex gap-3 pt-2">
-          <button
-            type="button"
-            onClick={goBack}
-            className="rounded-xl border border-border px-6 py-2.5 font-medium text-foreground hover:bg-black/10 dark:hover:bg-zinc-700/50 transition-colors"
-          >
-            Back
           </button>
         </div>
       </form>
@@ -432,7 +472,7 @@ function RegisterContent() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin text-primary" size={40} /></div>}>
       <RegisterContent />
     </Suspense>
   );
