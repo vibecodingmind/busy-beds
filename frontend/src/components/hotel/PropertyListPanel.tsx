@@ -99,63 +99,69 @@ export default function PropertyListPanel({
               ref={(el) => {
                 if (el) hotelRefs.current.set(hotel.id, el);
               }}
-              className={`relative group cursor-pointer transition-all duration-200 ${isSelected ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-zinc-900' : ''
-                }`}
+              className={`relative group/item cursor-pointer transition-all duration-300 ${isSelected ? 'scale-[1.02] z-10' : 'hover:scale-[1.01]'}`}
               onClick={() => onHotelClick(hotel.id)}
             >
               <Link href={`/hotels/${hotel.id}`} className="block">
-                <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:shadow-lg hover:border-black/20 dark:hover:border-zinc-600">
+                <div className={`overflow-hidden rounded-2xl border transition-all duration-300 bg-white dark:bg-zinc-900 ${isSelected
+                    ? 'border-primary shadow-lg shadow-primary/10'
+                    : 'border-black/5 dark:border-white/5 shadow-sm hover:border-primary/30'
+                  }`}>
                   <div className="flex">
-                    <div className="relative w-40 h-32 flex-shrink-0 overflow-hidden rounded-l-2xl">
+                    <div className="relative w-32 h-28 flex-shrink-0 overflow-hidden">
                       <Image
                         src={imageUrl}
                         alt={hotel.name}
                         fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="160px"
+                        className="object-cover transition-transform duration-500 group-hover/item:scale-110"
+                        sizes="128px"
                         unoptimized={imageUrl.startsWith('http')}
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-40 group-hover/item:opacity-60 transition-opacity" />
                       {discountLabel && (
-                        <div className="absolute left-1 top-1 z-10 rounded-md bg-black/80 px-1.5 py-0.5 text-xs font-medium text-white">
-                          {discountLabel}% off
+                        <div className="absolute left-2 top-2 z-10 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white shadow-md">
+                          -{discountLabel}
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 p-4 min-w-0">
-                      <h3 className="text-base font-semibold text-foreground truncate">{hotel.name}</h3>
-                      {hotel.location && (
-                        <p className="mt-1 flex items-center gap-1 text-sm text-muted truncate">
-                          <MapPinIcon className="h-3.5 w-3.5 flex-shrink-0" />
-                          <span className="truncate">{hotel.location}</span>
-                        </p>
-                      )}
-                      <div className="mt-2 flex items-center gap-1">
-                        {hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0 ? (
-                          <>
-                            <StarIcon className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-medium">{Number(hotel.avg_rating).toFixed(1)}</span>
-                            <span className="text-xs text-muted">({hotel.review_count})</span>
-                          </>
-                        ) : (
-                          <span className="text-xs text-muted">No reviews yet</span>
+                    <div className="flex-1 p-3 min-w-0 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-sm font-bold text-foreground truncate group-hover/item:text-primary transition-colors">{hotel.name}</h3>
+                        {hotel.location && (
+                          <div className="mt-1 flex items-center gap-1 text-[11px] text-muted truncate">
+                            <MapPinIcon className="h-3 w-3 flex-shrink-0 opacity-70" />
+                            <span className="truncate">{hotel.location.split(',')[0]}</span>
+                          </div>
                         )}
                       </div>
-                      <p className="mt-2">
-                        <span className="font-bold text-primary">
-                          {hotel.coupon_discount_value}
-                        </span>
-                        {hotel.redemptions_this_month != null && hotel.redemptions_this_month > 0 && (
-                          <span className="ml-2 text-xs text-muted">
-                            {hotel.redemptions_this_month} redemptions
+
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center gap-1">
+                          {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
+                            <div className="flex items-center gap-1">
+                              <StarIcon className="h-3 w-3 text-amber-500 fill-amber-500" />
+                              <span className="text-[11px] font-bold text-foreground">{Number(hotel.avg_rating).toFixed(1)}</span>
+                            </div>
+                          ) : (
+                            <span className="text-[10px] text-muted uppercase font-bold tracking-tighter">New</span>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col items-end">
+                          <span className="text-xs font-bold text-primary">
+                            {hotel.coupon_discount_value}
                           </span>
-                        )}
-                      </p>
+                          {hotel.redemptions_this_month != null && hotel.redemptions_this_month > 0 && (
+                            <span className="text-[9px] text-muted opacity-70 leading-none">Popular Choice</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </Link>
-              <div className="absolute right-2 top-2 z-10">
-                <FavoriteButton hotelId={hotel.id} size="sm" />
+              <div className="absolute right-2 top-2 z-10 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                <FavoriteButton hotelId={hotel.id} size="xs" />
               </div>
             </div>
           );

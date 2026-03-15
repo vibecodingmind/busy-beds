@@ -100,75 +100,92 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
   return (
     // Outer wrapper is position:relative so the FavoriteButton can be positioned absolutely
     // outside the <Link> to avoid invalid nested interactive element HTML.
-    <div className="relative group">
-      <Link href={`/hotels/${hotel.id}`} className="block">
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:shadow-lg hover:border-black/20 dark:hover:border-zinc-600">
+    <div className="relative group/card h-full">
+      <Link href={`/hotels/${hotel.id}`} className="block h-full">
+        <div className="flex flex-col h-full overflow-hidden rounded-[1.5rem] border border-black/5 dark:border-white/5 bg-white dark:bg-zinc-900 shadow-sm transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)] hover:-translate-y-1 group-hover/card:border-primary/20">
           <div className="relative aspect-[4/3] w-full overflow-hidden">
             <BlurImage
               src={imageUrl}
               alt={hotel.name}
               fill
               sizes="(max-width: 640px) 50vw, 300px"
-              className="transition-transform duration-300 group-hover:scale-105"
+              className="transition-transform duration-700 ease-out group-hover/card:scale-110"
             />
-            {/* Dark gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
-            {/* Discount tag - top left */}
-            {discountLabel && (
-              <div className="absolute left-2 top-2 z-10 rounded-lg bg-black/80 px-2 py-1 text-xs font-medium text-white">
-                {discountLabel} off
+            {/* Immersive overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity duration-500 group-hover/card:opacity-80" />
+
+            {/* Top badges */}
+            <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
+              {discountLabel && (
+                <div className="rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg">
+                  {discountLabel} OFF
+                </div>
+              )}
+              {hotel.featured && (
+                <div className="rounded-full bg-amber-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg">
+                  Featured
+                </div>
+              )}
+            </div>
+
+            {/* Price tag on image */}
+            {lowestPrice && (
+              <div className="absolute bottom-3 left-3 z-10">
+                <div className="rounded-xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-3 py-1.5 shadow-sm">
+                  <span className="text-xs text-muted line-through mr-1 opacity-70">
+                    {formatPrice(lowestPrice.original, lowestPrice.currency)}
+                  </span>
+                  <span className="text-sm font-bold text-foreground">
+                    {formatPrice(lowestPrice.discounted, lowestPrice.currency)}
+                  </span>
+                  <span className="text-[10px] text-muted ml-0.5">/nt</span>
+                </div>
               </div>
             )}
-            {/* View Details - bottom right, white text on dark */}
-            <div className="absolute bottom-2 right-2 z-10 flex items-center gap-1 rounded-lg bg-black/80 px-3 py-1.5 text-sm font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
-              View Details
-              <ChevronRightIcon className="text-white" />
+
+            {/* Quick action hint */}
+            <div className="absolute bottom-3 right-3 z-10 translate-y-2 opacity-0 transition-all duration-300 group-hover/card:translate-y-0 group-hover/card:opacity-100">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-lg">
+                <ChevronRightIcon className="h-4 w-4" />
+              </div>
             </div>
           </div>
-          <div className="p-4">
-            <h3 className="text-base font-semibold text-foreground">{hotel.name}</h3>
-            {hotel.location && (
-              <p className="mt-2 flex items-center gap-1.5 text-sm text-muted">
-                <MapPinIcon className="h-4 w-4 flex-shrink-0 text-muted" />
-                <span className="line-clamp-1">{hotel.location}</span>
-              </p>
-            )}
-            {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
-              <p className="mt-2 flex items-center gap-1.5 text-sm">
-                <StarRating rating={Number(hotel.avg_rating)} size="sm" />
-                <span className="text-muted">
-                  {Number(hotel.avg_rating).toFixed(1)} ({hotel.review_count})
-                </span>
-              </p>
-            ) : (
-              <p className="mt-2 text-sm text-muted">No reviews yet</p>
-            )}
 
-            {lowestPrice ? (
-              <p className="mt-3 text-sm">
-                <span className="text-zinc-400 line-through dark:text-zinc-500">
-                  {formatPrice(lowestPrice.original, lowestPrice.currency)}
-                </span>
-                {' '}
-                <span className="font-bold text-primary">
-                  {formatPrice(lowestPrice.discounted, lowestPrice.currency)}
-                </span>
-                <span className="text-zinc-500 dark:text-zinc-400">/night</span>
-                {' '}
-                <span className="text-xs font-medium text-primary">
-                  ({hotel.coupon_discount_value})
-                </span>
-              </p>
-            ) : (
-              <p className="mt-3 font-medium text-primary">
-                {hotel.coupon_discount_value}
-              </p>
-            )}
+          <div className="flex flex-col flex-1 p-4">
+            <h3 className="text-base font-bold text-foreground tracking-tight group-hover/card:text-primary transition-colors line-clamp-1">{hotel.name}</h3>
+
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-muted">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-muted/50">
+                <MapPinIcon className="h-3.5 w-3.5" />
+              </div>
+              <span className="line-clamp-1 font-medium">{hotel.location?.split(',')[0]}</span>
+            </div>
+
+            <div className="mt-auto pt-4 flex items-center justify-between border-t border-border/50">
+              {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
+                <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <StarRating key={s} rating={Number(hotel.avg_rating) >= s ? 1 : 0} size="xs" />
+                    ))}
+                  </div>
+                  <span className="text-[11px] font-bold text-foreground ml-1">{Number(hotel.avg_rating).toFixed(1)}</span>
+                  <span className="text-[10px] text-muted">({hotel.review_count})</span>
+                </div>
+              ) : (
+                <span className="text-[10px] font-medium text-muted uppercase tracking-tighter">New Property</span>
+              )}
+
+              {hotel.redemptions_this_month != null && hotel.redemptions_this_month > 0 && (
+                <div className="flex items-center gap-1 text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                  🔥 Popular
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </Link>
-      {/* FavoriteButton lives outside the <Link> to avoid button-inside-anchor (invalid HTML) */}
-      <div className="absolute right-2 top-2 z-20 rounded-full bg-black/50 p-1">
+      <div className="absolute right-3 top-3 z-20">
         <FavoriteButton hotelId={hotel.id} size="sm" onRemove={onRemoveFavorite} onImage />
       </div>
     </div>

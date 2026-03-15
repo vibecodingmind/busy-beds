@@ -3,13 +3,14 @@
 interface StarRatingProps {
   rating?: number;
   max?: number;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   interactive?: boolean;
   value?: number;
   onChange?: (rating: number) => void;
 }
 
 const sizeClasses = {
+  xs: 'h-3 w-3',
   sm: 'h-4 w-4',
   md: 'h-5 w-5',
   lg: 'h-6 w-6',
@@ -61,9 +62,8 @@ export default function StarRating({
                   onChange(starValue);
                 }
               }}
-              className={`p-0.5 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-1 rounded ${
-                isFilled ? 'text-amber-500' : 'text-zinc-400 dark:text-zinc-500'
-              }`}
+              className={`p-0.5 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-1 rounded ${isFilled ? 'text-amber-500' : 'text-zinc-400 dark:text-zinc-500'
+                }`}
               aria-label={`${starValue} star${starValue > 1 ? 's' : ''}`}
             >
               {isFilled ? <StarFilled className={sizeClass} /> : <StarEmpty className={sizeClass} />}

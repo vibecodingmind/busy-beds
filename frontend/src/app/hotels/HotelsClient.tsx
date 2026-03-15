@@ -9,7 +9,7 @@ import { CardSkeleton } from '@/components/LoadingSkeleton';
 import SplitMapView from '@/components/hotel/SplitMapView';
 import PropertyListPanel from '@/components/hotel/PropertyListPanel';
 import FilterBar, { FilterState } from '@/components/hotel/FilterBar';
-import { HouseIcon, MapPinIcon } from '@/components/icons';
+import { HouseIcon, MapPinIcon, ChevronRightIcon } from '@/components/icons';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useToast } from '@/contexts/ToastContext';
 import { tanzaniaRegions } from '@/data/tanzania-wards';
@@ -186,87 +186,103 @@ function HotelsClientInner() {
   const locationBreadcrumb = [filters.country, filters.region].filter(Boolean).join(' › ');
 
   return (
-    <div className="min-h-screen">
-      {/* Header card */}
-      <div className="rounded-2xl border border-black/10 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/50 backdrop-blur-xl p-6 mb-4">
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h1 className="text-2xl font-bold text-black dark:text-zinc-100 flex items-center gap-2">
-              <HouseIcon className="h-7 w-7 text-primary" />
-              Properties
-            </h1>
-            {locationBreadcrumb && (
-              <p className="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">{locationBreadcrumb}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {/* View mode toggle */}
-            <div className="hidden md:flex rounded-xl border border-black/10 dark:border-zinc-700 overflow-hidden">
+    <div className="min-h-screen bg-transparent">
+      {/* Discovery Hub Header */}
+      <div className="relative mb-8 overflow-hidden rounded-[2.5rem] bg-zinc-950 px-8 py-12 text-white shadow-2xl">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80')] bg-cover bg-center opacity-30 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/40 to-transparent" />
+
+        <div className="relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+            <div className="max-w-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/20">
+                  <HouseIcon className="h-6 w-6 text-white" />
+                </div>
+                <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Discover Properties</h1>
+              </div>
+              <p className="text-lg text-zinc-300 font-medium leading-relaxed">
+                Explore handpicked hotels and active deals in
+                <span className="text-primary font-bold ml-1.5">{locationBreadcrumb || 'Tanzania'}</span>
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex bg-white/5 backdrop-blur-md rounded-2xl p-1 border border-white/10">
+                {[
+                  { id: 'list', icon: <ListBulletIcon />, label: 'List' },
+                  { id: 'split', icon: <div className="flex gap-0.5"><div className="w-1.5 h-3 bg-current rounded-sm opacity-50" /><div className="w-1.5 h-3 bg-current rounded-sm" /></div>, label: 'Split' },
+                  { id: 'map', icon: <MapIcon />, label: 'Map' }
+                ].map((mode) => (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    onClick={() => setViewMode(mode.id as any)}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm font-bold transition-all rounded-xl ${viewMode === mode.id
+                      ? 'bg-primary text-white shadow-lg'
+                      : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                      }`}
+                  >
+                    {mode.icon}
+                    <span className="hidden sm:inline">{mode.label}</span>
+                  </button>
+                ))}
+              </div>
+
               <button
                 type="button"
-                onClick={() => setViewMode('list')}
-                className={`px-4 py-2 text-sm transition-colors flex items-center gap-2 ${viewMode === 'list' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-zinc-100' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}`}
+                onClick={handleNearby}
+                className="flex items-center gap-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 px-5 py-3 text-sm font-bold text-white hover:bg-white/20 transition-all shadow-lg active:scale-95"
               >
-                <ListBulletIcon className="h-4 w-4" /> List
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('split')}
-                className={`px-4 py-2 text-sm transition-colors flex items-center gap-2 ${viewMode === 'split' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-zinc-100' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}`}
-              >
-                Split
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('map')}
-                className={`px-4 py-2 text-sm transition-colors flex items-center gap-2 ${viewMode === 'map' ? 'bg-zinc-200 dark:bg-zinc-700 text-black dark:text-zinc-100' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}`}
-              >
-                <MapIcon className="h-4 w-4" /> Map
+                <MapPinIcon className="h-4 w-4" />
+                <span>Nearby</span>
               </button>
             </div>
-            <button
-              type="button"
-              onClick={handleNearby}
-              className="flex items-center gap-2 rounded-xl border border-black/10 dark:border-zinc-700 px-4 py-2.5 text-sm hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800 transition-colors dark:text-zinc-100"
-            >
-              <MapPinIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Nearby</span>
-            </button>
+          </div>
+
+          <div className="mt-10">
+            <div className="rounded-3xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl p-2 shadow-2xl">
+              <FilterBar
+                filters={filters}
+                onFiltersChange={setFilters}
+                onReset={handleResetFilters}
+                locationData={locationMetadata ?? { countries: ['Tanzania'], regions: [] }}
+              />
+            </div>
           </div>
         </div>
+      </div>
 
-        <FilterBar
-          filters={filters}
-          onFiltersChange={setFilters}
-          onReset={handleResetFilters}
-          locationData={locationMetadata ?? { countries: ['Tanzania'], regions: [] }}
-        />
-
-        <div className="flex flex-wrap items-center gap-3 mt-4">
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="rounded-xl border border-black/10 dark:border-zinc-700 px-4 py-2.5 bg-white dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-100 text-sm outline-none"
-          >
-            <option value="name">Sort by Name</option>
-            <option value="location">Sort by Location</option>
-            <option value="rating">Sort by Rating</option>
-            {coords && <option value="distance">Sort by Distance</option>}
-          </select>
-          <span className="text-sm text-muted">
-            {loading ? 'Loading…' : `${displayedHotels.length} propert${displayedHotels.length !== 1 ? 'ies' : 'y'} found`}
+      <div className="flex items-center justify-between mb-6 px-2">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="appearance-none rounded-2xl border border-black/5 dark:border-white/5 px-5 py-2.5 bg-white dark:bg-zinc-900 shadow-sm text-sm font-bold text-foreground outline-none hover:border-primary/30 transition-all pr-10"
+            >
+              <option value="name">Sort by Name</option>
+              <option value="location">Location Alpha</option>
+              <option value="rating">Top Rated</option>
+              {coords && <option value="distance">Nearest First</option>}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+            </div>
+          </div>
+          <span className="text-xs font-bold text-muted uppercase tracking-widest bg-muted/30 px-3 py-1.5 rounded-full">
+            {loading ? 'Discovering…' : `${displayedHotels.length} found`}
           </span>
         </div>
       </div>
 
-      {/* Results */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-4">
-          {[1, 2, 3, 4, 5, 6].map((i) => <CardSkeleton key={i} />)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-2">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => <CardSkeleton key={i} />)}
         </div>
       ) : viewMode === 'split' ? (
-        <div className="flex flex-col md:flex-row gap-4 h-[calc(100vh-320px)] min-h-[500px]">
-          <div className="w-full md:w-[45%] lg:w-[40%] h-full rounded-xl border border-black/10 dark:border-zinc-700 overflow-hidden bg-white dark:bg-zinc-900/50">
+        <div className="flex flex-col md:flex-row gap-6 h-[calc(100vh-280px)] min-h-[600px] animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="w-full md:w-[45%] lg:w-[35%] h-full rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden bg-white dark:bg-zinc-900 shadow-xl">
             <PropertyListPanel
               hotels={displayedHotels}
               selectedHotelId={selectedHotelId}
@@ -297,32 +313,41 @@ function HotelsClientInner() {
       ) : (
         <>
           {displayedHotels.some((h) => h.featured) && (
-            <div className="mb-8 p-4">
-              <h2 className="mb-4 text-lg font-semibold text-zinc-800 dark:text-zinc-200">Featured Properties</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-1.5 w-8 rounded-full bg-amber-500" />
+                <h2 className="text-xl font-extrabold text-foreground tracking-tight">Handpicked Featured</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {displayedHotels.filter((h) => h.featured).map((hotel) => (
                   <HotelCard key={hotel.id} hotel={hotel} />
                 ))}
               </div>
             </div>
           )}
-          <div className="p-4">
-            <h2 className="mb-4 text-lg font-semibold text-zinc-800 dark:text-zinc-200">
-              {displayedHotels.some((h) => h.featured) ? 'All Properties' : 'Properties'}
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="pb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-1.5 w-8 rounded-full bg-primary" />
+              <h2 className="text-xl font-extrabold text-foreground tracking-tight">
+                {displayedHotels.some((h) => h.featured) ? 'Explore All Properties' : 'Explore Properties'}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {displayedHotels.map((hotel) => (
                 <HotelCard key={hotel.id} hotel={hotel} />
               ))}
             </div>
             {hasMore && (
-              <div className="mt-6 text-center">
+              <div className="mt-12 text-center">
                 <button
                   onClick={handleLoadMore}
                   disabled={loadingMore}
-                  className="px-6 py-2.5 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 disabled:opacity-50"
+                  className="group relative inline-flex items-center gap-3 rounded-full bg-primary px-8 py-4 font-bold text-white shadow-xl shadow-primary/20 hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 overflow-hidden"
                 >
-                  {loadingMore ? 'Loading…' : 'Load More'}
+                  <span className="relative z-10">{loadingMore ? 'Loading Properties…' : 'Deep Dive for More'}</span>
+                  <div className="h-5 w-5 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                    <ChevronRightIcon className="h-3 w-3" />
+                  </div>
                 </button>
               </div>
             )}

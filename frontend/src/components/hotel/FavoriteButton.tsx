@@ -7,7 +7,7 @@ import { favorites } from '@/lib/api';
 interface Props {
   hotelId: number;
   className?: string;
-  size?: 'sm' | 'md';
+  size?: 'xs' | 'sm' | 'md';
   onRemove?: () => void; // Called when removed from favorites (e.g. to update parent list)
   onImage?: boolean; // Use white/red for visibility on image overlays
 }
@@ -19,7 +19,7 @@ export default function FavoriteButton({ hotelId, className = '', size = 'md', o
 
   useEffect(() => {
     if (!user) return;
-    favorites.check(hotelId).then((r) => setFavorited(r.favorited)).catch(() => {});
+    favorites.check(hotelId).then((r) => setFavorited(r.favorited)).catch(() => { });
   }, [user, hotelId]);
 
   const handleClick = async (e: React.MouseEvent) => {
@@ -45,21 +45,20 @@ export default function FavoriteButton({ hotelId, className = '', size = 'md', o
 
   if (!user) return null;
 
-  const sz = size === 'sm' ? 'h-8 w-8' : 'h-10 w-10';
+  const sz = size === 'xs' ? 'h-6 w-6' : size === 'sm' ? 'h-8 w-8' : 'h-10 w-10';
   return (
     <button
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className={`rounded-full p-2 transition ${
-        onImage
+      className={`rounded-full p-2 transition ${onImage
           ? favorited
             ? 'text-red-400 hover:text-red-300 hover:bg-white/20'
             : 'text-white hover:bg-white/20 hover:text-white'
           : favorited
             ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30'
             : 'text-black hover:bg-black/5 dark:hover:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-300'
-      } ${sz} ${className}`}
+        } ${sz} ${className}`}
       aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
     >
       <svg className="h-full w-full" fill={favorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
