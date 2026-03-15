@@ -19,12 +19,13 @@ function AuthCallbackContent() {
     }
     if (token) {
       localStorage.setItem('token', token);
+      document.cookie = `access_token=${token};path=/;max-age=${60 * 60 * 24 * 7}`; // Sync cookie for middleware
       fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((r) => r.json())
         .then((user) => setUser(user))
-        .catch(() => {})
+        .catch(() => { })
         .finally(() => router.replace(returnTo.startsWith('/') ? returnTo : `/${returnTo}`));
     } else {
       router.replace('/login');
