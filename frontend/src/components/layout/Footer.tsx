@@ -8,7 +8,7 @@ export default function Footer() {
   const siteName = settings?.site_name || 'Busy Beds';
 
   return (
-    <footer className="mt-auto border-t border-border bg-background">
+    <footer className="mt-auto border-t border-border bg-background print:hidden">
       <div className="mx-auto max-w-6xl px-4 py-6">
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-foreground">
           <span className="font-medium text-foreground">{siteName}</span>

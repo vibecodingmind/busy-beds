@@ -17,7 +17,7 @@ export default function Header() {
   const hotelLogout = hotelAuth?.logout;
   const [showMenu, setShowMenu] = useState(false);
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 dark:bg-zinc-900/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 dark:bg-zinc-900/95 backdrop-blur-xl print:hidden">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center shrink-0" aria-label="Busy Beds home">
           <img

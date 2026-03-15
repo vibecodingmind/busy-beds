@@ -97,8 +97,8 @@ export default function MyCouponsPage() {
             type="button"
             onClick={() => setTab(t)}
             className={`border-b-2 px-4 py-2 text-sm font-medium ${tab === t
-                ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400'
-                : 'border-transparent text-black dark:text-zinc-400 dark:hover:text-zinc-300'
+              ? 'border-emerald-500 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400'
+              : 'border-transparent text-black dark:text-zinc-400 dark:hover:text-zinc-300'
               }`}
           >
             {t === 'active' && 'Active'}
@@ -115,8 +115,8 @@ export default function MyCouponsPage() {
             <div
               key={c.id}
               className={`flex cursor-pointer items-center gap-4 rounded-xl border-2 bg-white p-4 transition dark:bg-zinc-900 ${selected?.id === c.id
-                  ? 'border-emerald-500 shadow-md dark:border-emerald-600'
-                  : 'border-black/10 dark:border-zinc-700 hover:border-black/20 dark:hover:border-zinc-600 dark:border-zinc-700 dark:hover:border-zinc-600'
+                ? 'border-emerald-500 shadow-md dark:border-emerald-600'
+                : 'border-black/10 dark:border-zinc-700 hover:border-black/20 dark:hover:border-zinc-600 dark:border-zinc-700 dark:hover:border-zinc-600'
                 }`}
               onClick={() => setSelected(c)}
             >
@@ -165,9 +165,9 @@ export default function MyCouponsPage() {
         </div>
 
         {/* Right: Selected coupon detail */}
-        <div className="lg:min-w-[420px] print:w-full print:block">
+        <div className="lg:min-w-[420px] print:w-full print:max-w-none print:block">
           {selected ? (
-            <div className="rounded-2xl border border-black/10 dark:border-zinc-700 bg-white p-6 shadow-sm dark:bg-zinc-900 print:shadow-none print:border-none print:p-0">
+            <div className="rounded-2xl border border-black/10 dark:border-zinc-700 bg-white p-6 shadow-sm dark:bg-zinc-900 print:shadow-none print:border-none print:p-0 print:bg-white print:text-black">
               {/* Actions Header - hidden when printing */}
               <div className="flex justify-between items-center mb-6 print:hidden">
                 <span className="text-sm font-semibold text-zinc-500 uppercase tracking-widest">Coupon Details</span>
@@ -186,11 +186,11 @@ export default function MyCouponsPage() {
                   {selected.hotel_name?.charAt(0) || 'H'}
                 </div>
                 <div>
-                  <p className="font-bold text-lg text-black dark:text-zinc-100">{selected.hotel_name}</p>
-                  <p className="font-black text-2xl text-emerald-600 dark:text-emerald-400 leading-tight tracking-tight mt-1">{selected.discount_value} OFF</p>
-                  <p className={`text-sm mt-1 flex items-center gap-1.5 ${selected.status === 'active' ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-zinc-500'}`}>
+                  <p className="font-bold text-lg text-black dark:text-zinc-100 print:text-black">{selected.hotel_name}</p>
+                  <p className="font-black text-2xl text-emerald-600 dark:text-emerald-400 leading-tight tracking-tight mt-1 print:text-black">{selected.discount_value} OFF</p>
+                  <p className={`text-sm mt-1 flex items-center gap-1.5 print:text-black ${selected.status === 'active' ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-zinc-500'}`}>
                     {selected.status === 'active'
-                      ? <><span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span> {getExpiryCountdown(selected.expires_at)} · {new Date(selected.expires_at).toLocaleDateString()}</>
+                      ? <><span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse print:hidden"></span> {getExpiryCountdown(selected.expires_at)} · {new Date(selected.expires_at).toLocaleDateString()}</>
                       : <><XCircle className="h-3.5 w-3.5" /> Expired {new Date(selected.expires_at).toLocaleDateString()}</>}
                   </p>
                 </div>
@@ -215,11 +215,11 @@ export default function MyCouponsPage() {
 
               {/* Terms */}
               <div className="mt-6">
-                <h3 className="text-sm font-bold uppercase tracking-wide text-black dark:text-zinc-400">Terms of Use</h3>
-                <ul className="mt-2 space-y-1 text-sm text-black dark:text-zinc-300">
+                <h3 className="text-sm font-bold uppercase tracking-wide text-black dark:text-zinc-400 print:text-black">Terms of Use</h3>
+                <ul className="mt-2 space-y-1 text-sm text-black dark:text-zinc-300 print:text-black">
                   {DEFAULT_TERMS.map((t, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <span className="text-emerald-500">•</span>
+                      <span className="text-emerald-500 print:text-black">•</span>
                       {t}
                     </li>
                   ))}
@@ -227,29 +227,29 @@ export default function MyCouponsPage() {
               </div>
 
               {/* Code + QR (Premium Ticket style) */}
-              <div className="mt-8 relative overflow-hidden rounded-xl border border-dashed border-zinc-300 bg-gradient-to-b from-zinc-50 to-white p-8 dark:border-zinc-600 dark:from-zinc-800 dark:to-zinc-900 shadow-sm print:border-solid print:shadow-none">
+              <div className="mt-8 relative overflow-hidden rounded-xl border border-dashed border-zinc-300 bg-gradient-to-b from-zinc-50 to-white p-8 dark:border-zinc-600 dark:from-zinc-800 dark:to-zinc-900 shadow-sm print:border-solid print:shadow-none print:bg-white print:border-zinc-300">
                 {/* Perforated edge circles */}
                 <div className="absolute -left-3 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-white dark:bg-zinc-950 border-r border-dashed border-zinc-300 dark:border-zinc-600 print:hidden"></div>
                 <div className="absolute -right-3 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-white dark:bg-zinc-950 border-l border-dashed border-zinc-300 dark:border-zinc-600 print:hidden"></div>
 
-                <p className="mb-6 text-center font-mono text-3xl tracking-widest font-black text-black dark:text-zinc-100">
+                <p className="mb-6 text-center font-mono text-3xl tracking-widest font-black text-black dark:text-zinc-100 print:text-black">
                   {selected.code}
                 </p>
                 <div className="flex justify-center bg-transparent">
-                  <div className="rounded-xl border-4 border-white bg-white shadow-md print:shadow-none print:border-black">
+                  <div className="rounded-xl border-4 border-white bg-white shadow-md print:shadow-none print:border-none print:p-4">
                     <QRCodeSVG
                       value={typeof window !== 'undefined' ? `${window.location.origin}/redeem/${selected.code}` : ''}
-                      size={200}
+                      size={240}
                       level="M"
                     />
                   </div>
                 </div>
-                <div className="mt-6 text-center space-y-1">
-                  <p className="text-sm font-semibold text-black dark:text-zinc-300 uppercase tracking-widest">
+                <div className="mt-6 text-center space-y-1 print:mt-12">
+                  <p className="text-sm font-semibold text-black dark:text-zinc-300 uppercase tracking-widest print:text-black print:text-lg">
                     Scan at Check-in
                   </p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    If scanning fails, provide the code <strong className="text-black dark:text-zinc-300">{selected.code}</strong> to the front desk.
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 print:text-black print:text-sm print:mt-2">
+                    If scanning fails, provide the code <strong className="text-black dark:text-zinc-300 print:text-black">{selected.code}</strong> to the front desk.
                   </p>
                 </div>
               </div>
@@ -258,12 +258,12 @@ export default function MyCouponsPage() {
               <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-black/10 dark:border-zinc-800 pt-6 print:hidden">
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase ${selected.status === 'active'
-                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'
-                      : selected.status === 'redeemed'
-                        ? 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
-                        : selected.status === 'cancelled'
-                          ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'
-                          : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'
+                    : selected.status === 'redeemed'
+                      ? 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+                      : selected.status === 'cancelled'
+                        ? 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'
+                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'
                     }`}
                 >
                   {selected.status}
