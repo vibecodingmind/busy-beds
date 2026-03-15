@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface SearchableSelectProps<T = string> {
   value: T;
@@ -14,13 +14,8 @@ interface SearchableSelectProps<T = string> {
   onOptionClick?: (option: T) => void;
   allowCustom?: boolean;
   customPlaceholder?: string;
-}
-
-interface OptionItem<T> {
-  id: string;
-  value: T;
-  label: string;
-  type: 'option' | 'custom';
+  /** When true, the dropdown only shows options after the user starts typing */
+  searchFirst?: boolean;
 }
 
 export default function SearchableSelect<T>({
@@ -35,14 +30,21 @@ export default function SearchableSelect<T>({
   onOptionClick,
   allowCustom = false,
   customPlaceholder = 'Add new...',
+  searchFirst = false,
 }: SearchableSelectProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [filteredOptions, setFilteredOptions] = useState<T[]>([]);
   const [isCustom, setIsCustom] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const filteredOptions =
+    searchTerm.length > 0
+      ? options.filter((option) =>
+          optionLabel(option).toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : options;
 
   const handleFocus = () => {
     if (!disabled) {
@@ -59,18 +61,7 @@ export default function SearchableSelect<T>({
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value;
-    setSearchTerm(term);
-    
-    if (term.length === 0) {
-      setFilteredOptions([]);
-    } else {
-      const lowerTerm = term.toLowerCase();
-      const matches = options.filter(option => 
-        optionLabel(option).toLowerCase().includes(lowerTerm)
-      );
-      setFilteredOptions(matches);
-    }
+    setSearchTerm(e.target.value);
   };
 
   const handleOptionSelect = (option: T) => {
@@ -90,9 +81,12 @@ export default function SearchableSelect<T>({
     onChange(options[0] as T);
   };
 
+  // In searchFirst mode, only show the dropdown list when the user has typed something
+  const showList = isDropdownOpen && (!searchFirst || searchTerm.length > 0);
+
   const renderOptions = () => {
-    const displayOptions = searchTerm.length > 0 ? filteredOptions : options;
-    
+    const displayOptions = filteredOptions;
+
     return (
       <div className="absolute z-50 mt-1 w-full bg-white dark:bg-zinc-900 rounded-lg border border-black/10 dark:border-zinc-600 shadow-lg max-h-60 overflow-auto">
         {displayOptions.map((option, index) => (
@@ -105,8 +99,8 @@ export default function SearchableSelect<T>({
             {optionLabel(option)}
           </button>
         ))}
-        
-        {allowCustom && searchTerm.length > 0 && !displayOptions.length && (
+
+        {allowCustom && searchTerm.length > 0 && displayOptions.length === 0 && (
           <button
             type="button"
             onClick={handleCustomOption}
@@ -115,10 +109,10 @@ export default function SearchableSelect<T>({
             {customPlaceholder}: {searchTerm}
           </button>
         )}
-        
-        {searchTerm.length === 0 && !displayOptions.length && (
+
+        {displayOptions.length === 0 && !allowCustom && (
           <div className="px-4 py-2 text-sm text-zinc-500 dark:text-zinc-400">
-            No options available
+            No results found
           </div>
         )}
       </div>
@@ -147,15 +141,18 @@ export default function SearchableSelect<T>({
     }
   }, [isCustom, value, onChange]);
 
-  const displayValue = isCustom 
-    ? searchTerm 
+  // In searchFirst mode the input always shows the search term while focused,
+  // otherwise show the selected value label when not actively searching.
+  const displayValue = isCustom
+    ? searchTerm
+    : isFocused && searchFirst
+    ? searchTerm
+    : isFocused && searchTerm.length > 0
+    ? searchTerm
     : optionLabel(value);
 
   return (
-    <div 
-      ref={containerRef}
-      className={`relative ${className}`}
-    >
+    <div ref={containerRef} className={`relative ${className}`}>
       <div className={`relative ${isFocused || isDropdownOpen ? 'ring-2 ring-primary/50' : ''}`}>
         <div className="flex items-center justify-between">
           <input
@@ -165,12 +162,12 @@ export default function SearchableSelect<T>({
             onFocus={handleFocus}
             onBlur={handleBlur}
             onChange={handleSearchChange}
-            placeholder={placeholder}
+            placeholder={searchFirst && isFocused ? searchPlaceholder : placeholder}
             disabled={disabled}
             className={`w-full rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2.5 text-black dark:text-zinc-100 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors ${disabled ? 'bg-zinc-50 dark:bg-zinc-800/50 cursor-not-allowed' : ''}`}
-            readOnly={!allowCustom}
+            readOnly={!allowCustom && !searchFirst}
           />
-          
+
           {isFocused && (
             <button
               type="button"
@@ -183,8 +180,15 @@ export default function SearchableSelect<T>({
             </button>
           )}
         </div>
-        
-        {isDropdownOpen && renderOptions()}
+
+        {showList && renderOptions()}
+
+        {/* searchFirst hint: show a prompt before typing */}
+        {searchFirst && isDropdownOpen && searchTerm.length === 0 && (
+          <div className="absolute z-50 mt-1 w-full bg-white dark:bg-zinc-900 rounded-lg border border-black/10 dark:border-zinc-600 shadow-lg px-4 py-2.5 text-sm text-zinc-400 dark:text-zinc-500">
+            Type to search regions…
+          </div>
+        )}
       </div>
     </div>
   );
