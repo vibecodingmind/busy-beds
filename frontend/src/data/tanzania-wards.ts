@@ -238,9 +238,18 @@ export const tanzaniaRegions: TanzaniaRegion[] = [
   {
     region: 'Mtwara',
     wards: [
-      'Chikongola', 'Chiwale', 'Dimani', 'Dododa', 'Guluba', 'Kiromba', 'Kitangari', 'Kitunda', 'Likomba', 'Lulindi',
-      'Mabanda', 'Madaba', 'Mahurunga', 'Makanya', 'Malema', 'Mangaka', 'Masasi', 'Mayanga', 'Mbamba', 'Mchichiga',
-      'Mchinga', 'Mikuyuni', 'Mnima', 'Msanga', 'Mtua', 'Mtwara', 'Mynili', 'Nakapanya', 'Namajani', 'Namalenga'
+      'Chikongola', 'Chuno',
+      'Jangwani', 'Jida',
+      'Kisungule',
+      'Likombe',
+      'Magengeni', 'Majengo', 'Marika', 'Migongo', 'Mitengo', 'Mkuti', 'Mtonya',
+      'Mwenge',
+      'Naliendele', 'Nyasa',
+      'Rahaleo', 'Railway',
+      'Shangani',
+      'Temeke',
+      'Ufukoni',
+      'Vigaeni'
     ],
   },
   {
