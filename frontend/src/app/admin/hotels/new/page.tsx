@@ -15,7 +15,6 @@ export default function NewHotelPage() {
     name: '',
     description: '',
     location: '',
-    country: '',
     region: '',
     city: '',
     contact_phone: '',
@@ -45,7 +44,7 @@ export default function NewHotelPage() {
         featured: form.featured,
         latitude: form.latitude === '' ? undefined : Number(form.latitude),
         longitude: form.longitude === '' ? undefined : Number(form.longitude),
-        country: form.country || undefined,
+        country: 'Tanzania',
         region: form.region || undefined,
         city: form.city || undefined,
       });
@@ -94,8 +93,8 @@ export default function NewHotelPage() {
 
         {/* Location */}
         <LocationFields
-          value={{ country: form.country, region: form.region, city: form.city, location: form.location }}
-          onChange={(v) => setForm((f) => ({ ...f, country: v.country, region: v.region, city: v.city, location: v.location }))}
+          value={{ region: form.region, ward: form.city, location: form.location }}
+          onChange={(v) => setForm((f) => ({ ...f, region: v.region, city: v.ward, location: v.location }))}
         />
 
         {/* Coordinates */}

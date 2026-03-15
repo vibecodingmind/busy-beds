@@ -12,6 +12,7 @@ import FilterBar, { FilterState } from '@/components/hotel/FilterBar';
 import { HouseIcon, MapPinIcon } from '@/components/icons';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useToast } from '@/contexts/ToastContext';
+import { tanzaniaRegions, getWardsByRegion } from '@/data/tanzania-wards';
 
 interface MapBounds {
   north: number;
@@ -21,16 +22,21 @@ interface MapBounds {
 }
 
 interface LocationData {
-  countries: string[];
-  regions: { country: string; region: string }[];
-  cities: { country: string; region: string | null; city: string }[];
+  country: string;
+  regions: string[];
+  regionWards: { region: string; ward: string }[];
 }
+
+const locationData: LocationData = {
+  country: 'Tanzania',
+  regions: tanzaniaRegions.map(r => r.region),
+  regionWards: tanzaniaRegions.flatMap(r => r.wards.map(ward => ({ region: r.region, ward }))),
+};
 
 const INITIAL_FILTERS: FilterState = {
   search: '',
-  country: '',
   region: '',
-  city: '',
+  ward: '',
   minPrice: undefined,
   maxPrice: undefined,
   minRating: undefined,
@@ -51,7 +57,6 @@ function HotelsClientInner() {
   const [sort, setSort] = useState<string>(nearme ? 'distance' : 'name');
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [bounds, setBounds] = useState<MapBounds | null>(null);
-  const [locationData, setLocationData] = useState<LocationData | undefined>(undefined);
 
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -61,11 +66,6 @@ function HotelsClientInner() {
 
   const debouncedSearch = useDebounce(filters.search, 300);
   const debouncedBounds = useDebounce(bounds, 500);
-
-  // Load location data for filter dropdowns
-  useEffect(() => {
-    hotels.locations().then(setLocationData).catch(() => {});
-  }, []);
 
   const fetchHotels = useCallback(async (reset = false) => {
     const currentOffset = reset ? 0 : offset;
@@ -90,9 +90,9 @@ function HotelsClientInner() {
         min_rating: filters.minRating,
         amenities: filters.amenities.length > 0 ? filters.amenities : undefined,
         has_discount: filters.hasDiscount || undefined,
-        country: filters.country || undefined,
+        country: 'Tanzania',
         region: filters.region || undefined,
-        city: filters.city || undefined,
+        city: filters.ward || undefined,
         limit: 20,
         offset: currentOffset,
       });
@@ -117,7 +117,7 @@ function HotelsClientInner() {
 
   useEffect(() => {
     fetchHotels(true);
-  }, [debouncedSearch, sort, coords, debouncedBounds, filters.minPrice, filters.maxPrice, filters.minRating, filters.hasDiscount, filters.amenities, filters.country, filters.region, filters.city]);
+  }, [debouncedSearch, sort, coords, debouncedBounds, filters.minPrice, filters.maxPrice, filters.minRating, filters.hasDiscount, filters.amenities, filters.region, filters.ward]);
 
   useEffect(() => {
     if (nearme && navigator.geolocation && !coords) {
@@ -172,7 +172,7 @@ function HotelsClientInner() {
     setMobileMapOpen((prev) => !prev);
   }, []);
 
-  const locationBreadcrumb = [filters.country, filters.region, filters.city].filter(Boolean).join(' › ');
+  const locationBreadcrumb = [filters.region, filters.ward].filter(Boolean).join(' › ');
 
   return (
     <div className="min-h-screen">

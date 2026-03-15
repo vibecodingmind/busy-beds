@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 
 export interface FilterState {
   search: string;
-  country: string;
   region: string;
-  city: string;
+  ward: string;
   minPrice: number | undefined;
   maxPrice: number | undefined;
   minRating: number | undefined;
@@ -15,9 +14,9 @@ export interface FilterState {
 }
 
 interface LocationData {
-  countries: string[];
-  regions: { country: string; region: string }[];
-  cities: { country: string; region: string | null; city: string }[];
+  country: string;
+  regions: string[];
+  regionWards: { region: string; ward: string }[];
 }
 
 interface FilterBarProps {
@@ -72,9 +71,7 @@ export default function FilterBar({
 
   const update = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     const next = { ...filters, [key]: value };
-    // Cascade: reset dependent filters when parent changes
-    if (key === 'country') { next.region = ''; next.city = ''; }
-    if (key === 'region') { next.city = ''; }
+    if (key === 'region') { next.ward = ''; }
     onFiltersChange(next);
   };
 
@@ -85,27 +82,16 @@ export default function FilterBar({
     update('amenities', next);
   };
 
-  // Derive available options based on selected filters
-  const availableCountries = locationData?.countries ?? [];
-  const availableRegions = locationData
-    ? locationData.regions
-        .filter(r => !filters.country || r.country.toLowerCase() === filters.country.toLowerCase())
-        .map(r => r.region)
-    : [];
-  const availableCities = locationData
-    ? locationData.cities
-        .filter(c => {
-          const cMatch = !filters.country || (c.country ?? '').toLowerCase() === filters.country.toLowerCase();
-          const rMatch = !filters.region || (c.region ?? '').toLowerCase() === filters.region.toLowerCase();
-          return cMatch && rMatch;
-        })
-        .map(c => c.city)
+  const availableRegions = locationData?.regions ?? [];
+  const availableWards = locationData
+    ? locationData.regionWards
+        .filter(rw => !filters.region || rw.region.toLowerCase() === filters.region.toLowerCase())
+        .map(rw => rw.ward)
     : [];
 
   const activeFilterCount =
-    (filters.country ? 1 : 0) +
     (filters.region ? 1 : 0) +
-    (filters.city ? 1 : 0) +
+    (filters.ward ? 1 : 0) +
     (filters.minPrice != null ? 1 : 0) +
     (filters.maxPrice != null ? 1 : 0) +
     (filters.minRating != null ? 1 : 0) +
@@ -129,22 +115,8 @@ export default function FilterBar({
           />
         </div>
 
-        {/* Country */}
-        {availableCountries.length > 0 ? (
-          <select
-            value={filters.country}
-            onChange={(e) => update('country', e.target.value)}
-            className={selectClass}
-          >
-            <option value="">All Countries</option>
-            {availableCountries.map(c => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        ) : null}
-
-        {/* Region — shown when country selected or regions available */}
-        {(availableRegions.length > 0 || filters.country) && (
+        {/* Region */}
+        {availableRegions.length > 0 && (
           <select
             value={filters.region}
             onChange={(e) => update('region', e.target.value)}
@@ -157,16 +129,16 @@ export default function FilterBar({
           </select>
         )}
 
-        {/* City — shown when region selected or cities available */}
-        {(availableCities.length > 0 || filters.region || filters.country) && (
+        {/* Ward */}
+        {(availableWards.length > 0 || filters.region) && (
           <select
-            value={filters.city}
-            onChange={(e) => update('city', e.target.value)}
+            value={filters.ward}
+            onChange={(e) => update('ward', e.target.value)}
             className={selectClass}
           >
-            <option value="">All Cities</option>
-            {availableCities.map(c => (
-              <option key={c} value={c}>{c}</option>
+            <option value="">All Wards</option>
+            {availableWards.map(w => (
+              <option key={w} value={w}>{w}</option>
             ))}
           </select>
         )}
@@ -288,14 +260,11 @@ export default function FilterBar({
       {/* Active filter chips */}
       {activeFilterCount > 0 && (
         <div className="flex flex-wrap gap-2">
-          {filters.country && (
-            <FilterChip label={`🌍 ${filters.country}`} onRemove={() => update('country', '')} />
-          )}
           {filters.region && (
             <FilterChip label={`📍 ${filters.region}`} onRemove={() => update('region', '')} />
           )}
-          {filters.city && (
-            <FilterChip label={`🏙️ ${filters.city}`} onRemove={() => update('city', '')} />
+          {filters.ward && (
+            <FilterChip label={`🏙️ ${filters.ward}`} onRemove={() => update('ward', '')} />
           )}
           {(filters.minPrice != null || filters.maxPrice != null) && (
             <FilterChip
