@@ -44,6 +44,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="yJQsS05ZoMgj_Q1tABEL_RLj6zs1c54e8MlcIsjMv7A" />
+        <meta name="google-site-verification" content="xHm8twPcANFMYGBesK0oQpiQA_4kXb1Ph3-i6nZNCjM" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){var t=localStorage.getItem('busybeds-theme');if(t==='light'){document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');}})();`,
