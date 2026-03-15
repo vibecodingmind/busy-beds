@@ -6,7 +6,7 @@ import Footer from './Footer';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import MaintenanceGate from '@/components/MaintenanceGate';
 
-const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/auth/callback', '/auth/google/callback', '/auth/facebook/callback', '/auth/linkedin/callback', '/hotel/login', '/hotel/register', '/bootstrap-admin'];
+const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/auth/callback', '/auth/google/callback', '/auth/linkedin/callback', '/hotel/login', '/hotel/register', '/bootstrap-admin'];
 
 export default function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
