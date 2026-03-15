@@ -29,6 +29,10 @@ export default function NewHotelPage() {
     social_x: '',
     social_linkedin: '',
     social_tiktok: '',
+    booking_airbnb: '',
+    booking_bookingcom: '',
+    booking_agoda: '',
+    booking_expedia: '',
     coupon_discount_value: '',
     coupon_limit: 10,
     limit_period: 'daily',
@@ -56,6 +60,10 @@ export default function NewHotelPage() {
         social_x: form.social_x || undefined,
         social_linkedin: form.social_linkedin || undefined,
         social_tiktok: form.social_tiktok || undefined,
+        booking_airbnb: form.booking_airbnb || undefined,
+        booking_bookingcom: form.booking_bookingcom || undefined,
+        booking_agoda: form.booking_agoda || undefined,
+        booking_expedia: form.booking_expedia || undefined,
       });
       router.push('/admin/hotels');
     } catch (err) {
@@ -167,6 +175,29 @@ export default function NewHotelPage() {
             <div>
               <label className={labelClass}>TikTok URL</label>
               <input type="url" value={form.social_tiktok} onChange={(e) => setForm((f) => ({ ...f, social_tiktok: e.target.value }))} placeholder="https://tiktok.com/…" className={inputClass} />
+            </div>
+          </div>
+        </div>
+
+        {/* Third-Party Booking Links */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Third-Party Booking Links <span className="font-normal normal-case text-zinc-400">(optional)</span></p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Airbnb URL</label>
+              <input type="url" value={form.booking_airbnb} onChange={(e) => setForm((f) => ({ ...f, booking_airbnb: e.target.value }))} placeholder="https://airbnb.com/…" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Booking.com URL</label>
+              <input type="url" value={form.booking_bookingcom} onChange={(e) => setForm((f) => ({ ...f, booking_bookingcom: e.target.value }))} placeholder="https://booking.com/…" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Agoda URL</label>
+              <input type="url" value={form.booking_agoda} onChange={(e) => setForm((f) => ({ ...f, booking_agoda: e.target.value }))} placeholder="https://agoda.com/…" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Expedia URL</label>
+              <input type="url" value={form.booking_expedia} onChange={(e) => setForm((f) => ({ ...f, booking_expedia: e.target.value }))} placeholder="https://expedia.com/…" className={inputClass} />
             </div>
           </div>
         </div>

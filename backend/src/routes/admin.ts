@@ -74,6 +74,10 @@ router.post(
         social_x: req.body.social_x || null,
         social_linkedin: req.body.social_linkedin || null,
         social_tiktok: req.body.social_tiktok || null,
+        booking_airbnb: req.body.booking_airbnb || null,
+        booking_bookingcom: req.body.booking_bookingcom || null,
+        booking_agoda: req.body.booking_agoda || null,
+        booking_expedia: req.body.booking_expedia || null,
       });
       res.status(201).json(hotel);
     } catch (err) {

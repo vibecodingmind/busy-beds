@@ -321,6 +321,38 @@ export default async function HotelDetailPage({
               </a>
             )}
 
+            {/* Third Party Bookings */}
+            {(hotel.booking_airbnb || hotel.booking_bookingcom || hotel.booking_agoda || hotel.booking_expedia) && (
+              <div className="mt-6 pt-5 border-t border-black/5 dark:border-white/5">
+                <p className="text-sm font-semibold text-black dark:text-zinc-100 mb-3 uppercase tracking-wider">Or book via our partners</p>
+                <div className="flex flex-col gap-2.5">
+                  {hotel.booking_bookingcom && (
+                    <a href={hotel.booking_bookingcom} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#003580] dark:text-[#337ab7] hover:underline font-medium">
+                      <ExternalLinkIcon /> Booking.com
+                    </a>
+                  )}
+                  {hotel.booking_airbnb && (
+                    <a href={hotel.booking_airbnb} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#FF5A5F] hover:underline font-medium">
+                      <ExternalLinkIcon /> Airbnb
+                    </a>
+                  )}
+                  {hotel.booking_agoda && (
+                    <a href={hotel.booking_agoda} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#2a82c6] dark:text-[#42a5f5] hover:underline font-medium">
+                      <ExternalLinkIcon /> Agoda
+                    </a>
+                  )}
+                  {hotel.booking_expedia && (
+                    <a href={hotel.booking_expedia} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#0000A0] dark:text-[#5c6bc0] hover:underline font-medium">
+                      <ExternalLinkIcon /> Expedia
+                    </a>
+                  )}
+                </div>
+                <p className="mt-4 text-xs text-zinc-500 dark:text-zinc-400 italic">
+                  Note: App discount coupons only apply to direct bookings.
+                </p>
+              </div>
+            )}
+
             <div className="mt-4 flex justify-center">
               <ShareButton hotelId={hotel.id} hotelName={hotel.name} className="border-0 px-2 py-1 text-zinc-500" />
             </div>

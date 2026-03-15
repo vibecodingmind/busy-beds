@@ -778,6 +778,10 @@ export interface Hotel {
   social_x?: string | null;
   social_linkedin?: string | null;
   social_tiktok?: string | null;
+  booking_airbnb?: string | null;
+  booking_bookingcom?: string | null;
+  booking_agoda?: string | null;
+  booking_expedia?: string | null;
 }
 
 export interface HotelRoom {

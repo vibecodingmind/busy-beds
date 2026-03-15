@@ -66,6 +66,10 @@ CREATE TABLE IF NOT EXISTS hotels (
     social_x VARCHAR(500),
     social_linkedin VARCHAR(500),
     social_tiktok VARCHAR(500),
+    booking_airbnb VARCHAR(500),
+    booking_bookingcom VARCHAR(500),
+    booking_agoda VARCHAR(500),
+    booking_expedia VARCHAR(500),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -237,6 +241,18 @@ BEGIN
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='social_tiktok') THEN
     ALTER TABLE hotels ADD COLUMN social_tiktok VARCHAR(500);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='booking_airbnb') THEN
+    ALTER TABLE hotels ADD COLUMN booking_airbnb VARCHAR(500);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='booking_bookingcom') THEN
+    ALTER TABLE hotels ADD COLUMN booking_bookingcom VARCHAR(500);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='booking_agoda') THEN
+    ALTER TABLE hotels ADD COLUMN booking_agoda VARCHAR(500);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='booking_expedia') THEN
+    ALTER TABLE hotels ADD COLUMN booking_expedia VARCHAR(500);
   END IF;
 END $$;
 
