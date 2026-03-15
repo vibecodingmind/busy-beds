@@ -207,15 +207,19 @@ export const tanzaniaRegions: TanzaniaRegion[] = [
   {
     region: 'Mbeya',
     wards: [
-      'Ilemi', 'Itete', 'Iyula', 'Izumbwe', 'Jageta', 'Kagaja', 'Kandawa', 'Kapalala', 'Kawetele', 'Kibengi',
-      'Kibiti', 'Kigogo', 'Kihansi', 'Kilakala', 'Kilambo', 'Kilerwa', 'Kilimo', 'Kiluvya', 'Kimani', 'Kinyanambo',
-      'Kipeta', 'Kipok', 'Kyela', 'Lwai', 'Mabala', 'Madibira', 'Mafumbo', 'Makandana', 'Makete', 'Malangu',
-      'Mbalazu', 'Mbarali', 'Mbeya CBD', 'Mlowo', 'Mongala', 'Mponde', 'Msia', 'Mtandika', 'Mtukula', 'Mwalani',
-      'Mwantini', 'Mwaya', 'Mwilunga', 'Nachikila', 'Nakapanda', 'Nakatindi', 'Namtumbo', 'Ngalis', 'Ngana', 'Ng\'anga',
-      'Nkholongo', 'Nkunga', 'Nyimbili', 'Nymbagata', 'Porokera', 'Rangwi', 'Ritoke', 'Ruma', 'Santilya', 'Saza',
-      'Shabale', 'Shagusi', 'Sihama', 'Sindikichi', 'Sisawu', 'Siyuan', 'Songwe', 'Sorya', 'Sungen', 'Taab',
-      'Tambili', 'Tanzania', 'Teto', 'Tukuzi', 'Tumba', 'Tumbili', 'Tungi', 'Udinde', 'Ukukwe', 'Umrala',
-      'Urwira', 'Utengule', 'Uyole', 'Vikindu', 'Wonze'
+      'Bagamoyo Ward', 'Bonde la Usongwe', 'Bujela', 'Bujonde', 'Bulyaga',
+      'Chalangwa', 'Chimala', 'Chokaa',
+      'Forest',
+      'Ghana',
+      'Ibighi', 'Iduda', 'Ifumbo', 'Igale', 'Iganjo', 'Iganzo', 'Igawilo', 'Igurusi', 'Ihango', 'Ijombe', 'Ikama', 'Ikolo', 'Ikukwa', 'Ikuti', 'Ilembo', 'Ilemi', 'Ilima', 'Ilomba', 'Ilungu', 'Inyala', 'Ipande', 'Ipinda', 'Iponjola', 'Isandula', 'Isanga', 'Isange', 'Isongole', 'Isuto', 'Isyesye', 'Itagano', 'Itagata', 'Itende', 'Itete', 'Itewe', 'Itezi', 'Itiji', 'Iwambi', 'Iwiji', 'Iwindi', 'Iyela', 'Iyunga', 'Iyunga Mapinduzi', 'Iziwa',
+      'Kabula', 'Kajunjumele', 'Kalobe', 'Kambasegela', 'Kambikatoto', 'Kandete', 'Katumba', 'Katumba Songwe', 'Kawetele', 'Kinyala', 'Kisegese', 'Kisiba', 'Kisondela', 'Kiwira', 'Kyela Mjini', 'Kyimo',
+      'Lufilyo', 'Lufingo', 'Lupa Ward', 'Lupata', 'Lupepo', 'Lusungo', 'Luteba', 'Luwalaje', 'Lwangwa',
+      'Maanga', 'Mabatini', 'Madibira', 'Maendeleo', 'Mafyeko', 'Mahongole', 'Majengo', 'Makandana', 'Makongolosi', 'Makwale', 'Malindo', 'Mamba', 'Mapogoro', 'Masebe', 'Masoko', 'Masukulu', 'Matwebe', 'Matwiga', 'Mawindi', 'Mbalizi Road', 'Mbugani', 'Miyombweni', 'Mpombo', 'Mpuguso', 'Msasani Ward', 'Mshewe', 'Mtanila', 'Mwakibete', 'Mwansanga', 'Mwansekwa', 'Mwaya',
+      'Ndato', 'Ngana', 'Ngonga', 'Nkunga', 'Nonde', 'Nsalaga', 'Nsoho', 'Nzovwe',
+      'Ruanda', 'Ruiwa', 'Rujewa',
+      'Santilya', 'Sinde', 'Sisimba', 'Suma', 'Swaya',
+      'Tembela',
+      'Ubaruku', 'Ulenje', 'Utengule Usangu', 'Utengule Usongwe', 'Uyole'
     ],
   },
   {
