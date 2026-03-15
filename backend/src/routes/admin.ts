@@ -316,6 +316,7 @@ router.post(
   body('monthly_coupon_limit').isInt({ min: 1 }),
   body('price').isFloat({ min: 0 }),
   body('currency').optional().isIn(['USD', 'EUR', 'GBP', 'TZS']),
+  body('interval').optional().isIn(['week', 'month', 'year']),
   body('stripe_price_id').optional().trim(),
   body('paypal_plan_id').optional().trim(),
   body('flutterwave_plan_id').optional().trim(),
@@ -323,12 +324,13 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-      const { name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id, flutterwave_plan_id } = req.body;
+      const { name, monthly_coupon_limit, price, currency, interval, stripe_price_id, paypal_plan_id, flutterwave_plan_id } = req.body;
       const planCurrency = currency || 'USD';
+      const planInterval = interval || 'month';
       const result = await pool.query(
-        `INSERT INTO subscription_plans (name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id, flutterwave_plan_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-        [name, monthly_coupon_limit, price, planCurrency, stripe_price_id || null, paypal_plan_id || null, flutterwave_plan_id || null]
+        `INSERT INTO subscription_plans (name, monthly_coupon_limit, price, currency, interval, stripe_price_id, paypal_plan_id, flutterwave_plan_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+        [name, monthly_coupon_limit, price, planCurrency, planInterval, stripe_price_id || null, paypal_plan_id || null, flutterwave_plan_id || null]
       );
       res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -341,7 +343,7 @@ router.post(
 router.put('/plans/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id || '0');
-    const { name, monthly_coupon_limit, price, currency, stripe_price_id, paypal_plan_id, flutterwave_plan_id } = req.body;
+    const { name, monthly_coupon_limit, price, currency, interval, stripe_price_id, paypal_plan_id, flutterwave_plan_id } = req.body;
     const updates: string[] = [];
     const values: unknown[] = [];
     let i = 2;
@@ -349,6 +351,7 @@ router.put('/plans/:id', async (req, res) => {
     if (monthly_coupon_limit !== undefined) { updates.push(`monthly_coupon_limit = $${i++}`); values.push(monthly_coupon_limit); }
     if (price !== undefined) { updates.push(`price = $${i++}`); values.push(price); }
     if (currency !== undefined && ['USD', 'EUR', 'GBP', 'TZS'].includes(currency)) { updates.push(`currency = $${i++}`); values.push(currency); }
+    if (interval !== undefined && ['week', 'month', 'year'].includes(interval)) { updates.push(`interval = $${i++}`); values.push(interval); }
     if (stripe_price_id !== undefined) { updates.push(`stripe_price_id = $${i++}`); values.push(stripe_price_id || null); }
     if (paypal_plan_id !== undefined) { updates.push(`paypal_plan_id = $${i++}`); values.push(paypal_plan_id || null); }
     if (flutterwave_plan_id !== undefined) { updates.push(`flutterwave_plan_id = $${i++}`); values.push(flutterwave_plan_id || null); }
@@ -428,6 +431,50 @@ router.patch('/pages', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update pages' });
+  }
+});
+
+// Exchange Rates
+router.get('/exchange-rates', async (_req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM exchange_rates ORDER BY currency_code');
+    res.json({ rates: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch rates' });
+  }
+});
+
+router.post(
+  '/exchange-rates',
+  body('currency_code').isLength({ min: 3, max: 3 }).toUpperCase(),
+  body('rate').isFloat({ min: 0 }),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+      const { currency_code, rate } = req.body;
+      const result = await pool.query(
+        `INSERT INTO exchange_rates (currency_code, rate) VALUES ($1, $2)
+         ON CONFLICT (currency_code) DO UPDATE SET rate = EXCLUDED.rate, updated_at = CURRENT_TIMESTAMP
+         RETURNING *`,
+        [currency_code, rate]
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to update rate' });
+    }
+  }
+);
+
+router.delete('/exchange-rates/:code', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM exchange_rates WHERE currency_code = $1', [req.params.code.toUpperCase()]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete rate' });
   }
 });
 

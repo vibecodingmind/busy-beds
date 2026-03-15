@@ -27,10 +27,18 @@ CREATE TABLE IF NOT EXISTS subscription_plans (
     name VARCHAR(100) NOT NULL UNIQUE,
     monthly_coupon_limit INTEGER NOT NULL,
     price DECIMAL(10, 2) DEFAULT 0,
+    interval VARCHAR(20) NOT NULL DEFAULT 'month' CHECK (interval IN ('week', 'month', 'year')),
     stripe_price_id VARCHAR(255),
     paypal_plan_id VARCHAR(255),
     flutterwave_plan_id VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS exchange_rates (
+    id SERIAL PRIMARY KEY,
+    currency_code VARCHAR(3) UNIQUE NOT NULL, -- e.g. TZS, EUR
+    rate DECIMAL(15, 6) NOT NULL, -- rate relative to USD (base)
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS subscriptions (

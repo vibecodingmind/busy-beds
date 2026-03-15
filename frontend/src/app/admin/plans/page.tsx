@@ -15,11 +15,12 @@ export default function AdminPlansPage() {
   const router = useRouter();
   const toast = useToast();
   const [plans, setPlans] = useState<
-    { id: number; name: string; monthly_coupon_limit: number; price: number; currency?: string; stripe_price_id: string | null; paypal_plan_id: string | null; flutterwave_plan_id: string | null }[]
+    { id: number; name: string; monthly_coupon_limit: number; price: number; currency?: string; interval: 'week' | 'month' | 'year'; stripe_price_id: string | null; paypal_plan_id: string | null; flutterwave_plan_id: string | null }[]
   >([]);
-  const [form, setForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, currency: 'USD' as string, stripe_price_id: '', paypal_plan_id: '', flutterwave_plan_id: '' });
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [form, setForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, currency: 'USD' as string, interval: 'month' as 'week' | 'month' | 'year', stripe_price_id: '', paypal_plan_id: '', flutterwave_plan_id: '' });
   const [editing, setEditing] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, currency: 'USD' as string, stripe_price_id: '', paypal_plan_id: '', flutterwave_plan_id: '' });
+  const [editForm, setEditForm] = useState({ name: '', monthly_coupon_limit: 5, price: 0, currency: 'USD' as string, interval: 'month' as 'week' | 'month' | 'year', stripe_price_id: '', paypal_plan_id: '', flutterwave_plan_id: '' });
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== 'admin')) router.push('/');
@@ -27,7 +28,7 @@ export default function AdminPlansPage() {
 
   useEffect(() => {
     if (!user || user.role !== 'admin') return;
-    admin.plans.list().then((r) => setPlans(r.plans)).catch(() => {});
+    admin.plans.list().then((r) => setPlans(r.plans)).catch(() => { });
   }, [user]);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -38,13 +39,14 @@ export default function AdminPlansPage() {
         monthly_coupon_limit: form.monthly_coupon_limit,
         price: form.price,
         currency: form.currency || 'USD',
+        interval: form.interval,
         stripe_price_id: form.stripe_price_id || undefined,
         paypal_plan_id: form.paypal_plan_id || undefined,
         flutterwave_plan_id: form.flutterwave_plan_id || undefined,
       });
-      setForm({ name: '', monthly_coupon_limit: 5, price: 0, currency: 'USD', stripe_price_id: '', paypal_plan_id: '', flutterwave_plan_id: '' });
+      setForm({ name: '', monthly_coupon_limit: 5, price: 0, currency: 'USD', interval: 'month', stripe_price_id: '', paypal_plan_id: '', flutterwave_plan_id: '' });
       toast('Plan created', 'success');
-      admin.plans.list().then((r) => setPlans(r.plans)).catch(() => {});
+      admin.plans.list().then((r) => setPlans(r.plans)).catch(() => { });
     } catch {
       toast('Failed to create plan', 'error');
     }
@@ -57,13 +59,14 @@ export default function AdminPlansPage() {
         monthly_coupon_limit: editForm.monthly_coupon_limit,
         price: editForm.price,
         currency: editForm.currency || 'USD',
+        interval: editForm.interval,
         stripe_price_id: editForm.stripe_price_id || undefined,
         paypal_plan_id: editForm.paypal_plan_id || undefined,
         flutterwave_plan_id: editForm.flutterwave_plan_id || undefined,
       });
       setEditing(null);
       toast('Plan updated', 'success');
-      admin.plans.list().then((r) => setPlans(r.plans)).catch(() => {});
+      admin.plans.list().then((r) => setPlans(r.plans)).catch(() => { });
     } catch {
       toast('Failed to update', 'error');
     }
@@ -113,36 +116,59 @@ export default function AdminPlansPage() {
           onChange={(e) => setForm((f) => ({ ...f, price: parseFloat(e.target.value) || 0 }))}
           className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
         />
-        <div>
-          <label className="mb-1 block text-sm font-medium text-black dark:text-zinc-300">Currency</label>
-          <select
-            value={form.currency}
-            onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
-            className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
-          >
-            {CURRENCIES.map((c) => (
-              <option key={c} value={c}>{c === 'USD' ? '$ USD' : c === 'EUR' ? '€ EUR' : c === 'GBP' ? '£ GBP' : 'TZS'}</option>
-            ))}
-          </select>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-black dark:text-zinc-300">Currency</label>
+            <select
+              value={form.currency}
+              onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
+              className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            >
+              {CURRENCIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-black dark:text-zinc-300">Interval</label>
+            <select
+              value={form.interval}
+              onChange={(e) => setForm((f) => ({ ...f, interval: e.target.value as any }))}
+              className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            >
+              <option value="week">Weekly</option>
+              <option value="month">Monthly</option>
+              <option value="year">Yearly</option>
+            </select>
+          </div>
         </div>
-        <input
-          placeholder="Stripe Price ID (optional)"
-          value={form.stripe_price_id}
-          onChange={(e) => setForm((f) => ({ ...f, stripe_price_id: e.target.value }))}
-          className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
-        />
-        <input
-          placeholder="PayPal Plan ID (optional)"
-          value={form.paypal_plan_id}
-          onChange={(e) => setForm((f) => ({ ...f, paypal_plan_id: e.target.value }))}
-          className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
-        />
-        <input
-          placeholder="Flutterwave Plan ID (optional)"
-          value={form.flutterwave_plan_id}
-          onChange={(e) => setForm((f) => ({ ...f, flutterwave_plan_id: e.target.value }))}
-          className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
-        />
+
+        <button type="button" onClick={() => setShowAdvanced(!showAdvanced)} className="text-xs text-emerald-600 hover:underline">
+          {showAdvanced ? 'Hide Advanced (Gateway IDs)' : 'Show Advanced (Gateway IDs)'}
+        </button>
+
+        {showAdvanced && (
+          <div className="space-y-4 pt-2 border-t border-black/5 dark:border-zinc-700">
+            <input
+              placeholder="Stripe Price ID (Legacy)"
+              value={form.stripe_price_id}
+              onChange={(e) => setForm((f) => ({ ...f, stripe_price_id: e.target.value }))}
+              className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            />
+            <input
+              placeholder="PayPal Plan ID (Legacy)"
+              value={form.paypal_plan_id}
+              onChange={(e) => setForm((f) => ({ ...f, paypal_plan_id: e.target.value }))}
+              className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            />
+            <input
+              placeholder="Flutterwave Plan ID (Legacy)"
+              value={form.flutterwave_plan_id}
+              onChange={(e) => setForm((f) => ({ ...f, flutterwave_plan_id: e.target.value }))}
+              className="w-full rounded-lg border border-black/20 dark:border-zinc-600 px-4 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+            />
+          </div>
+        )}
         <button type="submit" className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700">Create</button>
       </form>
 
@@ -159,9 +185,12 @@ export default function AdminPlansPage() {
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
-                <input placeholder="Stripe ID" value={editForm.stripe_price_id} onChange={(e) => setEditForm((f) => ({ ...f, stripe_price_id: e.target.value }))} className="w-32 rounded border px-2 py-1 text-xs dark:bg-zinc-800 dark:text-zinc-100" />
-                <input placeholder="PayPal ID" value={editForm.paypal_plan_id} onChange={(e) => setEditForm((f) => ({ ...f, paypal_plan_id: e.target.value }))} className="w-32 rounded border px-2 py-1 text-xs dark:bg-zinc-800 dark:text-zinc-100" />
-                <input placeholder="Flutterwave ID" value={editForm.flutterwave_plan_id} onChange={(e) => setEditForm((f) => ({ ...f, flutterwave_plan_id: e.target.value }))} className="w-32 rounded border px-2 py-1 text-xs dark:bg-zinc-800 dark:text-zinc-100" />
+                <select value={editForm.interval} onChange={(e) => setEditForm((f) => ({ ...f, interval: e.target.value as any }))} className="rounded border px-2 py-1 text-sm dark:bg-zinc-800 dark:text-zinc-100">
+                  <option value="week">week</option>
+                  <option value="month">month</option>
+                  <option value="year">year</option>
+                </select>
+                {/* Advanced hidden in edit for simplicity, can be added if needed */}
                 <div className="flex gap-2">
                   <button onClick={() => handleUpdate(p.id)} className="rounded bg-emerald-600 px-2 py-1 text-sm text-white">Save</button>
                   <button onClick={() => setEditing(null)} className="rounded bg-black/10 dark:bg-zinc-600 px-2 py-1 text-sm dark:bg-zinc-600">Cancel</button>
@@ -170,7 +199,7 @@ export default function AdminPlansPage() {
             ) : (
               <>
                 <span className="font-medium text-black dark:text-zinc-100">{p.name}</span>
-                <span className="text-black dark:text-zinc-400">{p.monthly_coupon_limit} coupons/mo · {formatPlanPrice(p.price, p.currency)}</span>
+                <span className="text-black dark:text-zinc-400">{p.monthly_coupon_limit} coupons/{p.interval || 'mo'} · {formatPlanPrice(p.price, p.currency)}</span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => {
@@ -180,6 +209,7 @@ export default function AdminPlansPage() {
                         monthly_coupon_limit: p.monthly_coupon_limit,
                         price: p.price,
                         currency: p.currency || 'USD',
+                        interval: p.interval || 'month',
                         stripe_price_id: p.stripe_price_id || '',
                         paypal_plan_id: p.paypal_plan_id || '',
                         flutterwave_plan_id: p.flutterwave_plan_id || '',

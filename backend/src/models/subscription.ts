@@ -6,6 +6,7 @@ export interface SubscriptionPlan {
   monthly_coupon_limit: number;
   price: number;
   currency?: string;
+  interval: 'week' | 'month' | 'year';
   stripe_price_id?: string | null;
   paypal_plan_id?: string | null;
   flutterwave_plan_id?: string | null;
@@ -22,7 +23,7 @@ export interface Subscription {
 
 export async function findAllPlans(): Promise<SubscriptionPlan[]> {
   const result = await pool.query(
-    'SELECT id, name, monthly_coupon_limit, price, COALESCE(currency, \'USD\') as currency, stripe_price_id, paypal_plan_id, flutterwave_plan_id FROM subscription_plans ORDER BY monthly_coupon_limit'
+    'SELECT id, name, monthly_coupon_limit, price, COALESCE(currency, \'USD\') as currency, COALESCE(interval, \'month\') as interval, stripe_price_id, paypal_plan_id, flutterwave_plan_id FROM subscription_plans ORDER BY monthly_coupon_limit'
   );
   return result.rows;
 }
@@ -33,9 +34,12 @@ export async function findPlanById(id: number): Promise<SubscriptionPlan | null>
 }
 
 export async function createStripeSubscription(userId: number, planId: number, stripeSubscriptionId: string): Promise<Subscription> {
+  const plan = await findPlanById(planId);
   const now = new Date();
   const periodEnd = new Date(now);
-  periodEnd.setMonth(periodEnd.getMonth() + 1);
+  if (plan?.interval === 'week') periodEnd.setDate(periodEnd.getDate() + 7);
+  else if (plan?.interval === 'year') periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+  else periodEnd.setMonth(periodEnd.getMonth() + 1);
   const result = await pool.query(
     `INSERT INTO subscriptions (user_id, plan_id, status, current_period_start, current_period_end, stripe_subscription_id)
      VALUES ($1, $2, 'active', $3, $4, $5)
@@ -54,9 +58,12 @@ export async function createStripeSubscription(userId: number, planId: number, s
 }
 
 export async function createPayPalSubscription(userId: number, planId: number, paypalSubscriptionId: string): Promise<Subscription> {
+  const plan = await findPlanById(planId);
   const now = new Date();
   const periodEnd = new Date(now);
-  periodEnd.setMonth(periodEnd.getMonth() + 1);
+  if (plan?.interval === 'week') periodEnd.setDate(periodEnd.getDate() + 7);
+  else if (plan?.interval === 'year') periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+  else periodEnd.setMonth(periodEnd.getMonth() + 1);
   const result = await pool.query(
     `INSERT INTO subscriptions (user_id, plan_id, status, current_period_start, current_period_end, paypal_subscription_id)
      VALUES ($1, $2, 'active', $3, $4, $5)
@@ -79,9 +86,12 @@ export async function createFlutterwaveSubscription(
   planId: number,
   flutterwaveSubscriptionId: string
 ): Promise<Subscription> {
+  const plan = await findPlanById(planId);
   const now = new Date();
   const periodEnd = new Date(now);
-  periodEnd.setMonth(periodEnd.getMonth() + 1);
+  if (plan?.interval === 'week') periodEnd.setDate(periodEnd.getDate() + 7);
+  else if (plan?.interval === 'year') periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+  else periodEnd.setMonth(periodEnd.getMonth() + 1);
   const result = await pool.query(
     `INSERT INTO subscriptions (user_id, plan_id, status, current_period_start, current_period_end, flutterwave_subscription_id)
      VALUES ($1, $2, 'active', $3, $4, $5)
@@ -117,6 +127,7 @@ export async function findSubscriptionByUserId(userId: number): Promise<(Subscri
       monthly_coupon_limit: row.monthly_coupon_limit,
       price: row.price,
       currency: row.plan_currency,
+      interval: row.interval || 'month',
     },
   };
 }
@@ -125,9 +136,12 @@ export async function createSubscription(
   userId: number,
   planId: number
 ): Promise<Subscription> {
+  const plan = await findPlanById(planId);
   const now = new Date();
   const periodEnd = new Date(now);
-  periodEnd.setMonth(periodEnd.getMonth() + 1);
+  if (plan?.interval === 'week') periodEnd.setDate(periodEnd.getDate() + 7);
+  else if (plan?.interval === 'year') periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+  else periodEnd.setMonth(periodEnd.getMonth() + 1);
 
   const result = await pool.query(
     `INSERT INTO subscriptions (user_id, plan_id, status, current_period_start, current_period_end)

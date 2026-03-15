@@ -8,36 +8,53 @@ import { processReferralReward } from '../services/referralReward';
 import { getSetting } from '../services/settings';
 import { pool } from '../config/db';
 import { config } from '../config';
+import * as exchangeRateModel from '../models/exchangeRate';
+
+interface CustomJwtPayload extends JwtPayload {
+  name: string;
+  email: string;
+}
 
 const router = Router();
 
 function verifyFlutterwaveSignature(rawBody: Buffer, signature: string, secretHash: string): boolean {
-  const hash = crypto.createHmac('sha256', secretHash).update(rawBody).digest('base64');
-  return hash === signature;
+  try {
+    const hash = crypto.createHmac('sha256', secretHash).update(rawBody).digest('base64');
+    return hash === signature;
+  } catch (e) {
+    return false;
+  }
 }
 
 export async function webhookHandler(req: Request, res: Response) {
   const secretHash = await getSetting('flutterwave_secret_hash');
   if (!secretHash) {
-    res.status(503).send('Flutterwave webhook not configured');
-    return;
+    console.error('Flutterwave webhook failed: flutterwave_secret_hash not configured');
+    return res.status(503).send('Flutterwave webhook not configured');
   }
   const signature = req.headers['flutterwave-signature'] as string;
   const rawBody = req.body as Buffer;
+
   if (!signature || !verifyFlutterwaveSignature(rawBody, signature, secretHash)) {
-    res.status(401).send('Invalid signature');
-    return;
+    console.warn('Flutterwave webhook: Invalid signature received');
+    return res.status(401).send('Invalid signature');
   }
-  const body = JSON.parse(rawBody.toString()) as {
-    type?: string;
-    data?: { id?: string; tx_ref?: string; reference?: string; status?: string };
-  };
+
+  let body;
+  try {
+    body = JSON.parse(rawBody.toString());
+  } catch (e) {
+    console.error('Flutterwave webhook: JSON parse error', e);
+    return res.status(400).send('Invalid JSON');
+  }
+
   const eventType = body?.type;
   const data = body?.data;
 
+  console.log(`Flutterwave Webhook received: ${eventType}`, { tx_ref: data?.tx_ref });
+
   if (eventType === 'charge.completed' && data) {
     const txRef = data.tx_ref ?? data.reference;
-    const chargeId = data.id;
     const status = data.status;
     if ((status === 'successful' || status === 'succeeded') && txRef) {
       try {
@@ -47,7 +64,8 @@ export async function webhookHandler(req: Request, res: Response) {
         );
         const row = pending.rows[0];
         if (row) {
-          const subId = chargeId || txRef;
+          const subId = String(data.id || txRef);
+          console.log(`Activating Flutterwave subscription ${subId} for user ${row.user_id}`);
           await subscriptionModel.createFlutterwaveSubscription(row.user_id, row.plan_id, subId);
           await pool.query('DELETE FROM flutterwave_charge_pending WHERE tx_ref = $1', [txRef]);
           const plan = await subscriptionModel.findPlanById(row.plan_id);
@@ -58,7 +76,7 @@ export async function webhookHandler(req: Request, res: Response) {
           }
         }
       } catch (e) {
-        console.error('Flutterwave webhook charge.completed:', e);
+        console.error('Flutterwave webhook capture error:', e);
       }
     }
   }
@@ -68,45 +86,52 @@ export async function webhookHandler(req: Request, res: Response) {
 router.post('/create-charge', authMiddleware, async (req, res) => {
   const secretKey = await getSetting('flutterwave_secret_key');
   if (!secretKey) {
+    console.error('Flutterwave create-charge failed: flutterwave_secret_key not configured');
     return res.status(503).json({ error: 'Flutterwave not configured' });
   }
+
   try {
     const userId = (req.user as JwtPayload).userId;
-    const planId = parseInt(req.body?.plan_id);
+    const { plan_id, success_url, cancel_url, currency: currencyOverride } = req.body;
+    const planId = parseInt(plan_id);
     const plan = await subscriptionModel.findPlanById(planId);
-    if (!plan?.flutterwave_plan_id) {
-      return res.status(400).json({ error: 'Invalid plan or Flutterwave not configured for this plan' });
+
+    if (!plan) {
+      console.error(`Flutterwave checkout failed: Plan ${planId} not found`);
+      return res.status(400).json({ error: 'Invalid plan' });
     }
 
-    const user = await userModel.findUserById(userId);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    const currency = (currencyOverride || plan.currency || 'USD').toUpperCase();
+    let amount = Number(plan.price);
 
-    const txRef = `busybeds_sub_${userId}_${planId}_${Date.now()}`;
-    const redirectUrl = req.body.success_url || `${config.frontendUrl}/subscription?success=1`;
+    if (currencyOverride && currencyOverride.toUpperCase() !== (plan.currency || 'USD').toUpperCase()) {
+      amount = await exchangeRateModel.convertPrice(amount, plan.currency || 'USD', currencyOverride);
+      console.log(`Converting Flutterwave price for ${currencyOverride}: ${plan.price} -> ${amount}`);
+    }
 
-    await pool.query(
-      'INSERT INTO flutterwave_charge_pending (tx_ref, user_id, plan_id) VALUES ($1, $2, $3)',
-      [txRef, userId, planId]
-    );
-
-    const currency = (plan.currency || 'USD').toUpperCase();
-    const amount = Number(plan.price);
-
-    const payload: Record<string, unknown> = {
-      tx_ref: txRef,
+    const tx_ref = `flw_${userId}_${planId}_${Date.now()}`;
+    const payload: any = {
+      tx_ref,
       amount,
       currency,
-      redirect_url: redirectUrl,
+      redirect_url: success_url || `${config.frontendUrl}/subscription?success=1`,
       customer: {
-        email: user.email,
-        name: user.name,
+        email: (req.user as CustomJwtPayload).email,
+        name: (req.user as CustomJwtPayload).name,
       },
-      customizations: { title: 'Busy Beds Subscription' },
+      customizations: {
+        title: 'Busy Beds Subscription',
+        description: `Plan: ${plan.name}`,
+        logo: 'https://busybeds.com/logo.png',
+      },
     };
 
     if (plan.flutterwave_plan_id) {
-      payload.payment_plan = parseInt(plan.flutterwave_plan_id, 10) || plan.flutterwave_plan_id;
+      const parsedId = parseInt(plan.flutterwave_plan_id, 10);
+      payload.payment_plan = isNaN(parsedId) ? plan.flutterwave_plan_id : parsedId;
     }
+
+    console.log(`Creating Flutterwave payment link for user ${userId}, plan ${planId}, Currency: ${currency}, Amount: ${amount}`);
 
     const apiRes = await fetch('https://api.flutterwave.com/v3/payments', {
       method: 'POST',
@@ -119,21 +144,26 @@ router.post('/create-charge', authMiddleware, async (req, res) => {
 
     if (!apiRes.ok) {
       const errText = await apiRes.text();
-      console.error('Flutterwave create payment:', apiRes.status, errText);
-      await pool.query('DELETE FROM flutterwave_charge_pending WHERE tx_ref = $1', [txRef]).catch(() => {});
+      console.error('Flutterwave create payment error response:', apiRes.status, errText);
       return res.status(502).json({ error: 'Flutterwave payment creation failed' });
     }
 
     const result = (await apiRes.json()) as { status?: string; data?: { link?: string } };
     const link = result.data?.link;
     if (!link) {
-      await pool.query('DELETE FROM flutterwave_charge_pending WHERE tx_ref = $1', [txRef]).catch(() => {});
+      console.error('Flutterwave create payment error: No link in response', result);
       return res.status(502).json({ error: 'Invalid Flutterwave response' });
     }
 
-    res.json({ url: link, tx_ref: txRef });
+    // Save pending charge
+    await pool.query(
+      'INSERT INTO flutterwave_charge_pending (tx_ref, user_id, plan_id) VALUES ($1, $2, $3)',
+      [tx_ref, userId, planId]
+    );
+
+    res.json({ url: link, tx_ref });
   } catch (err) {
-    console.error(err);
+    console.error('Flutterwave create-charge internal error:', err);
     res.status(500).json({ error: 'Failed to create Flutterwave payment' });
   }
 });

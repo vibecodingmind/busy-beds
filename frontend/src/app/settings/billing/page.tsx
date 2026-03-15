@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { subscriptions, stripe, paypal, flutterwave, promo } from '@/lib/api';
+import { subscriptions, stripe, paypal, flutterwave, promo, exchangeRates } from '@/lib/api';
 import type { SubscriptionPlan } from '@/lib/api';
 import { formatPlanPrice } from '@/lib/formatPlanPrice';
 import { useToast } from '@/contexts/ToastContext';
@@ -22,6 +22,8 @@ function SubscriptionContent() {
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; message: string } | null>(null);
   const [promoError, setPromoError] = useState('');
   const [promoChecking, setPromoChecking] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [rates, setRates] = useState<{ currency_code: string; rate: number }[]>([]);
   const toast = useToast();
 
   useEffect(() => {
@@ -30,6 +32,7 @@ function SubscriptionContent() {
 
   useEffect(() => {
     subscriptions.plans().then((r) => setPlans(r.plans)).catch(() => { });
+    exchangeRates.listPublic().then((r) => setRates(r.rates)).catch(() => { });
     if (user) {
       subscriptions.me().then((r) => {
         if (r.subscription) setCurrentSub(r.subscription as { plan: SubscriptionPlan; current_period_end: string });
@@ -73,7 +76,8 @@ function SubscriptionContent() {
         planId,
         undefined,
         undefined,
-        appliedPromo?.code
+        appliedPromo?.code,
+        selectedCurrency
       );
       if (session?.url) {
         window.location.href = session.url;
@@ -93,7 +97,7 @@ function SubscriptionContent() {
   const handlePayPalSubscribe = async (planId: number) => {
     setLoading(`paypal-${planId}`);
     try {
-      const res = await paypal.createSubscription(planId);
+      const res = await paypal.createSubscription(planId, undefined, undefined, selectedCurrency);
       if (res?.url) {
         window.location.href = res.url;
         return;
@@ -112,7 +116,7 @@ function SubscriptionContent() {
   const handleFlutterwaveSubscribe = async (planId: number) => {
     setLoading(`flutterwave-${planId}`);
     try {
-      const res = await flutterwave.createCharge(planId);
+      const res = await flutterwave.createCharge(planId, undefined, undefined, selectedCurrency);
       if (res?.url) {
         window.location.href = res.url;
         return;
@@ -179,7 +183,7 @@ function SubscriptionContent() {
           <h2 className="text-xl font-bold text-foreground">Active Plan</h2>
           <p className="mt-1 text-sm text-muted">
             {currentSub
-              ? `Current plan: ${currentSub.plan.name} (${currentSub.plan.monthly_coupon_limit} coupons/month)`
+              ? `Current plan: ${currentSub.plan.name} (${currentSub.plan.monthly_coupon_limit} coupons/${currentSub.plan.interval || 'month'})`
               : 'Choose a plan to start generating coupons.'}
           </p>
           {currentSub && (
@@ -218,6 +222,23 @@ function SubscriptionContent() {
           </div>
         )}
 
+        <div className="flex items-center justify-between border-b border-border pb-4">
+          <h2 className="text-xl font-bold text-foreground">Available Plans</h2>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-muted">Currency:</span>
+            <select
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value)}
+              className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              <option value="USD">USD ($)</option>
+              {rates.map(r => (
+                <option key={r.currency_code} value={r.currency_code}>{r.currency_code}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <div className="grid gap-6 sm:grid-cols-3">
           {plans.map((plan) => {
             const hasStripe = !!plan.stripe_price_id;
@@ -231,17 +252,28 @@ function SubscriptionContent() {
               <div
                 key={plan.id}
                 className={`flex flex-col justify-between rounded-3xl border p-8 transition-all ${isCurrent
-                    ? 'border-primary/50 bg-primary/5 shadow-sm'
-                    : 'border-border bg-card hover:border-primary/30'
+                  ? 'border-primary/50 bg-primary/5 shadow-sm'
+                  : 'border-border bg-card hover:border-primary/30'
                   }`}
               >
                 <div>
                   <h3 className="text-lg font-semibold text-foreground">{plan.name}</h3>
                   <div className="mt-4 flex items-baseline gap-1">
-                    <p className="text-3xl font-bold tracking-tight text-foreground">{formatPlanPrice(plan.price, plan.currency)}</p>
-                    <p className="text-sm font-medium text-muted">/ mo</p>
+                    <p className="text-3xl font-bold tracking-tight text-foreground">
+                      {(() => {
+                        if (selectedCurrency === (plan.currency || 'USD')) {
+                          return formatPlanPrice(plan.price, plan.currency);
+                        }
+                        const rateObj = rates.find(r => r.currency_code === selectedCurrency);
+                        if (rateObj) {
+                          return formatPlanPrice(plan.price * rateObj.rate, selectedCurrency);
+                        }
+                        return formatPlanPrice(plan.price, plan.currency);
+                      })()}
+                    </p>
+                    <p className="text-sm font-medium text-muted">/ {plan.interval || 'mo'}</p>
                   </div>
-                  <p className="mt-4 text-sm text-muted">{plan.monthly_coupon_limit} coupons per month</p>
+                  <p className="mt-4 text-sm text-muted">{plan.monthly_coupon_limit} coupons per {plan.interval || 'month'}</p>
                 </div>
                 <div className="mt-4 flex flex-col gap-2">
                   {isCurrent ? (

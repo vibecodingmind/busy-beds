@@ -6,6 +6,11 @@ INSERT INTO subscription_plans (name, monthly_coupon_limit, price) VALUES
     ('Premium', 30, 49.99)
 ON CONFLICT (name) DO NOTHING;
 
+-- NOTE: To enable payment gateways, update the subscription_plans table with your live/test IDs:
+-- UPDATE subscription_plans SET stripe_price_id = 'price_...' WHERE name = 'Basic';
+-- UPDATE subscription_plans SET paypal_plan_id = 'P-...' WHERE name = 'Basic';
+-- UPDATE subscription_plans SET flutterwave_plan_id = '...' WHERE name = 'Basic';
+
 INSERT INTO hotels (name, description, location, contact_phone, contact_email, images, latitude, longitude, coupon_discount_value, coupon_limit, limit_period) VALUES
     ('Grand Plaza Hotel', 'Luxury hotel in the heart of the city with stunning views.', '123 Main Street, Downtown', '+1-555-0101', 'info@grandplaza.com',
      '["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80","https://images.unsplash.com/photo-1582719478250-c89c6d9cba22?w=800&q=80","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&q=80"]'::jsonb,

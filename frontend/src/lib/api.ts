@@ -315,6 +315,10 @@ export const coupons = {
     }),
 };
 
+export const exchangeRates = {
+  listPublic: () => api<{ rates: { currency_code: string; rate: number }[] }>('/exchange-rates/public'),
+};
+
 // Subscriptions
 export const subscriptions = {
   plans: () => api<{ plans: SubscriptionPlan[] }>('/subscriptions/plans'),
@@ -338,28 +342,28 @@ export const subscriptions = {
 };
 
 export const stripe = {
-  createCheckoutSession: (planId: number, successUrl?: string, cancelUrl?: string, promoCode?: string) =>
+  createCheckoutSession: (planId: number, successUrl?: string, cancelUrl?: string, promoCode?: string, currency?: string) =>
     api<{ url: string; sessionId: string }>('/stripe/create-checkout-session', {
       method: 'POST',
-      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl, promo_code: promoCode }),
+      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl, promo_code: promoCode, currency }),
     }),
   billingPortal: () =>
     api<{ url: string }>('/stripe/billing-portal', { method: 'POST' }),
 };
 
 export const paypal = {
-  createSubscription: (planId: number, successUrl?: string, cancelUrl?: string) =>
+  createSubscription: (planId: number, successUrl?: string, cancelUrl?: string, currency?: string) =>
     api<{ url: string; subscriptionId: string }>('/paypal/create-subscription', {
       method: 'POST',
-      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
+      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl, currency }),
     }),
 };
 
 export const flutterwave = {
-  createCharge: (planId: number, successUrl?: string, cancelUrl?: string) =>
+  createCharge: (planId: number, successUrl?: string, cancelUrl?: string, currency?: string) =>
     api<{ url: string; tx_ref: string }>('/flutterwave/create-charge', {
       method: 'POST',
-      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl }),
+      body: JSON.stringify({ plan_id: planId, success_url: successUrl, cancel_url: cancelUrl, currency }),
     }),
 };
 
@@ -591,6 +595,7 @@ export const admin = {
           monthly_coupon_limit: number;
           price: number;
           currency?: string;
+          interval: 'week' | 'month' | 'year';
           stripe_price_id: string | null;
           paypal_plan_id: string | null;
           flutterwave_plan_id: string | null;
@@ -601,6 +606,7 @@ export const admin = {
       monthly_coupon_limit: number;
       price: number;
       currency?: string;
+      interval?: 'week' | 'month' | 'year';
       stripe_price_id?: string;
       paypal_plan_id?: string;
       flutterwave_plan_id?: string;
@@ -612,6 +618,7 @@ export const admin = {
         monthly_coupon_limit: number;
         price: number;
         currency: string;
+        interval: 'week' | 'month' | 'year';
         stripe_price_id: string;
         paypal_plan_id: string;
         flutterwave_plan_id: string;
@@ -714,6 +721,15 @@ export const admin = {
         method: 'PATCH',
         body: JSON.stringify(data),
       }),
+  },
+  exchangeRates: {
+    list: () => api<{ rates: { id: number; currency_code: string; rate: number; updated_at: string }[] }>('/admin/exchange-rates'),
+    update: (currency_code: string, rate: number) =>
+      api<object>('/admin/exchange-rates', {
+        method: 'POST',
+        body: JSON.stringify({ currency_code, rate }),
+      }),
+    delete: (code: string) => api<{ success: boolean }>(`/admin/exchange-rates/${code}`, { method: 'DELETE' }),
   },
   exportCsv: async (path: string, filename: string): Promise<void> => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -834,6 +850,7 @@ export interface SubscriptionPlan {
   monthly_coupon_limit: number;
   price: number;
   currency?: string;
+  interval: 'week' | 'month' | 'year';
   stripe_price_id?: string | null;
   paypal_plan_id?: string | null;
   flutterwave_plan_id?: string | null;
