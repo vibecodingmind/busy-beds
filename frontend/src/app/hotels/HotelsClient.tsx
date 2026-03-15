@@ -22,17 +22,13 @@ interface MapBounds {
 }
 
 interface LocationData {
-  country: string;
-  regions: string[];
+  countries: string[];
+  regions: { country: string; region: string }[];
 }
-
-const locationData: LocationData = {
-  country: 'Tanzania',
-  regions: tanzaniaRegions.map(r => r.region),
-};
 
 const INITIAL_FILTERS: FilterState = {
   search: '',
+  country: 'Tanzania', // Default to Tanzania as per user request
   region: '',
   minPrice: undefined,
   maxPrice: undefined,
@@ -59,6 +55,7 @@ function HotelsClientInner() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [locationMetadata, setLocationMetadata] = useState<LocationData | null>(null);
   const [selectedHotelId, setSelectedHotelId] = useState<number | null>(null);
 
   const debouncedSearch = useDebounce(filters.search, 300);
@@ -87,7 +84,7 @@ function HotelsClientInner() {
         min_rating: filters.minRating,
         amenities: filters.amenities.length > 0 ? filters.amenities : undefined,
         has_discount: filters.hasDiscount || undefined,
-        country: 'Tanzania',
+        country: filters.country || undefined,
         region: filters.region || undefined,
         city: undefined,
         limit: 20,
@@ -114,7 +111,24 @@ function HotelsClientInner() {
 
   useEffect(() => {
     fetchHotels(true);
-  }, [debouncedSearch, sort, coords, debouncedBounds, filters.minPrice, filters.maxPrice, filters.minRating, filters.hasDiscount, filters.amenities, filters.region]);
+  }, [debouncedSearch, sort, coords, debouncedBounds, filters.minPrice, filters.maxPrice, filters.minRating, filters.hasDiscount, filters.amenities, filters.region, filters.country]);
+
+  useEffect(() => {
+    // Fetch dynamic location metadata
+    hotels.locations().then(res => {
+      setLocationMetadata({
+        countries: res.countries,
+        regions: res.regions
+      });
+    }).catch(err => {
+      console.error('Failed to fetch locations:', err);
+      // Fallback to minimal data if API fails
+      setLocationMetadata({
+        countries: ['Tanzania'],
+        regions: tanzaniaRegions.map(r => ({ country: 'Tanzania', region: r.region }))
+      });
+    });
+  }, []);
 
   useEffect(() => {
     if (nearme && navigator.geolocation && !coords) {
@@ -122,7 +136,7 @@ function HotelsClientInner() {
       setSort('distance');
       navigator.geolocation.getCurrentPosition(
         (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => {},
+        () => { },
         { enableHighAccuracy: true }
       );
     }
@@ -169,7 +183,7 @@ function HotelsClientInner() {
     setMobileMapOpen((prev) => !prev);
   }, []);
 
-  const locationBreadcrumb = [filters.region].filter(Boolean).join(' › ');
+  const locationBreadcrumb = [filters.country, filters.region].filter(Boolean).join(' › ');
 
   return (
     <div className="min-h-screen">
@@ -225,7 +239,7 @@ function HotelsClientInner() {
           filters={filters}
           onFiltersChange={setFilters}
           onReset={handleResetFilters}
-          locationData={locationData}
+          locationData={locationMetadata ?? { countries: ['Tanzania'], regions: [] }}
         />
 
         <div className="flex flex-wrap items-center gap-3 mt-4">

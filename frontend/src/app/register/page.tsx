@@ -33,7 +33,7 @@ function RegisterContent() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [hotelId, setHotelId] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState<string>('');
+  const [selectedCountry, setSelectedCountry] = useState<string>('Tanzania');
   const [hotels, setHotels] = useState<{ id: number; name: string; country?: string }[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [promoCode, setPromoCode] = useState('');
@@ -215,14 +215,11 @@ function RegisterContent() {
                 <Globe size={18} />
               </div>
               <SearchableSelect
-                value={selectedCountry}
-                options={uniqueCountries}
-                onChange={(val) => {
-                  setSelectedCountry(val);
-                  setHotelId(''); // Reset hotel when country changes
-                }}
-                placeholder="Search or Select Country..."
-                searchPlaceholder="Search countries..."
+                value="Tanzania"
+                options={['Tanzania']}
+                onChange={() => { }} // Read-only for now
+                placeholder="Tanzania"
+                disabled
                 className="w-full"
               />
             </div>

@@ -5,6 +5,7 @@ import SearchableSelect from '@/components/SearchableSelect';
 
 export interface FilterState {
   search: string;
+  country: string;
   region: string;
   minPrice: number | undefined;
   maxPrice: number | undefined;
@@ -14,8 +15,8 @@ export interface FilterState {
 }
 
 interface LocationData {
-  country: string;
-  regions: string[];
+  countries: string[];
+  regions: { country: string; region: string }[];
 }
 
 interface FilterBarProps {
@@ -80,9 +81,12 @@ export default function FilterBar({
     update('amenities', next);
   };
 
-  const availableRegions = locationData?.regions ?? [];
+  const availableRegions = locationData?.regions
+    .filter(r => !filters.country || r.country === filters.country)
+    .map(r => r.region) ?? [];
 
   const activeFilterCount =
+    (filters.country ? 1 : 0) +
     (filters.region ? 1 : 0) +
     (filters.minPrice != null ? 1 : 0) +
     (filters.maxPrice != null ? 1 : 0) +
@@ -107,8 +111,23 @@ export default function FilterBar({
           />
         </div>
 
+        {/* Country */}
+        <div className="min-w-[160px]">
+          <SearchableSelect
+            value={filters.country}
+            options={['Tanzania']} // Restricted to Tanzania for now
+            onChange={(value) => {
+              const next = { ...filters, country: value, region: '' };
+              onFiltersChange(next);
+            }}
+            placeholder="All Countries"
+            searchPlaceholder="Search countries..."
+            optionLabel={(c) => c || 'All Countries'}
+          />
+        </div>
+
         {/* Region */}
-        {availableRegions.length > 0 && (
+        {(availableRegions.length > 0 || filters.country) && (
           <div className="min-w-[180px]">
             <SearchableSelect
               value={filters.region}
@@ -117,6 +136,7 @@ export default function FilterBar({
               placeholder="All Regions"
               searchPlaceholder="Search regions..."
               optionLabel={(region) => region || 'All Regions'}
+              disabled={!filters.country}
               searchFirst
             />
           </div>
@@ -126,11 +146,10 @@ export default function FilterBar({
         <button
           type="button"
           onClick={() => setShowMoreFilters(!showMoreFilters)}
-          className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-colors ${
-            showMoreFilters || activeFilterCount > 0
+          className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition-colors ${showMoreFilters || activeFilterCount > 0
               ? 'border-primary bg-primary/5 text-primary dark:border-primary dark:bg-primary/10'
               : 'border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 hover:bg-zinc-50 dark:hover:bg-zinc-700 dark:text-zinc-100'
-          }`}
+            }`}
         >
           <FilterIcon />
           Filters
@@ -196,11 +215,10 @@ export default function FilterBar({
               <button
                 type="button"
                 onClick={() => setShowAmenitiesDropdown(!showAmenitiesDropdown)}
-                className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
-                  filters.amenities.length > 0
+                className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${filters.amenities.length > 0
                     ? 'border-primary bg-primary/5 text-primary'
                     : 'border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 dark:text-zinc-100'
-                }`}
+                  }`}
               >
                 Amenities {filters.amenities.length > 0 && `(${filters.amenities.length})`}
                 <ChevronDownIcon className="h-3.5 w-3.5" />
@@ -239,6 +257,9 @@ export default function FilterBar({
       {/* Active filter chips */}
       {activeFilterCount > 0 && (
         <div className="flex flex-wrap gap-2">
+          {filters.country && (
+            <FilterChip label={`🌍 ${filters.country}`} onRemove={() => onFiltersChange({ ...filters, country: '', region: '' })} />
+          )}
           {filters.region && (
             <FilterChip label={`📍 ${filters.region}`} onRemove={() => update('region', '')} />
           )}
