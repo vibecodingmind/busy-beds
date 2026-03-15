@@ -27,15 +27,23 @@ export const tanzaniaRegions: TanzaniaRegion[] = [
   {
     region: 'Dar es Salaam',
     wards: [
-      'Airini', 'Buguruni', 'Buguruni Mnazi', 'Chanika', 'Charambe', 'Chake Chake', 'Goba', 'Gulubay', 'Hananasif',
-      'Ifakara', 'Ilala CBD', 'Jangwani', 'Kagera', 'Kariakoo', 'Kibaha', 'Kibiti', 'Kigamboni', 'Kijichi', 'Kilwa',
-      'Kimara', 'Kinja', 'Kisarawe', 'Kisutu', 'Kitunda', 'Kivule', 'Kibiti', 'Kigamboni', 'Kijitonyama', 'Kilakala',
-      'Kiliongo', 'Kilwa', 'Kimbiji', 'Kinondoni CBD', 'Kipawa', 'Kipele', 'Kitonga', 'Kivule', 'Kondeni', 'Kongowe',
-      'Kibiti', 'Lugalo', 'Machimbo', 'Magomeni', 'Makangara', 'Makazi', 'Makete', 'Makonde', 'Makumbaku', 'Mali',
-      'Mamber', 'Masinganyika', 'Matsyana', 'Mbezi', 'Mburahati', 'Mchikichini', 'Mikocheni', 'Mkwajuni', 'Mnazi Mmoja',
-      'Mogo', 'Mongola', 'Morogoro', 'Msasani', 'Mtambani', 'Mtoni', 'Mwananyamala', 'Mwarakwato', 'Mwigulu', 'Ndugumbi',
-      'Neger', 'Nyamanzi', 'Pahama', 'Paje', 'Pangawe', 'Pwani', 'Rangi Tatu', 'Sabando', 'Saga', 'Salasala',
-      'Sandali', 'Saranda', 'Sinde', 'Sinza', 'Soga', 'Somangila', 'Sonde', 'Tabata', 'Tandika', 'Tangas'
+      'Azimio',
+      'Buguruni', 'Bunju', 'Buza',
+      'Chamazi', 'Changombe', 'Chanika', 'Charambe',
+      'Gerezani', 'Goba', 'Gongolamboto',
+      'Hananasif',
+      'Ilala',
+      'Jangwani',
+      'Kariakoo', 'Kawe', 'Keko', 'Kibada', 'Kibamba', 'Kiburugwa', 'Kigamboni', 'Kigogo', 'Kijichi', 'Kijitonyama', 'Kilakala', 'Kimanga', 'Kimara', 'Kimbiji', 'Kinondoni', 'Kinyerezi', 'Kipawa', 'Kisarawe II', 'Kisutu', 'Kitunda', 'Kivukoni', 'Kivule', 'Kiwalani', 'Kunduchi', 'Kurasini', 'Kwembe',
+      'Mabibo', 'Mabwepande', 'Magomeni', 'Majohe', 'Makangarawe', 'Makongo', 'Makuburi', 'Makumbusho', 'Makurumla', 'Manzese', 'Mbagala', 'Mbagala Kuu', 'Mbezi', 'Mbezi Juu', 'Mburahati', 'Mbweni', 'Mchafukoge', 'Mchikichini', 'Mianzini', 'Miburani', 'Mikocheni', 'Mjimwema', 'Msasani', 'Msigani', 'Msongola', 'Mtoni', 'Mwananyamala', 'Mzimuni',
+      'Ndugumbi',
+      'Pembamnazi', 'Pugu',
+      'Sandali', 'Saranga', 'Segerea', 'Sinza', 'Somangila',
+      'Tabata', 'Tandale', 'Tandika', 'Temeke', 'Toangoma', 'Tungi',
+      'Ubungo', 'Ukonga', 'Upanga East', 'Upanga West',
+      'Vijibweni', 'Vingunguti',
+      'Wazo',
+      'Yombo Vituka'
     ],
   },
   {
