@@ -121,15 +121,17 @@ export const tanzaniaRegions: TanzaniaRegion[] = [
   {
     region: 'Kigoma',
     wards: [
-      'Bagamoyo', 'Biharamulo', 'Bukuba', 'Bulamata', 'Bunwezi', 'Burigi', 'Chankere', 'Chato', 'Chaya', 'Chibisa',
-      'Fuga', 'Gwiligole', 'Ilemela', 'Kabanga', 'Kagongwa', 'Kakonko', 'Kalangala', 'Kalebe', 'Kalenga', 'Kaliua',
-      'Kanga', 'Kanyosha', 'Kasanda', 'Kasonga', 'Katoro', 'Katuma', 'Katwa', 'Kavimo', 'Kigoma', 'Kigondo',
-      'Kilelema', 'Kilombero', 'Kipansia', 'Kirando', 'Kirekese', 'Kisessa', 'Kitosi', 'Kitunda', 'Kizengi', 'Lufumbwa',
-      'Lungalunga', 'Mabamba', 'Mabilila', 'Mabuga', 'Machinjioni', 'Magana', 'Mahembe', 'Makazi', 'Makere', 'Makondo',
-      'Malagarasi', 'Malimali', 'Maliwale', 'Mambara', 'Manda', 'Mangola', 'Mani', 'Marumba', 'Masengele', 'Masokwa',
-      'Matendo', 'Mato', 'Mbuga', 'Mbwiro', 'Mkongoro', 'Mlandede', 'Mnyala', 'Monda', 'Mponda', 'Mrambo', 'Msonga',
-      'Mtaa', 'Mteza', 'Mtoni', 'Mwangaza', 'Mwera', 'Mwiguru', 'Ndugba', 'Nguruka', 'Nkonge', 'Nkuyuni', 'Nyabibuye',
-      'Nyachande', 'Nyakiangaza', 'Nyamgandini', 'Nyamulenge', 'Nyanduga', 'Nyantkona', 'Panda', 'Rangwi', 'Rima', 'Rungwa'
+      'Bangwe', 'Biharu', 'Bitale', 'Bitare', 'Buhanda', 'Buhigwe', 'Buhingu', 'Buhoro', 'Busagara', 'Businde', 'Busunzu', 'Buzebazeba',
+      'Gungu',
+      'Igalula', 'Ilagala', 'Itaba', 'Itebula',
+      'Janda',
+      'Kagera', 'Kagezi', 'Kagongo', 'Kagunga', 'Kajana', 'Kalinzi', 'Kalya', 'Kandaga', 'Kasimbu', 'Kasingirima', 'Katubuka', 'Kazuramimba', 'Kibande', 'Kibirizi', 'Kibondo Mjini', 'Kigoma Ward', 'Kilelema', 'Kipampa', 'Kitahana', 'Kitongoni', 'Kizazi', 'Kumsenga', 'Kumwambu',
+      'Mabamba', 'Machinjioni', 'Mahembe', 'Majengo', 'Matendo', 'Mganza', 'Misezero', 'Mkigo', 'Mkongoro', 'Mtego wa Noti', 'Mugera', 'Muhambwe', 'Muhinda', 'Munanila', 'Mungonya', 'Munyegera', 'Munzeze', 'Murungu', 'Muyama', 'Mwamgongo', 'Mwandiga', 'Mwanga Kaskazini', 'Mwanga Kusini', 'Mwayaya',
+      'Nguruka', 'Nyamugali', 'Nyaruyoba',
+      'Rubuga', 'Rugongwe', 'Rusaba', 'Rusimbi', 'Rusohoko',
+      'Sigunga', 'Simbo', 'Sunuka',
+      'Turana',
+      'Uvinza Ward'
     ],
   },
   {
