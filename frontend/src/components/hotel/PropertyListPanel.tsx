@@ -99,9 +99,8 @@ export default function PropertyListPanel({
               ref={(el) => {
                 if (el) hotelRefs.current.set(hotel.id, el);
               }}
-              className={`relative group cursor-pointer transition-all duration-200 ${
-                isSelected ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-zinc-900' : ''
-              }`}
+              className={`relative group cursor-pointer transition-all duration-200 ${isSelected ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-zinc-900' : ''
+                }`}
               onClick={() => onHotelClick(hotel.id)}
             >
               <Link href={`/hotels/${hotel.id}`} className="block">
@@ -114,7 +113,7 @@ export default function PropertyListPanel({
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         sizes="160px"
-                        unoptimized={!imageUrl.includes('images.unsplash.com')}
+                        unoptimized={imageUrl.startsWith('http')}
                       />
                       {discountLabel && (
                         <div className="absolute left-1 top-1 z-10 rounded-md bg-black/80 px-1.5 py-0.5 text-xs font-medium text-white">

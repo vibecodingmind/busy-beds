@@ -38,51 +38,16 @@ function BlurImage({
   className?: string;
   priority?: boolean;
 }) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
-  const imgRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '100px' }
-    );
-
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Use unoptimized for any absolute URL — hotel images come from user-provided URLs
-  const isExternalImage = src.startsWith('http://') || src.startsWith('https://');
-
   return (
-    <div ref={imgRef} className={`relative ${className}`}>
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
-      )}
-      {isInView && (
-        <Image
-          src={src}
-          alt={alt}
-          fill={fill}
-          sizes={sizes}
-          className={`object-cover transition-all duration-500 ${
-            isLoaded ? 'blur-0 opacity-100' : 'blur-xl opacity-0'
-          }`}
-          onLoad={() => setIsLoaded(true)}
-          priority={priority}
-          unoptimized={!isExternalImage}
-        />
-      )}
-    </div>
+    <Image
+      src={src}
+      alt={alt}
+      fill={fill}
+      sizes={sizes}
+      className={`object-cover bg-zinc-200 dark:bg-zinc-800 ${className || ''}`}
+      priority={priority}
+      unoptimized={src.startsWith('http')}
+    />
   );
 }
 
@@ -129,7 +94,7 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
           setLowestPrice(lowest);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [hotel.id, hotel.coupon_discount_value]);
 
   return (

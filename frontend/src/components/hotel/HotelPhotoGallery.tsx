@@ -26,7 +26,7 @@ function getMediaItems(images: string[] | MediaItem[]): MediaItem[] {
   if (!images || images.length === 0) {
     return [{ url: PLACEHOLDER, type: 'image', category: 'Room' }];
   }
-  
+
   return images.map((item) => {
     if (isMediaItem(item)) {
       return {
@@ -65,52 +65,16 @@ function BlurImage({
   className?: string;
   priority?: boolean;
 }) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
-  const imgRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '100px' }
-    );
-
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Use unoptimized for any absolute URL — Next.js image optimization requires
-  // every domain to be whitelisted; hotel images come from arbitrary user-provided URLs.
-  const isExternalImage = src.startsWith('http://') || src.startsWith('https://');
-
   return (
-    <div ref={imgRef} className={`relative ${className}`}>
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-lg" />
-      )}
-      {isInView && (
-        <Image
-          src={src}
-          alt={alt}
-          fill={fill}
-          sizes={sizes}
-          className={`object-cover transition-all duration-700 ${
-            isLoaded ? 'blur-0 opacity-100' : 'blur-xl opacity-0'
-          }`}
-          onLoad={() => setIsLoaded(true)}
-          priority={priority}
-          unoptimized={!isExternalImage}
-        />
-      )}
-    </div>
+    <Image
+      src={src}
+      alt={alt}
+      fill={fill}
+      sizes={sizes}
+      className={`object-cover bg-zinc-200 dark:bg-zinc-800 ${className || ''}`}
+      priority={priority}
+      unoptimized={src.startsWith('http')}
+    />
   );
 }
 
@@ -145,11 +109,11 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
-  
+
   const list = getMediaItems(images);
   const categories = ['All', ...new Set(list.map((item) => item.category || 'Room'))];
   const filteredList = selectedCategory === 'All' ? list : list.filter((item) => item.category === selectedCategory);
-  
+
   const currentIndex = filteredList[index];
   const goPrev = useCallback(() => {
     setIndex((i) => (i <= 0 ? filteredList.length - 1 : i - 1));
@@ -209,7 +173,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
     if (!touchStart) return;
     const deltaX = e.changedTouches[0].clientX - touchStart.x;
     const deltaY = e.changedTouches[0].clientY - touchStart.y;
-    
+
     if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
       if (deltaX > 0) goPrev();
       else goNext();
@@ -236,11 +200,10 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
                 setSelectedCategory(cat);
                 setIndex(0);
               }}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                selectedCategory === cat
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === cat
                   ? 'bg-black text-white dark:bg-white dark:text-black'
                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700'
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -249,7 +212,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
       )}
 
       {/* MOBILE VIEW: Single image slider with swipe */}
-      <div 
+      <div
         className="md:hidden relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -261,7 +224,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
             onClick={() => openLightbox(index)}
           />
         ) : (
-          <div 
+          <div
             className={`relative w-full h-full ${isZoomed ? '' : 'cursor-pointer'}`}
             onClick={handleDoubleTap}
           >
@@ -275,13 +238,13 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
             />
           </div>
         )}
-        
+
         {filteredList.length > 1 && (
           <>
             <div className="absolute bottom-4 right-4 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white backdrop-blur-md">
               {index + 1} / {filteredList.length}
             </div>
-            
+
             <button
               onClick={(e) => { e.stopPropagation(); goPrev(); }}
               className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/80 p-1.5 text-black shadow-sm backdrop-blur-sm hover:bg-white transition"
@@ -302,7 +265,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
 
       {/* DESKTOP VIEW: Professional Grid (Airbnb style) */}
       <div className="hidden md:grid h-[400px] lg:h-[460px] w-full grid-cols-4 gap-2 overflow-hidden rounded-xl">
-        <div 
+        <div
           className={`relative cursor-pointer group ${filteredList.length === 1 ? 'col-span-4' : 'col-span-2 row-span-2'}`}
           onClick={() => openLightbox(0)}
         >
@@ -326,22 +289,20 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
         </div>
 
         {rightCount > 0 && (
-          <div className={`grid gap-2 col-span-2 row-span-2 ${
-            rightCount === 1 ? 'grid-cols-1 grid-rows-1' :
-            rightCount === 2 ? 'grid-cols-1 grid-rows-2' :
-            'grid-cols-2 grid-rows-2'
-          }`}>
+          <div className={`grid gap-2 col-span-2 row-span-2 ${rightCount === 1 ? 'grid-cols-1 grid-rows-1' :
+              rightCount === 2 ? 'grid-cols-1 grid-rows-2' :
+                'grid-cols-2 grid-rows-2'
+            }`}>
             {displayImages.slice(1).map((item, i) => {
               const globalIdx = i + 1;
               const isLastBox = globalIdx === 4 || globalIdx === displayImages.length - 1;
               const isThirdPhotoInFour = rightCount === 3 && i === 0;
-              
+
               return (
-                <div 
-                  key={globalIdx} 
-                  className={`relative cursor-pointer group overflow-hidden ${
-                    isThirdPhotoInFour ? 'col-span-2' : ''
-                  }`}
+                <div
+                  key={globalIdx}
+                  className={`relative cursor-pointer group overflow-hidden ${isThirdPhotoInFour ? 'col-span-2' : ''
+                    }`}
                   onClick={() => openLightbox(globalIdx)}
                 >
                   {item.type === 'video' ? (
@@ -360,7 +321,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
                     />
                   )}
                   <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10" />
-                  
+
                   {isLastBox && filteredList.length > 5 && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 hover:bg-black/60 transition-colors">
                       <span className="text-white font-semibold text-lg">+{filteredList.length - 5} photos</span>
@@ -398,9 +359,8 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
                 <button
                   type="button"
                   onClick={() => setIsPlaying(!isPlaying)}
-                  className={`flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition-colors backdrop-blur-md ${
-                    isPlaying ? 'bg-white/30' : ''
-                  }`}
+                  className={`flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition-colors backdrop-blur-md ${isPlaying ? 'bg-white/30' : ''
+                    }`}
                   aria-label={isPlaying ? 'Pause slideshow' : 'Play slideshow'}
                 >
                   {isPlaying ? (
@@ -430,7 +390,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
           </div>
 
           {/* Main Photo Area */}
-          <div 
+          <div
             className="relative flex flex-1 items-center justify-center overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
@@ -448,7 +408,7 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
               </button>
             )}
 
-            <div 
+            <div
               className={`relative w-full h-full max-w-7xl max-h-[75vh] px-16 md:px-28 ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
               onClick={() => setIsZoomed(!isZoomed)}
             >
@@ -497,11 +457,10 @@ export default function HotelPhotoGallery({ images, hotelName }: HotelPhotoGalle
                       setIndex(i);
                       setIsZoomed(false);
                     }}
-                    className={`relative h-16 w-24 md:h-20 md:w-32 flex-shrink-0 overflow-hidden rounded-lg transition-all duration-300 ${
-                      i === index 
-                        ? 'ring-2 ring-white opacity-100 scale-105 shadow-xl' 
+                    className={`relative h-16 w-24 md:h-20 md:w-32 flex-shrink-0 overflow-hidden rounded-lg transition-all duration-300 ${i === index
+                        ? 'ring-2 ring-white opacity-100 scale-105 shadow-xl'
                         : 'opacity-40 hover:opacity-100'
-                    }`}
+                      }`}
                   >
                     {item.type === 'video' ? (
                       <BlurImage
