@@ -1,16 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { admin } from '@/lib/api';
 import type { AdminHotel } from '@/lib/api';
+import { tanzaniaRegions } from '@/data/tanzania-wards';
 
 export default function AdminHotelsPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [hotels, setHotels] = useState<AdminHotel[]>([]);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [regionFilter, setRegionFilter] = useState('');
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== 'admin')) router.push('/');
@@ -24,6 +28,25 @@ export default function AdminHotelsPage() {
   useEffect(() => {
     fetchHotels();
   }, [user]);
+
+  const filteredHotels = useMemo(() => {
+    return hotels.filter((h) => {
+      const matchesSearch = !search || 
+        h.name.toLowerCase().includes(search.toLowerCase()) ||
+        (h.location?.toLowerCase().includes(search.toLowerCase())) ||
+        (h.city?.toLowerCase().includes(search.toLowerCase())) ||
+        (h.region?.toLowerCase().includes(search.toLowerCase()));
+      
+      const matchesStatus = statusFilter === 'all' || 
+        (statusFilter === 'active' && h.active !== false) ||
+        (statusFilter === 'inactive' && h.active === false);
+      
+      const matchesRegion = !regionFilter || 
+        h.region?.toLowerCase() === regionFilter.toLowerCase();
+      
+      return matchesSearch && matchesStatus && matchesRegion;
+    });
+  }, [hotels, search, statusFilter, regionFilter]);
 
   const handleDelete = async (h: AdminHotel) => {
     if (!confirm(`Delete "${h.name}"? This cannot be undone.`)) return;
@@ -48,7 +71,51 @@ export default function AdminHotelsPage() {
           Add Hotel
         </Link>
       </div>
-      <div className="mt-8 overflow-x-auto rounded-lg border border-black/10 dark:border-zinc-700">
+
+      {/* Filters */}
+      <div className="mt-6 flex flex-wrap gap-3">
+        <div className="flex-1 min-w-[200px]">
+          <input
+            type="text"
+            placeholder="Search hotels..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-black dark:text-zinc-100 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+          className="rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-black dark:text-zinc-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+        >
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <select
+          value={regionFilter}
+          onChange={(e) => setRegionFilter(e.target.value)}
+          className="rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-black dark:text-zinc-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+        >
+          <option value="">All Regions</option>
+          {tanzaniaRegions.map((r) => (
+            <option key={r.region} value={r.region}>{r.region}</option>
+          ))}
+        </select>
+        {(search || statusFilter !== 'all' || regionFilter) && (
+          <button
+            onClick={() => { setSearch(''); setStatusFilter('all'); setRegionFilter(''); }}
+            className="rounded-lg border border-red-200 dark:border-red-800 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+          >
+            Clear Filters
+          </button>
+        )}
+        <span className="flex items-center text-sm text-zinc-500 dark:text-zinc-400">
+          {filteredHotels.length} of {hotels.length} hotels
+        </span>
+      </div>
+
+      <div className="mt-6 overflow-x-auto rounded-lg border border-black/10 dark:border-zinc-700">
         <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
           <thead className="bg-white dark:bg-zinc-900">
             <tr>
@@ -62,10 +129,17 @@ export default function AdminHotelsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
-            {hotels.map((h) => (
+            {filteredHotels.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-zinc-500 dark:text-zinc-400">
+                  {hotels.length === 0 ? 'No hotels found' : 'No hotels match your filters'}
+                </td>
+              </tr>
+            ) : (
+              filteredHotels.map((h) => (
               <tr key={h.id}>
                 <td className="px-4 py-2 font-medium text-black dark:text-zinc-100">{h.name}</td>
-                <td className="px-4 py-2 text-sm text-black dark:text-zinc-400">{h.location ?? '-'}</td>
+                <td className="px-4 py-2 text-sm text-black dark:text-zinc-400">{h.region ? `${h.region}${h.city ? ', ' + h.city : ''}` : h.location ?? '-'}</td>
                 <td className="px-4 py-2">
                   <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${h.active !== false ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300' : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-600 dark:text-zinc-200'}`}>
                     {h.active !== false ? 'Active' : 'Inactive'}
@@ -90,10 +164,11 @@ export default function AdminHotelsPage() {
                   >
                     Delete
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+                  </td>
+                </tr>
+              ))
+            )}
+            </tbody>
         </table>
       </div>
     </div>
