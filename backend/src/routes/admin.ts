@@ -110,7 +110,7 @@ router.delete('/hotels/:id', async (req, res) => {
     const result = await pool.query('DELETE FROM hotels WHERE id = $1 RETURNING id, name', [id]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Hotel not found' });
     const userId = (req.user as JwtPayload)?.userId;
-    if (userId) logAdminAction(userId, 'hotel.delete', 'hotel', id, result.rows[0]?.name).catch(() => {});
+    if (userId) logAdminAction(userId, 'hotel.delete', 'hotel', id, result.rows[0]?.name).catch(() => { });
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -282,7 +282,7 @@ router.post('/hotel-accounts/:id/approve', async (req, res) => {
     const account = await hotelAccountModel.approveHotelAccount(id);
     if (!account) return res.status(404).json({ error: 'Hotel account not found' });
     const hotel = await hotelModel.findHotelById(account.hotel_id);
-    if (hotel) sendHotelApprovalEmail(account.email, hotel.name).catch(() => {});
+    if (hotel) sendHotelApprovalEmail(account.email, hotel.name).catch(() => { });
     res.json({ success: true, account });
   } catch (err) {
     console.error(err);
@@ -389,7 +389,7 @@ router.patch('/settings', async (req, res) => {
     }
     await updateSettings(updates);
     const userId = (req.user as JwtPayload)?.userId;
-    if (userId) logAdminAction(userId, 'settings.update', 'settings', undefined, Object.keys(updates).join(', ')).catch(() => {});
+    if (userId) logAdminAction(userId, 'settings.update', 'settings', undefined, Object.keys(updates).join(', ')).catch(() => { });
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -594,14 +594,14 @@ router.get('/withdraw-requests', async (req, res) => {
       FROM withdraw_requests wr JOIN users u ON wr.user_id = u.id ORDER BY wr.created_at DESC`;
     const result = statusFilter && ['pending', 'approved', 'paid', 'rejected'].includes(statusFilter)
       ? await pool.query(
-          `SELECT wr.id, wr.user_id, wr.amount, wr.method, wr.method_details, wr.status, wr.admin_notes, wr.created_at, wr.processed_at, u.email, u.name
+        `SELECT wr.id, wr.user_id, wr.amount, wr.method, wr.method_details, wr.status, wr.admin_notes, wr.created_at, wr.processed_at, u.email, u.name
            FROM withdraw_requests wr JOIN users u ON wr.user_id = u.id WHERE wr.status = $1 ORDER BY wr.created_at DESC`,
-          [statusFilter]
-        )
+        [statusFilter]
+      )
       : await pool.query(
-          `SELECT wr.id, wr.user_id, wr.amount, wr.method, wr.method_details, wr.status, wr.admin_notes, wr.created_at, wr.processed_at, u.email, u.name
+        `SELECT wr.id, wr.user_id, wr.amount, wr.method, wr.method_details, wr.status, wr.admin_notes, wr.created_at, wr.processed_at, u.email, u.name
            FROM withdraw_requests wr JOIN users u ON wr.user_id = u.id ORDER BY wr.created_at DESC`
-        );
+      );
     const requests = result.rows.map((row: Record<string, unknown>) => ({
       id: row.id,
       user_id: row.user_id,
@@ -668,6 +668,274 @@ router.patch('/withdraw-requests/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update withdraw request' });
+  }
+});
+
+// ============ Amenities Management ============
+
+// --- Categories ---
+router.get('/amenities/categories', async (req, res) => {
+  try {
+    const { include_amenities } = req.query;
+
+    if (include_amenities === 'true') {
+      const result = await pool.query(`
+        SELECT 
+            ac.id as category_id,
+            ac.name as category_name,
+            ac.display_order as category_display_order,
+            COALESCE(
+              json_agg(
+                json_build_object('id', a.id, 'name', a.name, 'icon', a.icon)
+              ) FILTER (WHERE a.id IS NOT NULL), '[]'
+            ) as amenities
+        FROM amenity_categories ac
+        LEFT JOIN amenities a ON ac.id = a.category_id
+        GROUP BY ac.id, ac.name, ac.display_order
+        ORDER BY ac.display_order ASC;
+      `);
+      return res.json({ categories: result.rows });
+    }
+
+    const result = await pool.query('SELECT * FROM amenity_categories ORDER BY display_order ASC');
+    res.json({ categories: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch amenity categories' });
+  }
+});
+
+router.post(
+  '/amenities/categories',
+  body('name').trim().notEmpty(),
+  body('description').optional().trim(),
+  body('display_order').optional().isInt(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+      const { name, description, display_order } = req.body;
+      const result = await pool.query(
+        'INSERT INTO amenity_categories (name, description, display_order) VALUES ($1, $2, $3) RETURNING *',
+        [name, description || null, display_order || 0]
+      );
+      res.status(201).json({ category: result.rows[0] });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to create amenity category' });
+    }
+  }
+);
+
+router.put('/amenities/categories/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id || '0');
+    const { name, description, display_order } = req.body;
+
+    const updates: string[] = [];
+    const values: unknown[] = [];
+    let i = 2;
+
+    if (name !== undefined) { updates.push(`name = $${i++}`); values.push(name); }
+    if (description !== undefined) { updates.push(`description = $${i++}`); values.push(description); }
+    if (display_order !== undefined) { updates.push(`display_order = $${i++}`); values.push(display_order); }
+
+    if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
+    values.unshift(id);
+
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+
+    const result = await pool.query(
+      `UPDATE amenity_categories SET ${updates.join(', ')} WHERE id = $1 RETURNING *`,
+      values
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Category not found' });
+    res.json({ category: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update category' });
+  }
+});
+
+router.delete('/amenities/categories/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id || '0');
+    const result = await pool.query('DELETE FROM amenity_categories WHERE id = $1 RETURNING id', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Category not found' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete category' });
+  }
+});
+
+// --- Amenities ---
+router.get('/amenities', async (_req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM amenities ORDER BY name ASC');
+    res.json({ amenities: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch amenities' });
+  }
+});
+
+router.post(
+  '/amenities',
+  body('category_id').isInt(),
+  body('name').trim().notEmpty(),
+  body('icon').optional().trim(),
+  body('description').optional().trim(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+      const { category_id, name, icon, description } = req.body;
+      const result = await pool.query(
+        'INSERT INTO amenities (category_id, name, icon, description) VALUES ($1, $2, $3, $4) RETURNING *',
+        [category_id, name, icon || null, description || null]
+      );
+      res.status(201).json({ amenity: result.rows[0] });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to create amenity' });
+    }
+  }
+);
+
+router.put('/amenities/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id || '0');
+    const { category_id, name, icon, description } = req.body;
+
+    const updates: string[] = [];
+    const values: unknown[] = [];
+    let i = 2;
+
+    if (category_id !== undefined) { updates.push(`category_id = $${i++}`); values.push(category_id); }
+    if (name !== undefined) { updates.push(`name = $${i++}`); values.push(name); }
+    if (icon !== undefined) { updates.push(`icon = $${i++}`); values.push(icon); }
+    if (description !== undefined) { updates.push(`description = $${i++}`); values.push(description); }
+
+    if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
+    values.unshift(id);
+
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+
+    const result = await pool.query(
+      `UPDATE amenities SET ${updates.join(', ')} WHERE id = $1 RETURNING *`,
+      values
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Amenity not found' });
+    res.json({ amenity: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update amenity' });
+  }
+});
+
+router.delete('/amenities/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id || '0');
+    const result = await pool.query('DELETE FROM amenities WHERE id = $1 RETURNING id', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Amenity not found' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete amenity' });
+  }
+});
+
+// --- Property Amenities Assignment ---
+router.post('/hotels/:hotelId/amenities', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const hotelId = parseInt(req.params?.hotelId ?? '0', 10);
+    const { amenity_ids } = req.body;
+
+    if (isNaN(hotelId)) return res.status(400).json({ error: 'Invalid hotel ID' });
+    if (!Array.isArray(amenity_ids)) return res.status(400).json({ error: 'amenity_ids must be an array' });
+
+    await client.query('BEGIN');
+
+    // Validate hotel exists
+    const hotelCheck = await client.query('SELECT id FROM hotels WHERE id = $1', [hotelId]);
+    if (hotelCheck.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Hotel not found' });
+    }
+
+    // Overwrite method: Delete existing and insert new
+    await client.query('DELETE FROM property_amenities WHERE property_id = $1', [hotelId]);
+
+    if (amenity_ids.length > 0) {
+      const values: string[] = [];
+      const queryParams: unknown[] = [hotelId];
+      let paramCounter = 2;
+
+      for (const id of amenity_ids) {
+        if (!Number.isInteger(id)) continue;
+        values.push(`($1, $${paramCounter})`);
+        queryParams.push(id);
+        paramCounter++;
+      }
+
+      if (values.length > 0) {
+        await client.query(
+          `INSERT INTO property_amenities (property_id, amenity_id) VALUES ${values.join(', ')} ON CONFLICT DO NOTHING`,
+          queryParams
+        );
+      }
+    }
+
+    await client.query('COMMIT');
+    res.json({ success: true, message: 'Amenities updated successfully' });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).json({ error: 'Failed to map amenities' });
+  } finally {
+    client.release();
+  }
+});
+
+router.get('/hotels/:hotelId/amenities', async (req, res) => {
+  try {
+    const hotelId = parseInt(req.params?.hotelId ?? '0', 10);
+    if (isNaN(hotelId)) return res.status(400).json({ error: 'Invalid hotel ID' });
+
+    const result = await pool.query(`
+      SELECT a.id, a.name, a.icon, ac.id as category_id, ac.name as category_name
+      FROM property_amenities pa
+      JOIN amenities a ON pa.amenity_id = a.id
+      JOIN amenity_categories ac ON a.category_id = ac.id
+      WHERE pa.property_id = $1
+      ORDER BY ac.display_order ASC, a.name ASC
+    `, [hotelId]);
+
+    // Format output structurally
+    const mapped = result.rows.reduce((acc: any, row) => {
+      const catIndex = acc.findIndex((c: any) => c.category_id === row.category_id);
+      if (catIndex > -1) {
+        acc[catIndex].amenities.push({ id: row.id, name: row.name, icon: row.icon });
+      } else {
+        acc.push({
+          category_id: row.category_id,
+          category_name: row.category_name,
+          amenities: [{ id: row.id, name: row.name, icon: row.icon }]
+        });
+      }
+      return acc;
+    }, []);
+
+    res.json({ amenities: mapped });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch property amenities' });
   }
 });
 

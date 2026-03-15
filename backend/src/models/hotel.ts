@@ -101,13 +101,28 @@ export async function findAllHotels(
     conditions.push(`h.coupon_discount_value IS NOT NULL AND h.coupon_discount_value != ''`);
   }
   if (opts?.amenities && opts.amenities.length > 0) {
-    const amenityConditions: string[] = [];
+    const paramsLength = opts.amenities.length;
+    let inClause = [];
+
     for (const amenity of opts.amenities) {
-      amenityConditions.push(`EXISTS (SELECT 1 FROM hotel_rooms r WHERE r.hotel_id = h.id AND $${i} = ANY(r.amenities))`);
-      params.push(amenity);
-      i++;
+      // Assuming amenities array is now IDs (numbers). 
+      // If they are slugs, the DB schema needs a slug or we query by name.
+      // Based on design: filter via amenity_id IN (...)
+      const amenityId = parseInt(amenity, 10);
+      if (!isNaN(amenityId)) {
+        inClause.push(`$${i}`);
+        params.push(amenityId);
+        i++;
+      }
     }
-    conditions.push(`(${amenityConditions.join(' OR ')})`);
+
+    if (inClause.length > 0) {
+      conditions.push(`
+        (SELECT COUNT(DISTINCT pa.amenity_id) 
+         FROM property_amenities pa 
+         WHERE pa.property_id = h.id AND pa.amenity_id IN (${inClause.join(', ')})) = ${inClause.length}
+      `);
+    }
   }
   const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
   let orderBy = 'COALESCE(h.featured, false) DESC, ';
