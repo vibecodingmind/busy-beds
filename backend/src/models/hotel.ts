@@ -16,10 +16,14 @@ export interface Hotel {
   active: boolean;
   latitude: number | null;
   longitude: number | null;
-  booking_url: string | null;
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: 'daily' | 'weekly' | 'monthly';
+  social_facebook: string | null;
+  social_instagram: string | null;
+  social_x: string | null;
+  social_linkedin: string | null;
+  social_tiktok: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -191,6 +195,11 @@ export async function findAllHotels(
     country: (r.country as string) || null,
     region: (r.region as string) || null,
     city: (r.city as string) || null,
+    social_facebook: (r.social_facebook as string) || null,
+    social_instagram: (r.social_instagram as string) || null,
+    social_x: (r.social_x as string) || null,
+    social_linkedin: (r.social_linkedin as string) || null,
+    social_tiktok: (r.social_tiktok as string) || null,
   })) as (Hotel & { avg_rating?: number | null; review_count?: number; redemptions_this_month?: number; avg_response_hours?: number | null })[];
 }
 
@@ -236,6 +245,11 @@ export async function findHotelById(id: number, includeInactive = false): Promis
     country: row.country || null,
     region: row.region || null,
     city: row.city || null,
+    social_facebook: row.social_facebook || null,
+    social_instagram: row.social_instagram || null,
+    social_x: row.social_x || null,
+    social_linkedin: row.social_linkedin || null,
+    social_tiktok: row.social_tiktok || null,
   };
 }
 
@@ -292,6 +306,11 @@ export async function findHotelsByIds(ids: number[]): Promise<(Hotel & { avg_rat
     country: (r.country as string) || null,
     region: (r.region as string) || null,
     city: (r.city as string) || null,
+    social_facebook: (r.social_facebook as string) || null,
+    social_instagram: (r.social_instagram as string) || null,
+    social_x: (r.social_x as string) || null,
+    social_linkedin: (r.social_linkedin as string) || null,
+    social_tiktok: (r.social_tiktok as string) || null,
   })) as (Hotel & { avg_rating?: number | null; review_count?: number; redemptions_this_month?: number; avg_response_hours?: number | null })[];
 }
 
@@ -314,10 +333,15 @@ export async function createHotel(data: {
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;
+  social_facebook?: string | null;
+  social_instagram?: string | null;
+  social_x?: string | null;
+  social_linkedin?: string | null;
+  social_tiktok?: string | null;
 }): Promise<Hotel> {
   const result = await pool.query(
-    `INSERT INTO hotels (name, description, location, country, region, city, contact_phone, contact_email, contact_whatsapp, images, latitude, longitude, booking_url, featured, active, coupon_discount_value, coupon_limit, limit_period)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+    `INSERT INTO hotels (name, description, location, country, region, city, contact_phone, contact_email, contact_whatsapp, images, latitude, longitude, booking_url, featured, active, coupon_discount_value, coupon_limit, limit_period, social_facebook, social_instagram, social_x, social_linkedin, social_tiktok)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
      RETURNING *`,
     [
       data.name,
@@ -338,6 +362,11 @@ export async function createHotel(data: {
       data.coupon_discount_value,
       data.coupon_limit,
       data.limit_period,
+      data.social_facebook || null,
+      data.social_instagram || null,
+      data.social_x || null,
+      data.social_linkedin || null,
+      data.social_tiktok || null,
     ]
   );
   const row = result.rows[0]!;
@@ -350,6 +379,11 @@ export async function createHotel(data: {
     country: row.country || null,
     region: row.region || null,
     city: row.city || null,
+    social_facebook: row.social_facebook || null,
+    social_instagram: row.social_instagram || null,
+    social_x: row.social_x || null,
+    social_linkedin: row.social_linkedin || null,
+    social_tiktok: row.social_tiktok || null,
   };
 }
 
@@ -374,6 +408,11 @@ export async function updateHotel(
     coupon_discount_value: string;
     coupon_limit: number;
     limit_period: string;
+    social_facebook: string | null;
+    social_instagram: string | null;
+    social_x: string | null;
+    social_linkedin: string | null;
+    social_tiktok: string | null;
   }>
 ): Promise<Hotel | null> {
   const fields: string[] = [];
@@ -404,6 +443,11 @@ export async function updateHotel(
     country: row.country || null,
     region: row.region || null,
     city: row.city || null,
+    social_facebook: row.social_facebook || null,
+    social_instagram: row.social_instagram || null,
+    social_x: row.social_x || null,
+    social_linkedin: row.social_linkedin || null,
+    social_tiktok: row.social_tiktok || null,
   };
 }
 

@@ -69,6 +69,11 @@ router.post(
         coupon_discount_value: req.body.coupon_discount_value,
         coupon_limit: req.body.coupon_limit,
         limit_period: req.body.limit_period,
+        social_facebook: req.body.social_facebook || null,
+        social_instagram: req.body.social_instagram || null,
+        social_x: req.body.social_x || null,
+        social_linkedin: req.body.social_linkedin || null,
+        social_tiktok: req.body.social_tiktok || null,
       });
       res.status(201).json(hotel);
     } catch (err) {

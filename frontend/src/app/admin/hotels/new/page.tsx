@@ -24,6 +24,11 @@ export default function NewHotelPage() {
     latitude: '' as string | number,
     longitude: '' as string | number,
     featured: false,
+    social_facebook: '',
+    social_instagram: '',
+    social_x: '',
+    social_linkedin: '',
+    social_tiktok: '',
     coupon_discount_value: '',
     coupon_limit: 10,
     limit_period: 'daily',
@@ -46,6 +51,11 @@ export default function NewHotelPage() {
         country: 'Tanzania',
         region: form.region || undefined,
         city: undefined,
+        social_facebook: form.social_facebook || undefined,
+        social_instagram: form.social_instagram || undefined,
+        social_x: form.social_x || undefined,
+        social_linkedin: form.social_linkedin || undefined,
+        social_tiktok: form.social_tiktok || undefined,
       });
       router.push('/admin/hotels');
     } catch (err) {
@@ -130,6 +140,33 @@ export default function NewHotelPage() {
             <div>
               <label className={labelClass}>Booking URL</label>
               <input type="url" value={form.booking_url} onChange={(e) => setForm((f) => ({ ...f, booking_url: e.target.value }))} placeholder="https://…" className={inputClass} />
+            </div>
+          </div>
+        </div>
+
+        {/* Social Media */}
+        <div className={sectionClass}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Social Media Links <span className="font-normal normal-case text-zinc-400">(optional)</span></p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Facebook URl</label>
+              <input type="url" value={form.social_facebook} onChange={(e) => setForm((f) => ({ ...f, social_facebook: e.target.value }))} placeholder="https://facebook.com/…" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Instagram URL</label>
+              <input type="url" value={form.social_instagram} onChange={(e) => setForm((f) => ({ ...f, social_instagram: e.target.value }))} placeholder="https://instagram.com/…" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>X (Twitter) URL</label>
+              <input type="url" value={form.social_x} onChange={(e) => setForm((f) => ({ ...f, social_x: e.target.value }))} placeholder="https://x.com/…" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>LinkedIn URL</label>
+              <input type="url" value={form.social_linkedin} onChange={(e) => setForm((f) => ({ ...f, social_linkedin: e.target.value }))} placeholder="https://linkedin.com/…" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>TikTok URL</label>
+              <input type="url" value={form.social_tiktok} onChange={(e) => setForm((f) => ({ ...f, social_tiktok: e.target.value }))} placeholder="https://tiktok.com/…" className={inputClass} />
             </div>
           </div>
         </div>

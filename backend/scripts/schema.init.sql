@@ -61,6 +61,11 @@ CREATE TABLE IF NOT EXISTS hotels (
     coupon_discount_value VARCHAR(100) NOT NULL,
     coupon_limit INTEGER NOT NULL DEFAULT 10,
     limit_period VARCHAR(20) NOT NULL DEFAULT 'daily' CHECK (limit_period IN ('daily', 'weekly', 'monthly')),
+    social_facebook VARCHAR(500),
+    social_instagram VARCHAR(500),
+    social_x VARCHAR(500),
+    social_linkedin VARCHAR(500),
+    social_tiktok VARCHAR(500),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -217,6 +222,21 @@ BEGIN
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='active') THEN
     ALTER TABLE hotels ADD COLUMN active BOOLEAN DEFAULT true;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='social_facebook') THEN
+    ALTER TABLE hotels ADD COLUMN social_facebook VARCHAR(500);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='social_instagram') THEN
+    ALTER TABLE hotels ADD COLUMN social_instagram VARCHAR(500);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='social_x') THEN
+    ALTER TABLE hotels ADD COLUMN social_x VARCHAR(500);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='social_linkedin') THEN
+    ALTER TABLE hotels ADD COLUMN social_linkedin VARCHAR(500);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='hotels' AND column_name='social_tiktok') THEN
+    ALTER TABLE hotels ADD COLUMN social_tiktok VARCHAR(500);
   END IF;
 END $$;
 

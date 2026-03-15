@@ -773,6 +773,11 @@ export interface Hotel {
   coupon_discount_value: string;
   coupon_limit: number;
   limit_period: string;
+  social_facebook?: string | null;
+  social_instagram?: string | null;
+  social_x?: string | null;
+  social_linkedin?: string | null;
+  social_tiktok?: string | null;
 }
 
 export interface HotelRoom {
