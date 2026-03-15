@@ -11,6 +11,7 @@ import HotelReviews from '@/components/hotel/HotelReviews';
 import ShareButton from '@/components/hotel/ShareButton';
 import HotelRooms from './HotelRooms';
 import StarRating from '@/components/StarRating';
+import AppLink from '@/components/AppLink';
 
 export const dynamic = 'force-dynamic';
 
@@ -152,29 +153,29 @@ export default async function HotelDetailPage({
               <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-black/5 dark:border-white/5 pt-4">
                 <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Follow us:</span>
                 {hotel.social_facebook && (
-                  <a href={hotel.social_facebook} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-[#1877F2] transition-colors" title="Facebook">
+                  <AppLink href={hotel.social_facebook} className="text-zinc-400 hover:text-[#1877F2] transition-colors" title="Facebook">
                     <FacebookIcon />
-                  </a>
+                  </AppLink>
                 )}
                 {hotel.social_instagram && (
-                  <a href={hotel.social_instagram} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-[#E4405F] transition-colors" title="Instagram">
+                  <AppLink href={hotel.social_instagram} className="text-zinc-400 hover:text-[#E4405F] transition-colors" title="Instagram">
                     <InstagramIcon />
-                  </a>
+                  </AppLink>
                 )}
                 {hotel.social_x && (
-                  <a href={hotel.social_x} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-black dark:hover:text-white transition-colors" title="X (Twitter)">
+                  <AppLink href={hotel.social_x} className="text-zinc-400 hover:text-black dark:hover:text-white transition-colors" title="X (Twitter)">
                     <XIcon />
-                  </a>
+                  </AppLink>
                 )}
                 {hotel.social_linkedin && (
-                  <a href={hotel.social_linkedin} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-[#0A66C2] transition-colors" title="LinkedIn">
+                  <AppLink href={hotel.social_linkedin} className="text-zinc-400 hover:text-[#0A66C2] transition-colors" title="LinkedIn">
                     <LinkedInIcon />
-                  </a>
+                  </AppLink>
                 )}
                 {hotel.social_tiktok && (
-                  <a href={hotel.social_tiktok} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-black dark:hover:text-white transition-colors" title="TikTok">
+                  <AppLink href={hotel.social_tiktok} className="text-zinc-400 hover:text-black dark:hover:text-white transition-colors" title="TikTok">
                     <TikTokIcon />
-                  </a>
+                  </AppLink>
                 )}
               </div>
             )}
@@ -235,10 +236,8 @@ export default async function HotelDetailPage({
                   </a>
                 )}
                 {hotel.contact_whatsapp && (
-                  <a
-                    href={`https://wa.me/${hotel.contact_whatsapp.replace(/\D/g, '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <AppLink
+                    href={`https://wa.me/${hotel.contact_whatsapp.replace(/[^0-9]/g, '')}`}
                     className="flex items-center gap-3 rounded-xl border border-black/10 dark:border-zinc-700 p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors group"
                   >
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-[#25D366] group-hover:bg-emerald-100">
@@ -248,7 +247,7 @@ export default async function HotelDetailPage({
                       <p className="text-xs text-zinc-500 dark:text-zinc-400">WhatsApp</p>
                       <p className="text-sm font-medium text-black dark:text-zinc-200">{hotel.contact_whatsapp}</p>
                     </div>
-                  </a>
+                  </AppLink>
                 )}
               </div>
             </div>
@@ -310,15 +309,13 @@ export default async function HotelDetailPage({
             <GetCouponButton hotelId={hotel.id} hotelName={hotel.name} />
 
             {hotel.booking_url && (
-              <a
+              <AppLink
                 href={hotel.booking_url}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-black/10 dark:border-zinc-600 bg-transparent px-4 py-3 font-medium text-black dark:text-zinc-100 transition-colors hover:border-black/20 hover:bg-zinc-50 dark:hover:bg-zinc-800"
               >
                 Book directly
                 <ExternalLinkIcon />
-              </a>
+              </AppLink>
             )}
 
             {/* Third Party Bookings */}
@@ -327,24 +324,24 @@ export default async function HotelDetailPage({
                 <p className="text-sm font-semibold text-black dark:text-zinc-100 mb-3 uppercase tracking-wider">Or book via our partners</p>
                 <div className="flex flex-col gap-2.5">
                   {hotel.booking_bookingcom && (
-                    <a href={hotel.booking_bookingcom} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#003580] dark:text-[#337ab7] hover:underline font-medium">
+                    <AppLink href={hotel.booking_bookingcom} className="flex items-center gap-2 text-sm text-[#003580] dark:text-[#337ab7] hover:underline font-medium">
                       <ExternalLinkIcon /> Booking.com
-                    </a>
+                    </AppLink>
                   )}
                   {hotel.booking_airbnb && (
-                    <a href={hotel.booking_airbnb} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#FF5A5F] hover:underline font-medium">
+                    <AppLink href={hotel.booking_airbnb} className="flex items-center gap-2 text-sm text-[#FF5A5F] hover:underline font-medium">
                       <ExternalLinkIcon /> Airbnb
-                    </a>
+                    </AppLink>
                   )}
                   {hotel.booking_agoda && (
-                    <a href={hotel.booking_agoda} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#2a82c6] dark:text-[#42a5f5] hover:underline font-medium">
+                    <AppLink href={hotel.booking_agoda} className="flex items-center gap-2 text-sm text-[#2a82c6] dark:text-[#42a5f5] hover:underline font-medium">
                       <ExternalLinkIcon /> Agoda
-                    </a>
+                    </AppLink>
                   )}
                   {hotel.booking_expedia && (
-                    <a href={hotel.booking_expedia} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#0000A0] dark:text-[#5c6bc0] hover:underline font-medium">
+                    <AppLink href={hotel.booking_expedia} className="flex items-center gap-2 text-sm text-[#0000A0] dark:text-[#5c6bc0] hover:underline font-medium">
                       <ExternalLinkIcon /> Expedia
-                    </a>
+                    </AppLink>
                   )}
                 </div>
                 <p className="mt-4 text-xs text-zinc-500 dark:text-zinc-400 italic">
