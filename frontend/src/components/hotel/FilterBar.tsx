@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 export interface FilterState {
   search: string;
   region: string;
-  ward: string;
   minPrice: number | undefined;
   maxPrice: number | undefined;
   minRating: number | undefined;
@@ -16,7 +15,6 @@ export interface FilterState {
 interface LocationData {
   country: string;
   regions: string[];
-  regionWards: { region: string; ward: string }[];
 }
 
 interface FilterBarProps {
@@ -71,7 +69,6 @@ export default function FilterBar({
 
   const update = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     const next = { ...filters, [key]: value };
-    if (key === 'region') { next.ward = ''; }
     onFiltersChange(next);
   };
 
@@ -83,15 +80,9 @@ export default function FilterBar({
   };
 
   const availableRegions = locationData?.regions ?? [];
-  const availableWards = locationData
-    ? locationData.regionWards
-        .filter(rw => !filters.region || rw.region.toLowerCase() === filters.region.toLowerCase())
-        .map(rw => rw.ward)
-    : [];
 
   const activeFilterCount =
     (filters.region ? 1 : 0) +
-    (filters.ward ? 1 : 0) +
     (filters.minPrice != null ? 1 : 0) +
     (filters.maxPrice != null ? 1 : 0) +
     (filters.minRating != null ? 1 : 0) +
@@ -125,20 +116,6 @@ export default function FilterBar({
             <option value="">All Regions</option>
             {availableRegions.map(r => (
               <option key={r} value={r}>{r}</option>
-            ))}
-          </select>
-        )}
-
-        {/* Ward */}
-        {(availableWards.length > 0 || filters.region) && (
-          <select
-            value={filters.ward}
-            onChange={(e) => update('ward', e.target.value)}
-            className={selectClass}
-          >
-            <option value="">All Wards</option>
-            {availableWards.map(w => (
-              <option key={w} value={w}>{w}</option>
             ))}
           </select>
         )}
@@ -262,9 +239,6 @@ export default function FilterBar({
         <div className="flex flex-wrap gap-2">
           {filters.region && (
             <FilterChip label={`📍 ${filters.region}`} onRemove={() => update('region', '')} />
-          )}
-          {filters.ward && (
-            <FilterChip label={`🏙️ ${filters.ward}`} onRemove={() => update('ward', '')} />
           )}
           {(filters.minPrice != null || filters.maxPrice != null) && (
             <FilterChip

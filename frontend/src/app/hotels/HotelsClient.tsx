@@ -12,7 +12,7 @@ import FilterBar, { FilterState } from '@/components/hotel/FilterBar';
 import { HouseIcon, MapPinIcon } from '@/components/icons';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useToast } from '@/contexts/ToastContext';
-import { tanzaniaRegions, getWardsByRegion } from '@/data/tanzania-wards';
+import { tanzaniaRegions } from '@/data/tanzania-wards';
 
 interface MapBounds {
   north: number;
@@ -24,19 +24,16 @@ interface MapBounds {
 interface LocationData {
   country: string;
   regions: string[];
-  regionWards: { region: string; ward: string }[];
 }
 
 const locationData: LocationData = {
   country: 'Tanzania',
   regions: tanzaniaRegions.map(r => r.region),
-  regionWards: tanzaniaRegions.flatMap(r => r.wards.map(ward => ({ region: r.region, ward }))),
 };
 
 const INITIAL_FILTERS: FilterState = {
   search: '',
   region: '',
-  ward: '',
   minPrice: undefined,
   maxPrice: undefined,
   minRating: undefined,
@@ -92,7 +89,7 @@ function HotelsClientInner() {
         has_discount: filters.hasDiscount || undefined,
         country: 'Tanzania',
         region: filters.region || undefined,
-        city: filters.ward || undefined,
+        city: undefined,
         limit: 20,
         offset: currentOffset,
       });
@@ -117,7 +114,7 @@ function HotelsClientInner() {
 
   useEffect(() => {
     fetchHotels(true);
-  }, [debouncedSearch, sort, coords, debouncedBounds, filters.minPrice, filters.maxPrice, filters.minRating, filters.hasDiscount, filters.amenities, filters.region, filters.ward]);
+  }, [debouncedSearch, sort, coords, debouncedBounds, filters.minPrice, filters.maxPrice, filters.minRating, filters.hasDiscount, filters.amenities, filters.region]);
 
   useEffect(() => {
     if (nearme && navigator.geolocation && !coords) {
@@ -172,7 +169,7 @@ function HotelsClientInner() {
     setMobileMapOpen((prev) => !prev);
   }, []);
 
-  const locationBreadcrumb = [filters.region, filters.ward].filter(Boolean).join(' › ');
+  const locationBreadcrumb = [filters.region].filter(Boolean).join(' › ');
 
   return (
     <div className="min-h-screen">

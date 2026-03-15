@@ -31,7 +31,6 @@ export default function EditHotelPage() {
     description: '',
     location: '',
     region: '',
-    city: '',
     contact_phone: '',
     contact_email: '',
     contact_whatsapp: '',
@@ -59,7 +58,6 @@ export default function EditHotelPage() {
         description: h.description || '',
         location: h.location || '',
         region: (h as any).region || '',
-        city: (h as any).city || '',
         contact_phone: h.contact_phone || '',
         contact_email: h.contact_email || '',
         contact_whatsapp: h.contact_whatsapp || '',
@@ -94,7 +92,7 @@ export default function EditHotelPage() {
         longitude: form.longitude === '' ? null : Number(form.longitude),
         country: 'Tanzania',
         region: (form.region || null) as any,
-        city: (form.city || null) as any,
+        city: null,
       });
       router.push('/admin/hotels');
     } catch (err) {
@@ -177,8 +175,8 @@ export default function EditHotelPage() {
 
         {/* Location */}
         <LocationFields
-          value={{ region: form.region, ward: form.city, location: form.location }}
-          onChange={(v) => setForm((f) => ({ ...f, region: v.region, city: v.ward, location: v.location }))}
+          value={{ region: form.region, location: form.location }}
+          onChange={(v) => setForm((f) => ({ ...f, region: v.region, location: v.location }))}
         />
 
         {/* Coordinates */}

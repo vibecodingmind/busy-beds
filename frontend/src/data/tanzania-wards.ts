@@ -1,365 +1,49 @@
 export interface TanzaniaRegion {
   region: string;
-  wards: string[];
 }
 
 export const tanzaniaRegions: TanzaniaRegion[] = [
-  {
-    region: 'Arusha',
-    wards: [
-      'Akheri', 'Alailelai', 'Arash', 'Bangata', 'Baraa', 'Baray', 'Buger', 'Bwawani',
-      'Daa', 'Daraja Mbili', 'Digodigo', 'Elangata Dapash', 'Elerai', 'Endabash', 'Endamaghang', 'Endamarariek', 'Enduleni', 'Engarenaibor', 'Engaruka', 'Engikaret', 'Enguserosambu', 'Engutoto', 'Esilalei',
-      'Ganako', 'Gelai Lumbwa', 'Gelai Meirugoi',
-      'Ilkidinga', 'Iloirienito',
-      'Kakesio', 'Kaloleni', 'Kamwanga', 'Kansay', 'Karatu', 'Kati', 'Kikatiti', 'Kikwe', 'Kimandolu', 'Kimnyaki', 'Kimokouwa', 'Kingori', 'Kiranyi', 'Kisongo', 'Kitumbeine',
-      'Leguruki', 'Lemara', 'Lepurko', 'Levolosi', 'Lolkisale', 'Longido',
-      'Maalon', 'Majengo', 'Maji ya Chai', 'Makiba', 'Makuyuni', 'Mangola', 'Maroroni', 'Matale', 'Mateves', 'Mbuguni', 'Mbulumbulu', 'Meserani', 'Mlangarini', 'Moita', 'Moivo', 'Monduli Juu', 'Monduli Mjini', 'Moshono', 'Mswakini', 'Mto wa Mbu', 'Mundarara', 'Murieti', 'Musa', 'Mussa', 'Mwandeti',
-      'Nainokanoka', 'Naiyobi', 'Namanga', 'Nduruma', 'Ngarenanyuki', 'Ngarenaro', 'Ngorongoro', 'Nkoanrua', 'Nkoaranga', 'Nkoarisambu',
-      'Olasiti', 'Olbalbal', 'Oldeani', 'Oldonyo-Sambu', 'Oldonyosambu', 'Oljoro', 'Olkola', 'Olmolog', 'Olmotonyi', 'Oloipiri', 'Oloirien', 'Ololosokwan', 'Olorieni', 'Oltroto', 'Oltrumet', 'Orbomba', 'Orgosorok',
-      'Pinyinyi', 'Poli',
-      'Qurus',
-      'Rhotia',
-      'Sale', 'Sambasha', 'Samunge', 'Seela Singisi', 'Sekei', 'Selela', 'Sepeko', 'Soit Sambu', 'Sokon II', 'Sokoni I', 'Sombetini', 'Songoro',
-      'Terrat', 'Themi', 'Tingatinga',
-      'Unga Limited', 'Usa River'
-    ],
-  },
-  {
-    region: 'Dar es Salaam',
-    wards: [
-      'Azimio',
-      'Buguruni', 'Bunju', 'Buza',
-      'Chamazi', 'Changombe', 'Chanika', 'Charambe',
-      'Gerezani', 'Goba', 'Gongolamboto',
-      'Hananasif',
-      'Ilala',
-      'Jangwani',
-      'Kariakoo', 'Kawe', 'Keko', 'Kibada', 'Kibamba', 'Kiburugwa', 'Kigamboni', 'Kigogo', 'Kijichi', 'Kijitonyama', 'Kilakala', 'Kimanga', 'Kimara', 'Kimbiji', 'Kinondoni', 'Kinyerezi', 'Kipawa', 'Kisarawe II', 'Kisutu', 'Kitunda', 'Kivukoni', 'Kivule', 'Kiwalani', 'Kunduchi', 'Kurasini', 'Kwembe',
-      'Mabibo', 'Mabwepande', 'Magomeni', 'Majohe', 'Makangarawe', 'Makongo', 'Makuburi', 'Makumbusho', 'Makurumla', 'Manzese', 'Mbagala', 'Mbagala Kuu', 'Mbezi', 'Mbezi Juu', 'Mburahati', 'Mbweni', 'Mchafukoge', 'Mchikichini', 'Mianzini', 'Miburani', 'Mikocheni', 'Mjimwema', 'Msasani', 'Msigani', 'Msongola', 'Mtoni', 'Mwananyamala', 'Mzimuni',
-      'Ndugumbi',
-      'Pembamnazi', 'Pugu',
-      'Sandali', 'Saranga', 'Segerea', 'Sinza', 'Somangila',
-      'Tabata', 'Tandale', 'Tandika', 'Temeke', 'Toangoma', 'Tungi',
-      'Ubungo', 'Ukonga', 'Upanga East', 'Upanga West',
-      'Vijibweni', 'Vingunguti',
-      'Wazo',
-      'Yombo Vituka'
-    ],
-  },
-  {
-    region: 'Dodoma',
-    wards: [
-      'Babayu', 'Bahi', 'Berege', 'Bereko', 'Bolisa', 'Buigiri', 'Bumbuta', 'Busi',
-      'Chahwa', 'Chali', 'Chamkoroma', 'Chamwino', 'Chandama', 'Changombe', 'Changaa', 'Chemba', 'Chemchem', 'Chigongwe', 'Chihanga', 'Chikola', 'Chilonwa', 'Chinugulu', 'Chipanga', 'Chunyu',
-      'Dabalo', 'Dalai', 'Dodoma Makulu',
-      'Farkwa', 'Fufu',
-      'Godegode', 'Goima', 'Gwandi',
-      'Handali', 'Haneti', 'Haubi', 'Hazina', 'Hogoro', 'Hombolo Bwawani', 'Hombolo Makulu', 'Huzi',
-      'Ibihwa', 'Ibugule', 'Idifu', 'Iduo', 'Ikowa', 'Ilindi', 'Ipagala', 'Ipala', 'Ipera', 'Iringa Mvumi', 'Itiso', 'Iyumbu',
-      'Jangalo',
-      'Kalamba', 'Kibaigwa', 'Kibakwe', 'Kigwe', 'Kikilo', 'Kikombo', 'Kikore', 'Kikuyu Kaskazini', 'Kikuyu Kusini', 'Kikuyu North', 'Kikuyu South', 'Kilimani', 'Kimagai', 'Kingale', 'Kisese', 'Kiwanja cha Ndege', 'Kizota', 'Kolo', 'Kondoa Mjini', 'Kongwa', 'Kwamtoro',
-      'Lalta', 'Lamaiti', 'Lamati', 'Luhundwa', 'Lumuma',
-      'Madukani', 'Madunga', 'Magara', 'Majeleko', 'Majengo', 'Makanda', 'Makangwa', 'Makole', 'Makorongo', 'Makutupora', 'Manchali', 'Manda', 'Manzase', 'Masange', 'Massa', 'Matomondo', 'Matumbulu', 'Mazae', 'Mbabala', 'Mbalawala', 'Mbuga', 'Membe', 'Mima', 'Miyuji', 'Mkoka', 'Mkonze', 'Mlali', 'Mlowa Bwawani', 'Mlunduzi', 'Mnadani', 'Mnenia', 'Mondo', 'Mpalanga', 'Mpamantwa', 'Mpendo', 'Mpunguzi', 'Mpwapwa Mjini', 'Mpwayungu', 'Mrijo', 'Msalato', 'Msamalo', 'Msanga', 'Msisi', 'Mtanana', 'Mtitaa', 'Mtumba', 'Mundemu', 'Muungano', 'Mvumi Makulu', 'Mvumi Mission', 'Mwitikira',
-      'Nala', 'Nghongh\'onha', 'Nghambaku', 'Njoge', 'Nkuhungu', 'Nondwa', 'Ntyuka', 'Nzuguni',
-      'Ovada',
-      'Pahi', 'Pandambili', 'Paranga',
-      'Rudi',
-      'Sagara', 'Sanzawa', 'Segala', 'Sejeli', 'Soera', 'Suruke',
-      'Tambukareli', 'Thawi',
-      'Ugogoni', 'Uhuru',
-      'Ving\'hawe', 'Viwandani',
-      'Wotta',
-      'Zanka', 'Zoissa', 'Zuzu'
-    ],
-  },
-  {
-    region: 'Geita',
-    wards: [
-      'Bugulula', 'Bukama', 'Bukoli', 'Bulela', 'Chato', 'Gairo', 'Geita', 'Kagera', 'Kamhanga', 'Karionwe',
-      'Kasamwa', 'Katete', 'Katoro', 'Kemondo', 'Kigangaga', 'Kirumba', 'Lugega', 'Magaka', 'Mbogwe', 'Mcharo',
-      'Mhungo', 'Mpororo', 'Mwabuzo', 'Mwageza', 'Mwataga', 'Nyerere', 'Nyijundu', 'Nyongwa', 'Sengwa', 'Shabaka'
-    ],
-  },
-  {
-    region: 'Iringa',
-    wards: [
-      'Gangilonga',
-      'Idamba', 'Idodi', 'Ifunda', 'Igongolo', 'Igosi', 'Ikondo', 'Ilala', 'Ilembula', 'Ilolo Mpya', 'Ilula', 'Imalinyi', 'Itunundu', 'Izazi',
-      'Kalenga', 'Kihesa', 'Kihorogota', 'Kitanzini', 'Kitwiru', 'Kiwere', 'Kwakilosa',
-      'Lumuli', 'Lupembe',
-      'Maboga', 'Magulilwa', 'Mahongole', 'Mahuninga', 'Makorongoni', 'Malangali', 'Malenga Makali', 'Mdandu', 'Mgama', 'Mivinjeni', 'Mkwaja', 'Mkwawa', 'Mlandege', 'Mlowa', 'Mseke', 'Mshindo', 'Mtwango', 'Mtwivila', 'Mwangata',
-      'Nduli', 'Nzihi',
-      'Ruaha',
-      'Ulanda', 'Usuka', 'Uwemba',
-      'Wasa',
-      'Yakobi'
-    ],
-  },
-  {
-    region: 'Kagera',
-    wards: [
-      'Biharamulo', 'Bukoba', 'Bunda', 'Bugene', 'Bwera', 'Chato', 'Gera', 'Ibuga', 'Isingiro', 'Kabale',
-      'Kagoma', 'Kamachumu', 'Karagwe', 'Kasharu', 'Katara', 'Katerero', 'Kigabaga', 'Kihanga', 'Kikagati', 'Kirushura',
-      'Kyerwa', 'Luguru', 'Mabira', 'Mairirwe', 'Masonga', 'Mduguyu', 'Mitalula', 'Momba', 'Mpororo', 'Mrunda',
-      'Muntal', 'Mwanakaguru', 'Mwisho wa Mugeta', 'Nyakabango', 'Nyakasozi', 'Nyakazinga', 'Nyamiaga', 'Nyarubungo', 'Rubafla', 'Ruhita',
-      'Rukingiri', 'Rulenge', 'Rwabukenge', 'Rwanda', 'Rwamazi', 'Rwangara', 'Rwanswa', 'Songa', 'Suguti', 'Tarakea',
-      'Tobare', 'Watima', 'Zaneno'
-    ],
-  },
-  {
-    region: 'Kaskazini Pemba',
-    wards: ['Kangani', 'Wete'],
-  },
-  {
-    region: 'Kaskazini Unguja',
-    wards: ['Kibaha', 'Micheweni'],
-  },
-  {
-    region: 'Katavi',
-    wards: ['Kapenta', 'Katavi', 'Makia'],
-  },
-  {
-    region: 'Kigoma',
-    wards: [
-      'Bangwe', 'Biharu', 'Bitale', 'Bitare', 'Buhanda', 'Buhigwe', 'Buhingu', 'Buhoro', 'Busagara', 'Businde', 'Busunzu', 'Buzebazeba',
-      'Gungu',
-      'Igalula', 'Ilagala', 'Itaba', 'Itebula',
-      'Janda',
-      'Kagera', 'Kagezi', 'Kagongo', 'Kagunga', 'Kajana', 'Kalinzi', 'Kalya', 'Kandaga', 'Kasimbu', 'Kasingirima', 'Katubuka', 'Kazuramimba', 'Kibande', 'Kibirizi', 'Kibondo Mjini', 'Kigoma Ward', 'Kilelema', 'Kipampa', 'Kitahana', 'Kitongoni', 'Kizazi', 'Kumsenga', 'Kumwambu',
-      'Mabamba', 'Machinjioni', 'Mahembe', 'Majengo', 'Matendo', 'Mganza', 'Misezero', 'Mkigo', 'Mkongoro', 'Mtego wa Noti', 'Mugera', 'Muhambwe', 'Muhinda', 'Munanila', 'Mungonya', 'Munyegera', 'Munzeze', 'Murungu', 'Muyama', 'Mwamgongo', 'Mwandiga', 'Mwanga Kaskazini', 'Mwanga Kusini', 'Mwayaya',
-      'Nguruka', 'Nyamugali', 'Nyaruyoba',
-      'Rubuga', 'Rugongwe', 'Rusaba', 'Rusimbi', 'Rusohoko',
-      'Sigunga', 'Simbo', 'Sunuka',
-      'Turana',
-      'Uvinza Ward'
-    ],
-  },
-  {
-    region: 'Kilimanjaro',
-    wards: [
-      'Arusha Chini',
-      'Boma Mbuzi', 'Bondeni',
-      'Gararagua',
-      'Hai Mjini',
-      'Kahe Mashariki', 'Kaloleni', 'Karansi', 'Kashashi', 'Kiboriloni', 'Kibosho Kati', 'Kibosho Magharibi', 'Kibosho Mashariki', 'Kilema Kaskazini', 'Kilema Kati', 'Kilema Kusini', 'Kilimanjaro', 'Kindi', 'Kirima', 'Kirua Vunjo Kusini', 'Kirua Vunjo Magharibi', 'Kirua Vunjo Mashariki', 'Kisima', 'Kisiwani', 'Kiusa', 'Korongoni',
-      'Livishi', 'Longuo',
-      'Mabogini', 'Machame Kaskazini', 'Machame Kusini', 'Machame Magharibi', 'Machame Mashariki', 'Machame Uroki', 'Majengo', 'Makiwaru', 'Mamba Kaskazini', 'Mamba Kusini', 'Marangu Magharibi', 'Marangu Mashariki', 'Masama Kusini', 'Masama Magharibi', 'Masama Mashariki', 'Masama Rundugai', 'Mawenzi', 'Mbokomu', 'Mfumuni', 'Mhezi', 'Miembeni', 'Mji Mpya', 'Msaranga', 'Mshewa', 'Mwembe', 'Mwika Kaskazini', 'Mwika Kusini',
-      'Naeny', 'Nasai', 'Ndumeti', 'Ngambo', 'Ngarenairobi', 'Njoro',
-      'Okaoni', 'Old Moshi Magharibi', 'Old Moshi Mashariki', 'Olkolili',
-      'Pasua',
-      'Rau', 'Sanya Juu', 'Shirimatunda', 'Soweto',
-      'Uru Kaskazini', 'Uru Kusini', 'Uru Mashariki', 'Uru Shimbwe',
-      'Vudee'
-    ],
-  },
-  {
-    region: 'Kusini Pemba',
-    wards: ['Chake Chake', 'Mkoani'],
-  },
-  {
-    region: 'Kusini Unguja',
-    wards: ['Kibaha', 'Koani'],
-  },
-  {
-    region: 'Lindi',
-    wards: [
-      'Chikonji', 'Chumo',
-      'Jamhuri',
-      'Kandawale', 'Kibata', 'Kikole', 'Kilwa Kivinje', 'Kinjumbi', 'Kipatimu', 'Kiranjeranje',
-      'Lihimalyao', 'Likawage',
-      'Makonde', 'Mandawa', 'Matopeni', 'Mbanja', 'Mchinga', 'Miguruwe', 'Mikumbi', 'Mingoyo', 'Mingumbi', 'Mitandi', 'Miteja', 'Mitole', 'Msinjahili', 'Mtama', 'Mtanda', 'Mwenge',
-      'Nachingwea', 'Nanjirinji', 'Ndori', 'Ngapa', 'Njinjo',
-      'Pande Mikoma',
-      'Rahaleo', 'Rasbura',
-      'Tandangongoro', 'Tingi',
-      'Wailes'
-    ],
-  },
-  {
-    region: 'Manyara',
-    wards: [
-      'Arri',
-      'Babati', 'Bashnet', 'Bonga',
-      'Dabil', 'Dareda', 'Duru',
-      'Endakiso',
-      'Gallapo', 'Gidas',
-      'Katesh', 'Kibaya', 'Kiru',
-      'Magugu', 'Mamire', 'Mwada',
-      'Nkaiti',
-      'Orkesumet',
-      'Qash',
-      'Riroda',
-      'Sigino', 'Singe',
-      'Terrat',
-      'Ufana'
-    ],
-  },
-  {
-    region: 'Mara',
-    wards: [
-      'Bukura', 'Bunda', 'Butiama', 'Chato', 'Gerish', 'Issenye', 'Kakomo', 'Kasoli', 'Kemondo', 'Kenyamana',
-      'Ketare', 'Kikagati', 'Kirumi', 'Kisima', 'Kisorya', 'Kitengule', 'Lushwa', 'Macal', 'Maji', 'Makongoro',
-      'Mara', 'Mbondo', 'Mihingo', 'Mugei', 'Mundo', 'Mungaa', 'Musoma', 'Nyakaiga', 'Nyanza', 'Nyarokamba',
-      'Ramadhani', 'Rangwa', 'Rwankenge', 'Rweso', 'Sangaiwe', 'Serengeti', 'Sota', 'Suguti', 'Taal', 'Tarime',
-      'Tonet', 'Tura', 'Utegi', 'Watoto'
-    ],
-  },
-  {
-    region: 'Mbeya',
-    wards: [
-      'Bagamoyo Ward', 'Bonde la Usongwe', 'Bujela', 'Bujonde', 'Bulyaga',
-      'Chalangwa', 'Chimala', 'Chokaa',
-      'Forest',
-      'Ghana',
-      'Ibighi', 'Iduda', 'Ifumbo', 'Igale', 'Iganjo', 'Iganzo', 'Igawilo', 'Igurusi', 'Ihango', 'Ijombe', 'Ikama', 'Ikolo', 'Ikukwa', 'Ikuti', 'Ilembo', 'Ilemi', 'Ilima', 'Ilomba', 'Ilungu', 'Inyala', 'Ipande', 'Ipinda', 'Iponjola', 'Isandula', 'Isanga', 'Isange', 'Isongole', 'Isuto', 'Isyesye', 'Itagano', 'Itagata', 'Itende', 'Itete', 'Itewe', 'Itezi', 'Itiji', 'Iwambi', 'Iwiji', 'Iwindi', 'Iyela', 'Iyunga', 'Iyunga Mapinduzi', 'Iziwa',
-      'Kabula', 'Kajunjumele', 'Kalobe', 'Kambasegela', 'Kambikatoto', 'Kandete', 'Katumba', 'Katumba Songwe', 'Kawetele', 'Kinyala', 'Kisegese', 'Kisiba', 'Kisondela', 'Kiwira', 'Kyela Mjini', 'Kyimo',
-      'Lufilyo', 'Lufingo', 'Lupa Ward', 'Lupata', 'Lupepo', 'Lusungo', 'Luteba', 'Luwalaje', 'Lwangwa',
-      'Maanga', 'Mabatini', 'Madibira', 'Maendeleo', 'Mafyeko', 'Mahongole', 'Majengo', 'Makandana', 'Makongolosi', 'Makwale', 'Malindo', 'Mamba', 'Mapogoro', 'Masebe', 'Masoko', 'Masukulu', 'Matwebe', 'Matwiga', 'Mawindi', 'Mbalizi Road', 'Mbugani', 'Miyombweni', 'Mpombo', 'Mpuguso', 'Msasani Ward', 'Mshewe', 'Mtanila', 'Mwakibete', 'Mwansanga', 'Mwansekwa', 'Mwaya',
-      'Ndato', 'Ngana', 'Ngonga', 'Nkunga', 'Nonde', 'Nsalaga', 'Nsoho', 'Nzovwe',
-      'Ruanda', 'Ruiwa', 'Rujewa',
-      'Santilya', 'Sinde', 'Sisimba', 'Suma', 'Swaya',
-      'Tembela',
-      'Ubaruku', 'Ulenje', 'Utengule Usangu', 'Utengule Usongwe', 'Uyole'
-    ],
-  },
-  {
-    region: 'Mjini Magharibi',
-    wards: ['Mtoni', 'Ngambo', 'Zanzibar'],
-  },
-  {
-    region: 'Morogoro',
-    wards: [
-      'Bamba', 'Diovuna', 'Gairo', 'Kanga', 'Karofi', 'Kibiti', 'Kilombero', 'Kilombero Valley', 'Kingupira', 'Kisaki',
-      'Kisima', 'Kizigo', 'Lukanda', 'Lumati', 'Mahenge', 'Malinyi', 'Mbuga', 'Mkuranga', 'Mlanzi', 'Mlimwa',
-      'Momba', 'Morogoro', 'Msingazi', 'Mtamba', 'Mtau', 'Mwanazi', 'Mwasonga', 'Namarunu', 'Ngerengere', 'Panza',
-      'Selembala', 'Siginal', 'Sudi', 'Tununguo'
-    ],
-  },
-  {
-    region: 'Mtwara',
-    wards: [
-      'Chikongola', 'Chuno',
-      'Jangwani', 'Jida',
-      'Kisungule',
-      'Likombe',
-      'Magengeni', 'Majengo', 'Marika', 'Migongo', 'Mitengo', 'Mkuti', 'Mtonya',
-      'Mwenge',
-      'Naliendele', 'Nyasa',
-      'Rahaleo', 'Railway',
-      'Shangani',
-      'Temeke',
-      'Ufukoni',
-      'Vigaeni'
-    ],
-  },
-  {
-    region: 'Mwanza',
-    wards: [
-      'Buhare', 'Bukabo', 'Bukwimba', 'Bulya', 'Busega', 'Butundwe', 'Chifunfu', 'Chitete', 'Dugush', 'Gulwe',
-      'Igokelo', 'Ilemy', 'Isaka', 'Itabira', 'Jamal', 'Kamanga', 'Kanyangereko', 'Kashishi', 'Katwe', 'Kimali',
-      'KIRIMA', 'Kurasho', 'Lungula', 'Mabuki', 'Makojo', 'Malita', 'Mbarari', 'Mbuga', 'Misungwi', 'Mwamashele',
-      'Mwamaza', 'Nyanghando', 'Nyanguge', 'Nyasansa', 'Nyatonkoko', 'Pemba', 'Sangabuye', 'Senjele', 'Shantika', 'Sima'
-    ],
-  },
-  {
-    region: 'Njombe',
-    wards: [
-      'Igima', 'Igosi', 'Ikongoro', 'Ilangu', 'Isapulano', 'Isawa', 'Itambo', 'Itandula', 'Kibara', 'Kidugala',
-      'Kihuhu', 'Kilondo', 'Kitwale', 'Luduma', 'Luganga', 'Lungana', 'Mabanda', 'Madibira', 'Makambako', 'Makete',
-      'Malindima', 'Masasi', 'Mlangali', 'Mpepo', 'Mtwango', 'Nambin', 'Nlingano', 'Njombe', 'Usuka', 'Wanga'
-    ],
-  },
-  {
-    region: 'Pwani',
-    wards: [
-      'Bagamoyo', 'Chalinze', 'Kibaha', 'Kibiti', 'Kilwa', 'Kisarawe', 'Mafia Island', 'Mkuranga', 'Rufiji', 'Utete'
-    ],
-  },
-  {
-    region: 'Rukwa',
-    wards: [
-      'Kabwe', 'Kala', 'Kankyeka', 'Kantalo', 'Kashe', 'Katongolo', 'Kazamondo', 'Kibwa', 'Kikwete', 'Laela',
-      'Lumba', 'Lyabukande', 'Mala', 'Mambweni', 'Mwadui', 'Namanyere', 'Nkansi', 'Sankuruku', 'Sitalike', 'Sumbawanga'
-    ],
-  },
-  {
-    region: 'Ruvuma',
-    wards: [
-      'Gumbasi', 'Imalamudhe', 'Kigoma', 'Kitai', 'Liuli', 'Lukumburu', 'Madaba', 'Majengo', 'Makongoro', 'Manda',
-      'Mbaha', 'Mbinga', 'Mikesse', 'Mimiro', 'Mipina', 'Miyau', 'Mlangali', 'Mnero', 'Mpepo', 'Msikisi',
-      'Mtina', 'Mtwango', 'Mugango', 'Mughunga', 'Nakapanya', 'Namiyoh', 'Ndati', 'Nguruka', 'Ntomoko', 'Ruvuma',
-      'Sonjo', 'Tunduru', 'Wino'
-    ],
-  },
-  {
-    region: 'Shinyanga',
-    wards: [
-      'Buhigwe', 'Didima', 'Igunga', 'Kandagi', 'Mbuga', 'Mgunda', 'Misasi', 'Misungwi', 'Mwashisya', 'Shinyanga'
-    ],
-  },
-  {
-    region: 'Simiyu',
-    wards: [
-      'Bariadi', 'Busega', 'Itilima', 'Maswa', 'Meatu', 'Nyanghwale', 'Shinyanga', 'Singu', 'Suma', 'Tarime'
-    ],
-  },
-  {
-    region: 'Singida',
-    wards: [
-      'Ikungi', 'Iramba', 'Itigi', 'Kakonko', 'Kalangi', 'Kandete', 'Kanyato', 'Kasinte', 'Kinyaghopa', 'Kipenzi',
-      'Kituntu', 'Lugala', 'Mabama', 'Makuro', 'Mgandu', 'Minziro', 'Missungwi', 'Mkiwa', 'Mtwangi', 'Musi',
-      'Ngimu', 'Nkololo', 'Nkungi', 'Puma', 'Rungwa', 'Shinyanga', 'Singida', 'Sirari', 'Songambele', 'Surubu'
-    ],
-  },
-  {
-    region: 'Songwe',
-    wards: [
-      'Chambua', 'Chano', 'Chokaa', 'Ikenge', 'Ilima', 'Iputo', 'Isase', 'Itete', 'Iwangwa', 'Iyula',
-      'Kabelekota', 'Kagwe', 'Kakasana', 'Kapelamosh', 'Kawetele', 'Kibenga', 'Kifun', 'Kihansi', 'Kikondo', 'Kilakala',
-      'Kile', 'Kileti', 'Kivungu', 'Kyela', 'Lusungo', 'Manda', 'Mankani', 'Mbokama', 'Mbuga', 'Mlowo',
-      'Mponde', 'Msangazi', 'Mtukula', 'Mwanakombo', 'Mwanalaba', 'Mwasongolo', 'Nakasonga', 'Nakau', 'Namjele', 'Nampajingo'
-    ],
-  },
-  {
-    region: 'Tabora',
-    wards: [
-      'Gombelo', 'Igunda', 'Kagongwa', 'Kalola', 'Kandawa', 'Kanindo', 'Kaponz', 'Kasola', 'Kigwa', 'Kitete',
-      'Kitunda', 'Lalyeta', 'Luguru', 'Mabira', 'Makangala', 'Mamba', 'Mbuji', 'MiyAP', 'Mkongoro', 'Mponde'
-    ],
-  },
-  {
-    region: 'Tanga',
-    wards: [
-      'Bongoyo', 'Chumbageni', 'Kange', 'Kigome', 'Kilwa', 'Kirare', 'Kisimatui', 'Kwamin', 'Langata', 'Lushoto',
-      'Mabanda', 'Magila', 'Makonde', 'Mkongoro', 'Mombasa', 'Mosi', 'Msata', 'Mto wa Mkuu', 'Mto wa Pwani', 'Mughunga',
-      'Musi', 'Mwarongo', 'Mzambarauni', 'Pande', 'Pongwe', 'Raskazini', 'Sanjale', 'Segera', 'Tanga CBD', 'Tanganyika',
-      'Teremia', 'Toti', 'Ulu', 'Ushindi', 'Zange'
-    ],
-  },
+  { region: 'Arusha' },
+  { region: 'Dar es Salaam' },
+  { region: 'Dodoma' },
+  { region: 'Geita' },
+  { region: 'Iringa' },
+  { region: 'Kagera' },
+  { region: 'Kaskazini Pemba' },
+  { region: 'Kaskazini Unguja' },
+  { region: 'Katavi' },
+  { region: 'Kigoma' },
+  { region: 'Kilimanjaro' },
+  { region: 'Kusini Pemba' },
+  { region: 'Kusini Unguja' },
+  { region: 'Lindi' },
+  { region: 'Manyara' },
+  { region: 'Mara' },
+  { region: 'Mbeya' },
+  { region: 'Mjini Magharibi' },
+  { region: 'Morogoro' },
+  { region: 'Mtwara' },
+  { region: 'Mwanza' },
+  { region: 'Njombe' },
+  { region: 'Pwani' },
+  { region: 'Rukwa' },
+  { region: 'Ruvuma' },
+  { region: 'Shinyanga' },
+  { region: 'Simiyu' },
+  { region: 'Singida' },
+  { region: 'Songwe' },
+  { region: 'Tabora' },
+  { region: 'Tanga' },
 ];
 
 export function getTanzaniaLocationData() {
   const regions = tanzaniaRegions.map(r => r.region);
-  
-  const regionWards: { region: string; ward: string }[] = [];
-  tanzaniaRegions.forEach(r => {
-    r.wards.forEach(ward => {
-      regionWards.push({ region: r.region, ward });
-    });
-  });
-  
   return {
     country: 'Tanzania',
     regions,
-    regionWards,
   };
 }
 
-export function getWardsByRegion(region: string): string[] {
-  const found = tanzaniaRegions.find(r => r.region.toLowerCase() === region.toLowerCase());
-  return found ? found.wards : [];
-}
-
-export function getAllWards(): string[] {
-  return tanzaniaRegions.flatMap(r => r.wards).sort();
+export function getAllRegions(): string[] {
+  return tanzaniaRegions.map(r => r.region).sort();
 }

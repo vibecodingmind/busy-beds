@@ -1,10 +1,9 @@
 'use client';
 
-import { tanzaniaRegions, getWardsByRegion } from '@/data/tanzania-wards';
+import { tanzaniaRegions } from '@/data/tanzania-wards';
 
 interface LocationValue {
   region: string;
-  ward: string;
   location: string;
 }
 
@@ -15,7 +14,6 @@ interface LocationFieldsProps {
 
 export default function LocationFields({ value, onChange }: LocationFieldsProps) {
   const availableRegions = tanzaniaRegions.map(r => r.region);
-  const availableWards = value.region ? getWardsByRegion(value.region) : [];
 
   const inputClass =
     'mt-1 w-full rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2.5 text-black dark:text-zinc-100 placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-colors';
@@ -23,7 +21,6 @@ export default function LocationFields({ value, onChange }: LocationFieldsProps)
 
   const set = (key: keyof LocationValue) => (val: string) => {
     const next: LocationValue = { ...value, [key]: val };
-    if (key === 'region') { next.ward = ''; }
     onChange(next);
   };
 
@@ -67,36 +64,6 @@ export default function LocationFields({ value, onChange }: LocationFieldsProps)
       </div>
 
       <div>
-        <label className={labelClass}>Ward / City</label>
-        <div className="flex gap-2 mt-1">
-          <select
-            value={availableWards.includes(value.ward) ? value.ward : '__other__'}
-            onChange={(e) => {
-              if (e.target.value !== '__other__') set('ward')(e.target.value);
-              else set('ward')('');
-            }}
-            className="flex-1 rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2.5 text-black dark:text-zinc-100 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
-            disabled={!value.region}
-          >
-            <option value="">— Select ward —</option>
-            {availableWards.map((w) => (
-              <option key={w} value={w}>{w}</option>
-            ))}
-            <option value="__other__">+ Add new ward…</option>
-          </select>
-          {(!availableWards.includes(value.ward)) && value.ward && (
-            <input
-              type="text"
-              value={value.ward}
-              onChange={(e) => set('ward')(e.target.value)}
-              placeholder="Type ward name…"
-              className="flex-1 rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2.5 text-black dark:text-zinc-100 placeholder:text-zinc-400 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
-            />
-          )}
-        </div>
-      </div>
-
-      <div>
         <label className={labelClass}>Street / Neighbourhood <span className="text-zinc-400 font-normal">(address detail)</span></label>
         <input
           type="text"
@@ -107,10 +74,10 @@ export default function LocationFields({ value, onChange }: LocationFieldsProps)
         />
       </div>
 
-      {(value.region || value.ward || value.location) && (
+      {(value.region || value.location) && (
         <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40 px-4 py-2.5 text-sm text-emerald-800 dark:text-emerald-300">
           <span className="font-medium">Preview: </span>
-          {[value.location, value.ward, value.region, 'Tanzania'].filter(Boolean).join(', ')}
+          {[value.location, value.region, 'Tanzania'].filter(Boolean).join(', ')}
         </div>
       )}
     </div>
