@@ -117,6 +117,7 @@ export default function FilterBar({
               placeholder="All Regions"
               searchPlaceholder="Search regions..."
               optionLabel={(region) => region || 'All Regions'}
+              searchFirst
             />
           </div>
         )}

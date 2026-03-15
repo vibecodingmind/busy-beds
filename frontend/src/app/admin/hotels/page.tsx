@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { admin } from '@/lib/api';
 import type { AdminHotel } from '@/lib/api';
 import { tanzaniaRegions } from '@/data/tanzania-wards';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export default function AdminHotelsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -92,16 +93,17 @@ export default function AdminHotelsPage() {
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <select
-          value={regionFilter}
-          onChange={(e) => setRegionFilter(e.target.value)}
-          className="rounded-lg border border-black/20 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-black dark:text-zinc-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
-        >
-          <option value="">All Regions</option>
-          {tanzaniaRegions.map((r) => (
-            <option key={r.region} value={r.region}>{r.region}</option>
-          ))}
-        </select>
+        <div className="min-w-[180px]">
+          <SearchableSelect
+            value={regionFilter}
+            options={['', ...tanzaniaRegions.map((r) => r.region)]}
+            onChange={(value) => setRegionFilter(value)}
+            placeholder="All Regions"
+            searchPlaceholder="Search regions..."
+            optionLabel={(region) => region || 'All Regions'}
+            searchFirst
+          />
+        </div>
         {(search || statusFilter !== 'all' || regionFilter) && (
           <button
             onClick={() => { setSearch(''); setStatusFilter('all'); setRegionFilter(''); }}
