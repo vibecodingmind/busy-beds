@@ -163,10 +163,16 @@ export const tanzaniaRegions: TanzaniaRegion[] = [
   {
     region: 'Lindi',
     wards: [
-      'Chito', 'Chunja', 'Kibuti', 'Kilimaherom', 'Kitonga', 'Lind CBD', 'Lindi', 'Lukuledi', 'Matumbi', 'Mbemba',
-      'Mchichuga', 'Michenge', 'Miguruwini', 'Mnangagano', 'Mpur', 'Mtama', 'Nachingwea', 'Namakamba', 'Nambound', 'Nandagala',
-      'Nanganga', 'Naongo', 'Naujombo', 'Njun', 'Nkowe', 'Nyengedi', 'Pachamo', 'Panda', 'Patame', 'Pitimuka',
-      'Ruangwa', 'Senta', 'Sindi', 'Tanang', 'Tara', 'Tendaguru', 'Tundatu'
+      'Chikonji', 'Chumo',
+      'Jamhuri',
+      'Kandawale', 'Kibata', 'Kikole', 'Kilwa Kivinje', 'Kinjumbi', 'Kipatimu', 'Kiranjeranje',
+      'Lihimalyao', 'Likawage',
+      'Makonde', 'Mandawa', 'Matopeni', 'Mbanja', 'Mchinga', 'Miguruwe', 'Mikumbi', 'Mingoyo', 'Mingumbi', 'Mitandi', 'Miteja', 'Mitole', 'Msinjahili', 'Mtama', 'Mtanda', 'Mwenge',
+      'Nachingwea', 'Nanjirinji', 'Ndori', 'Ngapa', 'Njinjo',
+      'Pande Mikoma',
+      'Rahaleo', 'Rasbura',
+      'Tandangongoro', 'Tingi',
+      'Wailes'
     ],
   },
   {
