@@ -137,14 +137,19 @@ export const tanzaniaRegions: TanzaniaRegion[] = [
   {
     region: 'Kilimanjaro',
     wards: [
-      'Arusha Chini', 'Boma', 'Bondeni', 'Buru', 'Chala', 'Chanja', 'Chomu', 'Gale', 'Himo', 'Ika',
-      'Irangi', 'Kahe', 'Kibosho', 'Kichanga', 'Kifura', 'Kilema', 'Kilimanjaro', 'Kindi', 'Kirua', 'Kisiwa',
-      'Kongoni', 'Lalago', 'Lomwe', 'Maangi', 'Machame', 'Madaha', 'Maji', 'Makami', 'Makanya', 'Makere',
-      'Marangu', 'Masama', 'Maua', 'Mavumo', 'Mawanjeri', 'Mbund', 'Mkomazi', 'Mkuu', 'Mlanga', 'Mmos',
-      'Mrawa', 'Msangazi', 'Mshiri', 'Mtakuja', 'Mtimba', 'Mto wa Ndege', 'Mtwango', 'Musi', 'Mwembe',
-      'Mwigoti', 'Nakuo', 'Narumu', 'Nduguti', 'Nekta', 'Ngana', 'Ngarenairobi', 'Ngarenanyuki', 'Ngorongoro', 'Nhelperenyi',
-      'Nkikagati', 'Nkomanji', 'Nkoyo', 'Nkwama', 'Nronga', 'Nyakanga', 'Nyerere', 'Olgilai', 'Olori', 'Rangit',
-      'Rombo', 'Ruvu', 'Sanya', 'Senguser', 'Shirimatanga', 'Siha', 'Sinduro', 'Song', 'Stahaha', 'St.'
+      'Arusha Chini',
+      'Boma Mbuzi', 'Bondeni',
+      'Gararagua',
+      'Hai Mjini',
+      'Kahe Mashariki', 'Kaloleni', 'Karansi', 'Kashashi', 'Kiboriloni', 'Kibosho Kati', 'Kibosho Magharibi', 'Kibosho Mashariki', 'Kilema Kaskazini', 'Kilema Kati', 'Kilema Kusini', 'Kilimanjaro', 'Kindi', 'Kirima', 'Kirua Vunjo Kusini', 'Kirua Vunjo Magharibi', 'Kirua Vunjo Mashariki', 'Kisima', 'Kisiwani', 'Kiusa', 'Korongoni',
+      'Livishi', 'Longuo',
+      'Mabogini', 'Machame Kaskazini', 'Machame Kusini', 'Machame Magharibi', 'Machame Mashariki', 'Machame Uroki', 'Majengo', 'Makiwaru', 'Mamba Kaskazini', 'Mamba Kusini', 'Marangu Magharibi', 'Marangu Mashariki', 'Masama Kusini', 'Masama Magharibi', 'Masama Mashariki', 'Masama Rundugai', 'Mawenzi', 'Mbokomu', 'Mfumuni', 'Mhezi', 'Miembeni', 'Mji Mpya', 'Msaranga', 'Mshewa', 'Mwembe', 'Mwika Kaskazini', 'Mwika Kusini',
+      'Naeny', 'Nasai', 'Ndumeti', 'Ngambo', 'Ngarenairobi', 'Njoro',
+      'Okaoni', 'Old Moshi Magharibi', 'Old Moshi Mashariki', 'Olkolili',
+      'Pasua',
+      'Rau', 'Sanya Juu', 'Shirimatunda', 'Soweto',
+      'Uru Kaskazini', 'Uru Kusini', 'Uru Mashariki', 'Uru Shimbwe',
+      'Vudee'
     ],
   },
   {
