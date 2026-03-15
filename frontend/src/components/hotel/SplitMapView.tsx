@@ -55,7 +55,7 @@ function SplitMapViewLoaded({
   });
 
   const hotelsWithCoords = useMemo(
-    () => hotels.filter((h): h is Hotel & { latitude: number; longitude: number } => 
+    () => hotels.filter((h): h is Hotel & { latitude: number; longitude: number } =>
       h.latitude != null && h.longitude != null
     ),
     [hotels]
@@ -188,11 +188,11 @@ function SplitMapViewLoaded({
                 {selectedHotel.name}
               </Link>
               {selectedHotel.location && (
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 truncate">{selectedHotel.location}</p>
+                <p className="mt-1 text-sm text-gray-700 truncate">{selectedHotel.location}</p>
               )}
               <div className="mt-1 flex items-center gap-2">
                 {selectedHotel.avg_rating != null && (
-                  <span className="text-sm font-medium">★ {Number(selectedHotel.avg_rating).toFixed(1)}</span>
+                  <span className="text-sm font-medium text-gray-900">★ {Number(selectedHotel.avg_rating).toFixed(1)}</span>
                 )}
                 <span className="text-sm font-bold text-primary">{selectedHotel.coupon_discount_value}</span>
               </div>

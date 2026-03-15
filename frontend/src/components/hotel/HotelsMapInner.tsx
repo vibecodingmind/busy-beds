@@ -89,7 +89,7 @@ function HotelsMapInnerLoaded({
                 {hotel.name}
               </Link>
               {hotel.location && (
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{hotel.location}</p>
+                <p className="mt-1 text-sm text-gray-700">{hotel.location}</p>
               )}
               <div className="mt-1 flex items-center gap-2">
                 {hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0 && (

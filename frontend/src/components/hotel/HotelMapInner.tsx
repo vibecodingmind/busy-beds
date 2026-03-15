@@ -44,8 +44,8 @@ function HotelMapInnerLoaded({
       <Marker position={center} />
       <InfoWindow position={center}>
         <div className="p-1 min-w-[160px]">
-          <strong className="font-semibold">{hotelName}</strong>
-          {location && <p className="mt-1 text-sm text-zinc-600">{location}</p>}
+          <strong className="font-semibold text-gray-900">{hotelName}</strong>
+          {location && <p className="mt-1 text-sm text-gray-700">{location}</p>}
         </div>
       </InfoWindow>
     </GoogleMap>
