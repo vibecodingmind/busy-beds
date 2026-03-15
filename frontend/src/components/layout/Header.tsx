@@ -59,8 +59,8 @@ export default function Header() {
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 border-b ${scrolled
-          ? 'bg-background/80 dark:bg-zinc-900/80 backdrop-blur-xl border-border py-2'
-          : 'bg-background border-transparent py-4'
+        ? 'bg-background/80 dark:bg-zinc-900/80 backdrop-blur-xl border-border py-2'
+        : 'bg-background border-transparent py-4'
         } print:hidden`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">
@@ -81,8 +81,8 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${isActive
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'text-muted hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted hover:text-foreground'
                     }`}
                 >
                   {link.label}
@@ -112,7 +112,7 @@ export default function Header() {
                   <span className="text-xs font-bold text-foreground truncate max-w-[100px]">{user.name}</span>
                   <span className="text-[10px] text-muted capitalize leading-tight">{user.role}</span>
                 </div>
-                <div className="h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary text-xs font-bold text-white ring-2 ring-background border border-border shadow-sm group-hover:ring-primary/20 transition-all">
+                <div className="h-7 w-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary text-[10px] font-bold text-white ring-1 ring-background border border-border/50 shadow-sm group-hover:ring-primary/20 transition-all">
                   {user.avatar_url ? (
                     <img
                       src={user.avatar_url}

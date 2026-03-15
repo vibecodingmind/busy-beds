@@ -133,7 +133,7 @@ export default function ProfileSettingsPage() {
                 {/* Avatar Section */}
                 <div className="mb-10 flex flex-col items-start relative z-10">
                     <div className="relative">
-                        <div className="h-24 w-24 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center text-primary text-3xl font-bold border-4 border-card shadow-sm">
+                        <div className="h-20 w-20 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold border-4 border-card shadow-sm">
                             {user.avatar_url ? (
                                 <img src={user.avatar_url} alt="Profile" className="h-full w-full object-cover" />
                             ) : (
