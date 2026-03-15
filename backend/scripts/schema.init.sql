@@ -442,3 +442,34 @@ CREATE TABLE IF NOT EXISTS user_activity_log (
 );
 CREATE INDEX IF NOT EXISTS idx_user_activity_log_user_id ON user_activity_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_activity_log_created_at ON user_activity_log(created_at);
+
+-- Amenities System
+CREATE TABLE IF NOT EXISTS amenity_categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    display_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS amenities (
+    id SERIAL PRIMARY KEY,
+    category_id INTEGER NOT NULL REFERENCES amenity_categories(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    icon VARCHAR(255),
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(category_id, name)
+);
+
+CREATE TABLE IF NOT EXISTS property_amenities (
+    property_id INTEGER NOT NULL REFERENCES hotels(id) ON DELETE CASCADE,
+    amenity_id INTEGER NOT NULL REFERENCES amenities(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(property_id, amenity_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_amenities_category ON amenities(category_id);
+CREATE INDEX IF NOT EXISTS idx_property_amenities_amenity ON property_amenities(amenity_id);
