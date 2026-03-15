@@ -83,10 +83,16 @@ export const tanzaniaRegions: TanzaniaRegion[] = [
   {
     region: 'Iringa',
     wards: [
-      'Isimani', 'Kihanga', 'Kilyely', 'Luhota', 'Lyamgungwe', 'Magalanga', 'Mahenge', 'Majengo', 'Makami', 'Makuka',
-      'Malagalila', 'Malengalogon', 'Masaka', 'Matomondo', 'Maweso', 'Mbalamaziwa', 'Mboli', 'Mlondo', 'Mlowo', 'Mtwango',
-      'Nduli', 'Nyangai', 'Nyangoro', 'Nyiwa', 'Pahi', 'Panda', 'Sanya', 'Sanye', 'Silibans', 'Tandai',
-      'Tumba', 'Uhominika', 'Ukwere', 'Ulanga', 'Urambo'
+      'Gangilonga',
+      'Idamba', 'Idodi', 'Ifunda', 'Igongolo', 'Igosi', 'Ikondo', 'Ilala', 'Ilembula', 'Ilolo Mpya', 'Ilula', 'Imalinyi', 'Itunundu', 'Izazi',
+      'Kalenga', 'Kihesa', 'Kihorogota', 'Kitanzini', 'Kitwiru', 'Kiwere', 'Kwakilosa',
+      'Lumuli', 'Lupembe',
+      'Maboga', 'Magulilwa', 'Mahongole', 'Mahuninga', 'Makorongoni', 'Malangali', 'Malenga Makali', 'Mdandu', 'Mgama', 'Mivinjeni', 'Mkwaja', 'Mkwawa', 'Mlandege', 'Mlowa', 'Mseke', 'Mshindo', 'Mtwango', 'Mtwivila', 'Mwangata',
+      'Nduli', 'Nzihi',
+      'Ruaha',
+      'Ulanda', 'Usuka', 'Uwemba',
+      'Wasa',
+      'Yakobi'
     ],
   },
   {
