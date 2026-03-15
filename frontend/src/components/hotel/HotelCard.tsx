@@ -143,11 +143,7 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
             ) : (
               <p className="mt-2 text-sm text-muted">No reviews yet</p>
             )}
-            {hotel.redemptions_this_month != null && hotel.redemptions_this_month > 0 && (
-              <p className="mt-2 text-xs text-muted">
-                {hotel.redemptions_this_month} redemption{hotel.redemptions_this_month !== 1 ? 's' : ''} this month
-              </p>
-            )}
+
             {lowestPrice ? (
               <p className="mt-3 text-sm">
                 <span className="text-zinc-400 line-through dark:text-zinc-500">
