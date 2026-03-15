@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import SearchableSelect from '@/components/SearchableSelect';
 
 export interface FilterState {
   search: string;
@@ -108,16 +109,16 @@ export default function FilterBar({
 
         {/* Region */}
         {availableRegions.length > 0 && (
-          <select
-            value={filters.region}
-            onChange={(e) => update('region', e.target.value)}
-            className={selectClass}
-          >
-            <option value="">All Regions</option>
-            {availableRegions.map(r => (
-              <option key={r} value={r}>{r}</option>
-            ))}
-          </select>
+          <div className="min-w-[180px]">
+            <SearchableSelect
+              value={filters.region}
+              options={['', ...availableRegions]}
+              onChange={(value) => update('region', value)}
+              placeholder="All Regions"
+              searchPlaceholder="Search regions..."
+              optionLabel={(region) => region || 'All Regions'}
+            />
+          </div>
         )}
 
         {/* More Filters toggle */}
