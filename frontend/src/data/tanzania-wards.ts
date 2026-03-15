@@ -7,13 +7,21 @@ export const tanzaniaRegions: TanzaniaRegion[] = [
   {
     region: 'Arusha',
     wards: [
-      'Abeid Karume', 'Amalus', 'Arusha CBD', 'Boma', 'Burunge', 'Castro', 'Chemka', 'Daudi', 'Elerai', 'Engaruka',
-      'Essilton', 'Farasi', 'Galoani', 'Gidodoka', 'Ilboru', 'Kariakoo', 'Kashashi', 'Katikati', 'Kikwe', 'Kisongo',
-      'Kitete', 'Kitunguu', 'Lengijave', 'Lemuma', 'Maji ya Chai', 'Makamu', 'Maroroni', 'Mbuguni', 'Mirerani', 'Moshi',
-      'Mtanana', 'Mto wa Mbu', 'Mwakiposi', 'Ngarenaro', 'Ngorongoro', 'Njiro', 'Olmotonyi', 'Oloipiri', 'Oltukai', 'Orkesumet',
-      'Pande', 'Patandi', 'Pingo', 'Poli', 'Rombo', 'Sa Integr', 'Sakila', 'Sambasha', 'Sandula', 'Sangaiwe',
-      'Selian', 'Shengena', 'Sinya', 'Sirua', 'Sokoni', 'Songoro', 'Sounge', 'Suki', 'Sumbawanga', 'TPC',
-      'Usa River', 'Wangshi', 'Ward'
+      'Akheri', 'Alailelai', 'Arash', 'Bangata', 'Baraa', 'Baray', 'Buger', 'Bwawani',
+      'Daa', 'Daraja Mbili', 'Digodigo', 'Elangata Dapash', 'Elerai', 'Endabash', 'Endamaghang', 'Endamarariek', 'Enduleni', 'Engarenaibor', 'Engaruka', 'Engikaret', 'Enguserosambu', 'Engutoto', 'Esilalei',
+      'Ganako', 'Gelai Lumbwa', 'Gelai Meirugoi',
+      'Ilkidinga', 'Iloirienito',
+      'Kakesio', 'Kaloleni', 'Kamwanga', 'Kansay', 'Karatu', 'Kati', 'Kikatiti', 'Kikwe', 'Kimandolu', 'Kimnyaki', 'Kimokouwa', 'Kingori', 'Kiranyi', 'Kisongo', 'Kitumbeine',
+      'Leguruki', 'Lemara', 'Lepurko', 'Levolosi', 'Lolkisale', 'Longido',
+      'Maalon', 'Majengo', 'Maji ya Chai', 'Makiba', 'Makuyuni', 'Mangola', 'Maroroni', 'Matale', 'Mateves', 'Mbuguni', 'Mbulumbulu', 'Meserani', 'Mlangarini', 'Moita', 'Moivo', 'Monduli Juu', 'Monduli Mjini', 'Moshono', 'Mswakini', 'Mto wa Mbu', 'Mundarara', 'Murieti', 'Musa', 'Mussa', 'Mwandeti',
+      'Nainokanoka', 'Naiyobi', 'Namanga', 'Nduruma', 'Ngarenanyuki', 'Ngarenaro', 'Ngorongoro', 'Nkoanrua', 'Nkoaranga', 'Nkoarisambu',
+      'Olasiti', 'Olbalbal', 'Oldeani', 'Oldonyo-Sambu', 'Oldonyosambu', 'Oljoro', 'Olkola', 'Olmolog', 'Olmotonyi', 'Oloipiri', 'Oloirien', 'Ololosokwan', 'Olorieni', 'Oltroto', 'Oltrumet', 'Orbomba', 'Orgosorok',
+      'Pinyinyi', 'Poli',
+      'Qurus',
+      'Rhotia',
+      'Sale', 'Sambasha', 'Samunge', 'Seela Singisi', 'Sekei', 'Selela', 'Sepeko', 'Soit Sambu', 'Sokon II', 'Sokoni I', 'Sombetini', 'Songoro',
+      'Terrat', 'Themi', 'Tingatinga',
+      'Unga Limited', 'Usa River'
     ],
   },
   {
