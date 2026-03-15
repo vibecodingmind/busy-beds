@@ -138,54 +138,55 @@ export default function HotelCard({ hotel, onRemoveFavorite }: HotelCardProps) {
             </div>
           </div>
 
-          <div className="flex flex-col flex-1 p-4 bg-white dark:bg-zinc-900">
-            <div className="flex justify-between items-start gap-2">
-              <h3 className="text-base font-bold text-foreground tracking-tight group-hover/card:text-emerald-600 dark:group-hover/card:text-emerald-400 transition-colors line-clamp-1">{hotel.name}</h3>
+          <div className="flex flex-col flex-1 p-4 bg-white dark:bg-zinc-900 gap-3">
+            {/* Middle Row: Title/Location (Left) and Price (Right) */}
+            <div className="flex justify-between items-start gap-4">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-bold text-foreground tracking-tight group-hover/card:text-emerald-600 dark:group-hover/card:text-emerald-400 transition-colors line-clamp-1">
+                  {hotel.name}
+                </h3>
+                <div className="mt-1 flex items-center gap-1 text-[11px] text-muted font-medium italic">
+                  <MapPinIcon className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <span className="line-clamp-1">{hotel.location?.split(',')[0]}</span>
+                </div>
+              </div>
+
               {lowestPrice && (
                 <div className="flex flex-col items-end shrink-0">
-                  <div className="text-lg font-extrabold text-foreground leading-none">
-                    {formatPrice(lowestPrice.discounted, lowestPrice.currency)}
+                  <div className="flex items-baseline gap-1.5">
+                    {lowestPrice.original > lowestPrice.discounted && (
+                      <span className="text-xs text-muted line-through opacity-70">
+                        {formatPrice(lowestPrice.original, lowestPrice.currency)}
+                      </span>
+                    )}
+                    <span className="text-lg font-extrabold text-foreground leading-none">
+                      {formatPrice(lowestPrice.discounted, lowestPrice.currency)}
+                    </span>
                   </div>
-                  <div className="text-[10px] text-muted font-medium mt-0.5">
+                  <span className="text-[10px] text-muted font-medium mt-1 uppercase tracking-wider">
                     per {hotel.price_type || 'day'}
-                  </div>
+                  </span>
                 </div>
               )}
             </div>
 
-            <div className="mt-1 flex items-center gap-1.5 text-xs text-muted">
-              <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-              <span className="line-clamp-1 font-medium italic">{hotel.location?.split(',')[0]}</span>
-            </div>
-
-            {/* Dynamic visual indicator for reviews and popularity */}
-            <div className="mt-4 pt-4 border-t border-border/50 flex items-center justify-between gap-4">
-              <div className="flex flex-col gap-1">
-                {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-0.5">
-                      <StarRating rating={1} size="xs" />
-                      <span className="text-xs font-bold text-foreground">{Number(hotel.avg_rating).toFixed(1)}</span>
-                    </div>
-                    <div className="h-3.5 w-px bg-border/50" />
-                    <span className="text-[11px] text-muted font-medium tracking-tight">
-                      {hotel.review_count} {hotel.review_count === 1 ? 'Review' : 'Reviews'}
-                    </span>
+            {/* Bottom Row: Reviews */}
+            <div className="mt-auto pt-3 border-t border-border/50">
+              {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-0.5">
+                    <StarRating rating={1} size="xs" />
+                    <span className="text-xs font-bold text-foreground">{Number(hotel.avg_rating).toFixed(1)}</span>
                   </div>
-                ) : (
-                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">New Property</span>
-                )}
-              </div>
-
-              {lowestPrice && lowestPrice.original > lowestPrice.discounted && (
-                <div className="flex flex-col items-end">
-                  <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-600/10 px-2 py-0.5 rounded-md">
-                    SAVE {Math.round(((lowestPrice.original - lowestPrice.discounted) / lowestPrice.original) * 100)}%
-                  </div>
-                  <div className="text-[10px] text-muted line-through mt-0.5">
-                    {formatPrice(lowestPrice.original, lowestPrice.currency)}
-                  </div>
+                  <div className="h-3.5 w-px bg-border/50" />
+                  <span className="text-[11px] text-muted font-medium tracking-tight">
+                    {hotel.review_count} {hotel.review_count === 1 ? 'Review' : 'Reviews'}
+                  </span>
                 </div>
+              ) : (
+                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
+                  New Property
+                </span>
               )}
             </div>
           </div>

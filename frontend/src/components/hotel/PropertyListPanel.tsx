@@ -125,38 +125,36 @@ export default function PropertyListPanel({
                       )}
                     </div>
                     <div className="flex-1 p-3 min-w-0 flex flex-col justify-between">
-                      <div>
-                        <div className="flex justify-between items-start gap-1">
-                          <h3 className="text-sm font-bold text-foreground truncate group-hover/item:text-emerald-600 dark:group-hover/item:text-emerald-400 transition-colors uppercase tracking-tight">{hotel.name}</h3>
-                        </div>
-                        {hotel.location && (
-                          <div className="mt-0.5 flex items-center gap-1 text-[11px] text-muted truncate italic">
-                            <MapPinIcon className="h-3 w-3 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
-                            <span className="truncate">{hotel.location.split(',')[0]}</span>
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-bold text-foreground truncate group-hover/item:text-emerald-600 dark:group-hover/item:text-emerald-400 transition-colors uppercase tracking-tight">
+                            {hotel.name}
+                          </h3>
+                          <div className="mt-0.5 flex items-center gap-1 text-[10px] text-muted truncate italic">
+                            <MapPinIcon className="h-2.5 w-2.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                            <span className="truncate">{hotel.location?.split(',')[0]}</span>
                           </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center justify-between mt-auto">
-                        <div className="flex flex-col gap-0.5">
-                          {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
-                            <div className="flex items-center gap-1">
-                              <span className="text-[11px] font-bold text-foreground bg-emerald-600/10 px-1.5 py-0.5 rounded text-emerald-700 dark:text-emerald-300">
-                                {Number(hotel.avg_rating).toFixed(1)}
-                              </span>
-                              <span className="text-[10px] text-muted">({hotel.review_count})</span>
-                            </div>
-                          ) : (
-                            <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">New</span>
-                          )}
                         </div>
 
-                        <div className="flex flex-col items-end">
+                        <div className="flex flex-col items-end shrink-0">
                           <span className="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400">
                             {hotel.coupon_discount_value}
                           </span>
                           <span className="text-[9px] text-muted font-medium">per {hotel.price_type || 'day'}</span>
                         </div>
+                      </div>
+
+                      <div className="mt-auto pt-2 border-t border-border/30 flex items-center justify-between">
+                        {(hotel.avg_rating != null && hotel.review_count != null && hotel.review_count > 0) ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold text-foreground bg-emerald-600/10 px-1 py-0.5 rounded text-emerald-700 dark:text-emerald-300">
+                              {Number(hotel.avg_rating).toFixed(1)}
+                            </span>
+                            <span className="text-[9px] text-muted tracking-tighter">({hotel.review_count})</span>
+                          </div>
+                        ) : (
+                          <span className="text-[9px] font-bold text-emerald-600/60 uppercase tracking-widest">New</span>
+                        )}
                       </div>
                     </div>
                   </div>
