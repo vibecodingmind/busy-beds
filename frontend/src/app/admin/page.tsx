@@ -26,10 +26,10 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (!user || user.role !== 'admin') return;
     // Use analytics endpoint for counts — no need to download full collections
-    admin.analytics().then(setAnalytics).catch(() => {});
-    admin.analyticsChart().then(setChartData).catch(() => {});
+    admin.analytics().then(setAnalytics).catch(() => { });
+    admin.analyticsChart().then(setChartData).catch(() => { });
     // Only fetch pending approvals since analytics doesn't include it
-    admin.pendingHotelAccounts().then((p) => setPendingCount(p.accounts.length)).catch(() => {});
+    admin.pendingHotelAccounts().then((p) => setPendingCount(p.accounts.length)).catch(() => { });
   }, [user]);
 
   if (authLoading || !user || user.role !== 'admin') return <div className="py-8">Loading...</div>;
@@ -144,6 +144,12 @@ export default function AdminDashboardPage() {
           <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 shadow-sm hover:shadow-md">
             <h3 className="font-semibold text-gray-900 dark:text-zinc-100">Pages</h3>
             <p className="mt-2 text-sm text-gray-600 dark:text-zinc-400">Privacy, Terms, About, Contact</p>
+          </div>
+        </Link>
+        <Link href="/admin/amenities">
+          <div className="rounded-xl border border-black/10 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 shadow-sm hover:shadow-md">
+            <h3 className="font-semibold text-gray-900 dark:text-zinc-100">Amenities</h3>
+            <p className="mt-2 text-sm text-gray-600 dark:text-zinc-400">Manage Categories & Amenities</p>
           </div>
         </Link>
         <Link href="/admin/contact-inbox">

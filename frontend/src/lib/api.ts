@@ -47,8 +47,8 @@ export const auth = {
       { method: 'POST', body: JSON.stringify({ email, password, name, referral_code: referralCode }) }
     ),
   login: (email: string, password: string) =>
-    api<{ 
-      user?: { id: number; email: string; name: string; role: string }; 
+    api<{
+      user?: { id: number; email: string; name: string; role: string };
       token?: string;
       requires_2fa?: boolean;
       temp_token?: string;
@@ -646,6 +646,35 @@ export const admin = {
         { method: 'PATCH', body: JSON.stringify(data) }
       ),
   },
+  amenityCategories: {
+    list: (include_amenities = false) =>
+      api<{ categories: AmenityCategory[] }>(`/admin/amenities/categories${include_amenities ? '?include_amenities=true' : ''}`),
+    create: (data: Partial<AmenityCategory>) =>
+      api<{ category: AmenityCategory }>('/admin/amenities/categories', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: number, data: Partial<AmenityCategory>) =>
+      api<{ category: AmenityCategory }>(`/admin/amenities/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id: number) =>
+      api<{ success: boolean }>(`/admin/amenities/categories/${id}`, { method: 'DELETE' }),
+  },
+  amenities: {
+    list: () =>
+      api<{ amenities: Amenity[] }>('/admin/amenities'),
+    create: (data: Partial<Amenity>) =>
+      api<{ amenity: Amenity }>('/admin/amenities', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: number, data: Partial<Amenity>) =>
+      api<{ amenity: Amenity }>(`/admin/amenities/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id: number) =>
+      api<{ success: boolean }>(`/admin/amenities/${id}`, { method: 'DELETE' }),
+  },
+  propertyAmenities: {
+    get: (hotelId: number) =>
+      api<{ amenities: PropertyAmenityCategory[] }>(`/admin/hotels/${hotelId}/amenities`),
+    update: (hotelId: number, amenity_ids: number[]) =>
+      api<{ success: boolean }>(`/admin/hotels/${hotelId}/amenities`, {
+        method: 'POST',
+        body: JSON.stringify({ amenity_ids }),
+      }),
+  },
   withdrawRequests: {
     list: (status?: string) =>
       api<{
@@ -687,6 +716,30 @@ export const admin = {
 };
 
 // Types
+export interface AmenityCategory {
+  id?: number;
+  category_id?: number; // Used in aggregates
+  category_name?: string; // Used in aggregates
+  name: string;
+  description?: string;
+  display_order?: number;
+  amenities?: Amenity[]; // Aggregate results
+}
+
+export interface Amenity {
+  id: number;
+  category_id: number;
+  name: string;
+  icon?: string;
+  description?: string;
+}
+
+export interface PropertyAmenityCategory {
+  category_id: number;
+  category_name: string;
+  amenities: { id: number; name: string; icon?: string }[];
+}
+
 export interface MediaItem {
   url: string;
   type?: 'image' | 'video';

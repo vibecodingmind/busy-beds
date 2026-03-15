@@ -9,6 +9,7 @@ import type { ManagingAccount, MediaItem } from '@/lib/api';
 import PhotosInput from '@/components/admin/PhotosInput';
 import HotelRoomsManager from '@/components/admin/HotelRoomsManager';
 import LocationFields from '@/components/admin/LocationFields';
+import PropertyAmenitiesManager from '@/components/admin/PropertyAmenitiesManager';
 
 function isMediaItemArray(arr: string[] | MediaItem[]): arr is MediaItem[] {
   return arr.length > 0 && typeof arr[0] === 'object' && 'url' in arr[0];
@@ -259,6 +260,11 @@ export default function EditHotelPage() {
       {/* Rooms Manager */}
       <div className="mt-10">
         <HotelRoomsManager hotelId={id} />
+      </div>
+
+      {/* Amenities Manager */}
+      <div className="mt-10">
+        <PropertyAmenitiesManager hotelId={id} />
       </div>
 
       {/* Hotel account */}
