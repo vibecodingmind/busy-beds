@@ -12,20 +12,20 @@ router.get('/redemptions', hotelAuthMiddleware, async (req, res) => {
 
     const { start, end } = req.query;
     let query = `
-      SELECT r.id, r.redeemed_at, c.code, c.discount_value, u.name as user_name
-      FROM redemptions r
-      JOIN coupons c ON r.coupon_id = c.id
+      SELECT c.id, c.code, c.status, c.discount_value, c.created_at, u.name as user_name, r.redeemed_at
+      FROM coupons c
       JOIN users u ON c.user_id = u.id
-      WHERE r.hotel_account_id IN (SELECT id FROM hotel_accounts WHERE hotel_id = $1)
+      LEFT JOIN redemptions r ON r.coupon_id = c.id
+      WHERE c.hotel_id = $1
     `;
     const params: (string | number)[] = [req.hotel.hotelId];
 
     if (start && end) {
-      query += ` AND r.redeemed_at >= $2 AND r.redeemed_at <= $3`;
+      query += ` AND c.created_at >= $2 AND c.created_at <= $3`;
       params.push(start as string, end as string);
     }
 
-    query += ` ORDER BY r.redeemed_at DESC LIMIT 100`;
+    query += ` ORDER BY c.created_at DESC LIMIT 100`;
 
     const result = await pool.query(query, params);
     res.json({ redemptions: result.rows });

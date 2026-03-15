@@ -833,10 +833,12 @@ export interface User {
 
 export interface Redemption {
   id: number;
-  redeemed_at: string;
   code: string;
+  status: 'active' | 'redeemed' | 'expired' | 'cancelled';
   discount_value: string;
+  created_at: string;
   user_name: string;
+  redeemed_at?: string | null;
 }
 
 export interface CouponAdmin extends Coupon {

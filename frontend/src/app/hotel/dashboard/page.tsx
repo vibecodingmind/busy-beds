@@ -6,11 +6,11 @@ import { useHotelAuth } from '@/contexts/HotelAuthContext';
 import { useRouter } from 'next/navigation';
 import { hotelDashboard } from '@/lib/api';
 
-type Redemption = { code: string; user_name: string; discount_value: string; redeemed_at: string };
+import type { Redemption } from '@/lib/api';
 
 function toCSV(rows: Redemption[]): string {
-  const header = 'Code,Guest,Discount,Date\n';
-  const body = rows.map((r) => `"${r.code}","${r.user_name.replace(/"/g, '""')}","${r.discount_value}","${r.redeemed_at}"`).join('\n');
+  const header = 'Code,Status,Guest,Discount,Created At,Redeemed At\n';
+  const body = rows.map((r) => `"${r.code}","${r.status}","${r.user_name.replace(/"/g, '""')}","${r.discount_value}","${new Date(r.created_at).toLocaleString()}","${r.redeemed_at ? new Date(r.redeemed_at).toLocaleString() : ''}"`).join('\n');
   return header + body;
 }
 
@@ -29,15 +29,15 @@ export default function HotelDashboardPage() {
 
   useEffect(() => {
     if (!hotel) return;
-    hotelDashboard.stats().then(setStats).catch(() => {});
-    hotelDashboard.chart(7).then((r) => setChartData(r.data)).catch(() => {});
+    hotelDashboard.stats().then(setStats).catch(() => { });
+    hotelDashboard.chart(7).then((r) => setChartData(r.data)).catch(() => { });
   }, [hotel]);
 
   useEffect(() => {
     if (!hotel) return;
     const s = start || undefined;
     const e = end || undefined;
-    hotelDashboard.redemptions(s, e).then((r) => setRedemptions(r.redemptions)).catch(() => {});
+    hotelDashboard.redemptions(s, e).then((r) => setRedemptions(r.redemptions)).catch(() => { });
   }, [hotel, start, end]);
 
   const exportCSV = () => {
@@ -103,7 +103,7 @@ export default function HotelDashboardPage() {
       )}
 
       <div className="mt-8">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-100">Redemptions</h2>
+        <h2 className="text-lg font-semibold text-black dark:text-zinc-100">All Coupons Generated</h2>
         <div className="mt-4 flex flex-wrap gap-4">
           <input
             type="date"
@@ -130,19 +130,29 @@ export default function HotelDashboardPage() {
             <thead className="bg-white dark:bg-zinc-800">
               <tr>
                 <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Code</th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Status</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Guest</th>
                 <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Discount</th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Date</th>
+                <th className="px-4 py-2 text-left text-sm font-medium text-black dark:text-zinc-300">Generated On</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/10 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
               {redemptions.map((r) => (
-                <tr key={r.code + r.redeemed_at}>
+                <tr key={r.id || r.code}>
                   <td className="px-4 py-2 font-mono text-sm text-black dark:text-zinc-100">{r.code}</td>
+                  <td className="px-4 py-2 text-sm">
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 box-border border text-xs font-semibold uppercase tracking-wide ${r.status === 'redeemed' ? 'border-emerald-300 bg-emerald-100 text-emerald-800 dark:border-emerald-800/60 dark:bg-emerald-900/40 dark:text-emerald-400' :
+                        r.status === 'active' ? 'border-blue-300 bg-blue-100 text-blue-800 dark:border-blue-800/60 dark:bg-blue-900/40 dark:text-blue-400' :
+                          r.status === 'cancelled' ? 'border-orange-300 bg-orange-100 text-orange-800 dark:border-orange-800/60 dark:bg-orange-900/40 dark:text-orange-400' :
+                            'border-zinc-300 bg-zinc-100 text-zinc-800 dark:border-zinc-700/60 dark:bg-zinc-800/40 dark:text-zinc-400'
+                      }`}>
+                      {r.status}
+                    </span>
+                  </td>
                   <td className="px-4 py-2 text-sm text-black dark:text-zinc-100">{r.user_name}</td>
                   <td className="px-4 py-2 text-sm text-black dark:text-zinc-100">{r.discount_value}</td>
                   <td className="px-4 py-2 text-sm text-black dark:text-zinc-400">
-                    {new Date(r.redeemed_at).toLocaleString()}
+                    {new Date(r.created_at).toLocaleString()}
                   </td>
                 </tr>
               ))}
@@ -150,7 +160,7 @@ export default function HotelDashboardPage() {
           </table>
         </div>
         {redemptions.length === 0 && (
-          <p className="mt-4 text-center text-black dark:text-zinc-400">No redemptions yet.</p>
+          <p className="mt-4 text-center text-black dark:text-zinc-400">No coupons yet.</p>
         )}
       </div>
 
